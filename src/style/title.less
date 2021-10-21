@@ -1,0 +1,48 @@
+/** @format */
+
+.title {
+  font-size: 18px;
+  font-weight: 600;
+  color: @heading-color;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  .position {
+    position: relative;
+    span {
+      font-size: 12px;
+      font-weight: 600;
+      color: #909db4;
+      &:nth-child(1) {
+        color: @heading-color;
+        font-size: 18px;
+      }
+    }
+    .manage {
+      margin-right: 40px;
+    }
+    .farm {
+      margin-right: 65px;
+    }
+    svg {
+      fill: #909db4;
+      width: 16px;
+      height: 16px;
+      position: absolute;
+      bottom: -3px;
+      left: 80px;
+    }
+  }
+  .icon {
+    min-width: 16px;
+    max-width: 16px;
+    height: 16px;
+    fill: @text-color;
+    margin-left: 8px;
+  }
+}
+@media (max-width: 750px) {
+  .title {
+    margin-top: 20px;
+  }
+}

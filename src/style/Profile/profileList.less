@@ -1,0 +1,77 @@
+/** @format */
+.table-content {
+  width: 1000px;
+  height: 391px;
+  background: #ffffff;
+  box-shadow: 0px 2px 30px 0px rgba(190, 200, 221, 0.3);
+  border-radius: 10px;
+  margin-top: 20px;
+  .icon {
+    width: 20px;
+    height: 20px;
+    fill: #909db4;
+  }
+  .action-btn + .action-btn {
+    margin-left: 20px;
+  }
+  .table-header-tab {
+    display: flex;
+    padding: 0px 16px;
+    border-bottom: solid 1px #f3f7fe;
+    margin-bottom: 0;
+    .farm {
+      display: flex;
+      align-items: center;
+      margin-left: 100px;
+      .item {
+        margin-right: 40px;
+        &:nth-last-child(1) {
+          margin-right: 0;
+        }
+        .totalReward {
+          font-size: 12px;
+          font-weight: 500;
+          color: #909db4;
+          margin-right: 5px;
+        }
+        .totalRewardVale {
+          font-size: 14px;
+          font-weight: 600;
+          color: #333333;
+          margin-right: 5px;
+        }
+      }
+    }
+    .header-tab-item {
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      color: #909db4;
+      display: flex;
+      align-items: center;
+      margin-right: 40px;
+      position: relative;
+      padding: 18px 0px;
+    }
+
+    .header-tab-item-active {
+      font-size: 14px;
+      font-weight: 500;
+      color: #333333;
+      .icon {
+        fill: #005aff;
+      }
+      &::after {
+        content: '';
+        width: 20px;
+        height: 2px;
+        background: #005aff;
+        border-radius: 1px;
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        transform: translateX(-50%);
+      }
+    }
+  }
+}

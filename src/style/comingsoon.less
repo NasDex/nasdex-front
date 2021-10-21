@@ -1,0 +1,27 @@
+/** @format */
+
+.comingsoon-container {
+  width: 1000px;
+  min-height: 100%;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  img {
+    width: 120px;
+    height: 100px;
+  }
+  p {
+    font-size: 14px;
+    font-weight: 600;
+    color: @text-color;
+    margin-top: 16px;
+  }
+}
+
+@media (max-width: 750px) {
+  .comingsoon-container {
+    width: 300px;
+  }
+}

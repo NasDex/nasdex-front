@@ -1,0 +1,145 @@
+/** @format */
+
+.chooseAssetPair-container {
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: @text-color;
+    border-radius: 3px;
+  }
+
+  .ant-input {
+    background-color: @form-back;
+    height: 40px;
+    border-radius: 8px;
+  }
+
+  .base {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    p {
+      font-size: 14px;
+      font-weight: 550;
+      color: @heading-color;
+      line-height: 14px;
+      margin-top: 20px;
+    }
+  }
+
+  .asset {
+    display: flex;
+    margin-top: 12px;
+
+    .asset-item {
+      width: 100px;
+      height: 42px;
+      background: #f2f4fc;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-right: 16px;
+      cursor: pointer;
+
+      img {
+        width: 28px;
+        height: 28px;
+      }
+
+      span {
+        font-size: 14px;
+        font-weight: 500;
+        color: @heading-color;
+        line-height: 14px;
+        margin-left: 8px;
+      }
+    }
+  }
+
+  .card {
+    height: 100%;
+    max-height: 292px;
+    background: @form-back;
+    border-radius: 10px;
+    margin-top: 20px;
+    overflow: auto;
+
+    .item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 56px;
+      padding: 5px 15px 0 5px;
+
+      &:hover {
+        background-color: #e4ebfc;
+        border-radius: 10px;
+      }
+
+      .left {
+        display: flex;
+
+        .logo {
+          width: 36px;
+          height: 36px;
+        }
+
+        .tit {
+          margin-left: 10px;
+          margin-top: 2px;
+          text-align: left;
+
+          p {
+            font-size: 14px;
+            font-weight: 600;
+            color: @heading-color;
+            line-height: 18px;
+            margin-bottom: 5px;
+          }
+
+          span {
+            font-size: 12px;
+            color: #666666;
+            line-height: 12px;
+          }
+        }
+      }
+
+      .right {
+        text-align: right !important;
+        p {
+          font-size: 14px;
+          font-weight: 500;
+          color: @heading-color;
+          line-height: 18px;
+          margin-bottom: 5px;
+        }
+        svg {
+          width: 10px;
+          height: 10px;
+          fill: @text-color;
+          margin-right: 3px;
+        }
+
+        span {
+          font-size: 12px;
+          font-weight: 400;
+          color: @text-color;
+          line-height: 12px;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 750px) {
+  .logo-img {
+    margin-top: 0px;
+  }
+}

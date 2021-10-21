@@ -1,0 +1,113 @@
+/** @format */
+
+.farm-pool-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  .farm-pool-item {
+    width: 320px;
+    margin-top: 20px;
+    padding: 20px;
+    background: @menu-back;
+    border-radius: 10px;
+
+    .pool-header {
+      display: flex;
+
+      .pool-logo {
+        width: 32px;
+        height: 32px;
+        margin-right: 10px;
+      }
+
+      .pool-name {
+        font-size: 14px;
+        font-weight: 600;
+        color: @heading-color;
+      }
+
+      .pool-source {
+        font-size: 12px;
+        font-weight: 400;
+        color: @text-color;
+        margin-top: 6px;
+      }
+    }
+
+    .apr-info {
+      margin-top: 10px;
+      padding: 15px 0px;
+      display: flex;
+      justify-content: space-evenly;
+      background: @input-back;
+      border-radius: 8px;
+      .long-apr-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: @heading-color;
+        line-height: 16px;
+      }
+
+      .long-apr-text {
+        font-size: 12px;
+        font-weight: 600;
+        color: @text-color;
+        margin-top: 10px;
+      }
+    }
+
+    .amm-price {
+      display: flex;
+      justify-content: space-between;
+
+      &:not(:last-child) {
+        margin-top: 20px;
+      }
+
+      .leabl {
+        font-size: 14px;
+        font-weight: 500;
+        color: @text-color;
+      }
+
+      .text {
+        font-size: 14px;
+        font-weight: 600;
+        color: @heading-color;
+      }
+    }
+
+    .action-btn {
+      margin-top: 20px;
+      // display: flex;
+      width: 100%;
+      // justify-content: space-between;
+      .farmBtn {
+        span {
+          font-size: 14px;
+          font-weight: 900;
+        }
+        width: 46%;
+        height: 48px;
+        background: @up-color;
+        border-radius: 8px;
+        font-weight: 900;
+        color: @menu-back;
+        border: none;
+      }
+      .shortBtn {
+        margin-left: 16px;
+      }
+      .longBtn {
+        width: 100%;
+      }
+    }
+  }
+}
+@media (max-width: 750px) {
+  .farm-pool-list {
+    .farm-pool-item {
+      width: 355px;
+    }
+  }
+}

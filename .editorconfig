@@ -1,0 +1,17 @@
+# top-most EditorConfig file
+root = true
+
+[*]
+indent_style = space
+# 缩进尺寸
+indent_size = 2
+charset = utf-8
+# 修剪尾随空格
+trim_trailing_whitespace = true
+end_of_line = lf
+# 插入最后的换行符
+insert_final_newline = true
+max_line_length = 120
+
+[*.md]
+trim_trailing_whitespace = false

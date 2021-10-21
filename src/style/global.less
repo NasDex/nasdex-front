@@ -1,0 +1,106 @@
+/** @format */
+
+// @font-face {
+//   font-family: 'opensans';
+//   src: url('../fonts/OpenSans.eot');
+//   /* IE9 Compat Modes */
+//   src: url('../fonts/OpenSans.eot?#iefix') format('embedded-opentype'),
+//     /* IE6-IE8 */ url('../fonts/OpenSans.woff2') format('woff2'),
+//     /* Super Modern Browsers */ url('../fonts/OpenSans.woff') format('woff'),
+//     /* Pretty Modern Browsers */ url('../fonts/OpenSans.ttf') format('truetype'),
+//     /* Safari, Android, iOS */ url('../fonts/OpenSans.svg#svgFontName') format('svg');
+//   /* Legacy iOS */
+// }
+
+// @font-face {
+//   font-family: 'SFCompactDisplay';
+//   src: url('../fonts/SFCompactDisplay.ttf') format('truetype');
+// }
+
+// @font-face {
+//   font-family: 'Rubik-Regular';
+//   src: url('../fonts/Rubik-Regular.ttf') format('truetype');
+// }
+
+@font-face {
+  font-family: 'PingFang';
+  src: url('../fonts/PingFang.ttf') format('truetype');
+  
+  /* IE9 Compat Modes */
+}
+
+* {
+  margin: 0px;
+  padding: 0px;
+}
+
+html,
+body,
+div,
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+ul,
+li,
+dl,
+dt,
+dd,
+table,
+tr,
+td,
+th,
+tbody,
+thead,
+span,
+i,
+a,
+input,
+button,
+textarea {
+  margin: 0px;
+  padding: 0px;
+  box-sizing: border-box;
+  // font-family: 'PingFang', 'SFCompactDisplay', 'Rubik-Regular', 'opensans', 'arial';
+  // font-family: 'PingFang','PingFang-SC-Light';
+  font-size: 12px;
+  line-height: 1;
+}
+
+p {
+  margin-bottom: 0px !important;
+}
+
+ul {
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+}
+
+.close-notification-icon {
+  width: 16px;
+  height: 16px;
+  fill: @text-color;
+
+  &:hover {
+    fill: @heading-color;
+  }
+}
+
+.container-center {
+  width: 1000px;
+  margin: 0 auto;
+  padding-top: 30px;
+}
+
+@media (max-width: 750px) {
+  .container-center {
+    width: 100%;
+    padding: 0px 10px 0;
+  }
+}

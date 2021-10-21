@@ -1,0 +1,51 @@
+/** @format */
+
+.trade-setting {
+  text-align: left;
+
+  .trade-setting-content {
+    .slippage-tolerance {
+      font-size: 14px;
+      font-weight: 400;
+      color: #333333;
+    }
+
+    .input-content {
+      margin-top: 12px;
+      display: flex;
+      justify-content: space-between;
+
+      .slippage-item {
+        width: 72px;
+        height: 32px;
+        background: rgba(#ffffff, 0.1);
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #333333;
+        text-align: center;
+        line-height: 32px;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+      }
+      .slippage-item-active {
+        border: 1px solid #005aff;
+        color: #005aff;
+      }
+
+      input {
+        width: 72px;
+        background: rgba(#ffffff, 0.1);
+        border-radius: 8px;
+      }
+
+      .ant-input-affix-wrapper {
+        width: 72px;
+        border-radius: 8px;
+      }
+    }
+  }
+  .trade-setting-alert {
+    margin-top: 12px;
+    color: #ff4343;
+  }
+}

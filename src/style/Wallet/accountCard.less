@@ -1,0 +1,51 @@
+/** @format */
+
+.accountCard-container {
+  .ant-input {
+    background-color: @form-back;
+    height: 40px;
+    border-radius: 8px;
+  }
+  .base {
+    display: flex;
+    justify-content: space-between;
+    p {
+      font-size: 14px;
+      font-weight: 600;
+      color: #000;
+      line-height: 14px;
+    }
+    .change {
+      width: 60px;
+      height: 20px;
+      line-height: 20px;
+      text-align: center;
+      background: @primary-color;
+      border-radius: 4px;
+      opacity: 0.4;
+    }
+  }
+  .btn {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+    .ant-btn {
+      width: 150px;
+      height: 40px;
+      border-radius: 8px;
+      opacity: 0.2;
+      border: 1px solid #000;
+      span {
+        color: #000;
+      }
+      &:nth-child(2) {
+        background: @primary-color;
+      }
+    }
+  }
+}
+@media (max-width: 750px) {
+  .logo-img {
+    margin-top: 0px;
+  }
+}

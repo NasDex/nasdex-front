@@ -1,0 +1,12 @@
+/** @format */
+.manage-container .manage-symbol-trade {
+  display: flex;
+  margin-top: 80px;
+  justify-content: space-between;
+}
+@media (max-width: 750px) {
+  .manage-container .manage-symbol-trade {
+    display: block;
+    margin-top: 20px;
+  }
+}

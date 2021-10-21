@@ -1,0 +1,673 @@
+/** @format */
+
+.staking-right {
+  width: 580px;
+  margin-left: 20px;
+
+  .stake {
+    height: 140px;
+    // padding: 83px 103px 20px 85px;
+    background: url('../../img/stake/pc-liquidity-banner.png') no-repeat;
+    background-size: 100% auto;
+    padding-top: 83px;
+
+    .stake-apr {
+      display: flex;
+      justify-content: space-around;
+      text-align: center;
+      .apr-title {
+        width: 100%;
+        font-size: 16px;
+        font-weight: bold;
+        color: @menu-back;
+        display: flex;
+        align-items: center;
+        text-align: center;
+        justify-content: center;
+        .icon {
+          width: 16px;
+          height: 16px;
+          fill: @menu-back;
+          margin-left: 4px;
+        }
+      }
+
+      .text {
+        font-size: 12px;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.5);
+        margin-top: 9px;
+      }
+    }
+  }
+
+  .stake-action {
+    padding: 20px;
+    display: flex;
+    background-color: @menu-back;
+
+    .stake-action-list {
+      background: #f7f7f7;
+      border-radius: 8px;
+
+      .stake-action-item {
+        width: 132px;
+        font-size: 14px;
+        font-weight: 600;
+        color: @heading-color;
+        height: 46px;
+        text-align: center;
+        line-height: 46px;
+        cursor: pointer;
+      }
+      .stake-action-item-active {
+        background: @up-back;
+        color: @heading-color;
+        border-radius: 8px;
+        border: none;
+        height: 46px;
+      }
+    }
+
+    .stake-action-num {
+      margin-left: 20px;
+      width: 100%;
+      .amount {
+        background: @form-back;
+        border-radius: 8px;
+        padding: 20px 12px;
+        height: 80px;
+        margin-top: 0;
+        .amount-header {
+          font-weight: 600;
+          color: #909db4;
+          display: flex;
+          justify-content: space-between;
+
+          span {
+            font-weight: 600;
+            color: @heading-color;
+          }
+        }
+
+        .amount-input {
+          display: flex;
+          justify-content: space-between;
+          margin-top: 0px;
+
+          input {
+            font-size: 18px;
+            font-weight: 600;
+            color: @heading-color;
+            padding: 0;
+          }
+
+          .max-btn {
+            padding: 4px 8px;
+            max-height: 20px;
+            background: #d6e4ff;
+            border-radius: 4px;
+            font-weight: 600;
+            color: @primary-color;
+            margin-top: 6px;
+            cursor: pointer;
+          }
+        }
+      }
+
+      button {
+        margin-top: 12px;
+        width: 100%;
+        height: 48px;
+        background: @primary-color;
+        box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        color: @menu-back;
+        span {
+          font-size: 14px;
+        }
+      }
+    }
+  }
+
+  .amount-header {
+    font-weight: 600;
+    color: #909db4;
+    display: flex;
+    justify-content: space-between;
+
+    span {
+      font-weight: 600;
+      color: @heading-color;
+    }
+  }
+
+  .amount-input {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+
+    input {
+      font-size: 18px;
+      font-weight: 600;
+      color: @heading-color;
+      padding: 0;
+    }
+
+    .max-btn {
+      padding: 4px 8px;
+      max-height: 20px;
+      background: rgba(@primary-color, 0.23);
+      border-radius: 4px;
+      font-weight: 600;
+      color: @primary-color;
+      cursor: pointer;
+    }
+  }
+  button {
+    margin-top: 12px;
+    width: 100%;
+    height: 48px;
+    background: @primary-color;
+    box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: @menu-back;
+  }
+}
+
+.liquidity {
+  .liquidity-banner {
+    background: url('../../img/stake/pc-liquidity-banner.png') no-repeat;
+    padding-top: 84px;
+    background-size: 100% 100%;
+    height: 140px;
+    text-align: center;
+    .total-liquidity-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: @menu-back;
+    }
+
+    .total-liquidity-text {
+      font-size: 12px;
+      font-weight: 500;
+      color: @menu-back;
+      margin-top: 8px;
+    }
+  }
+
+  .liquidity-content {
+    padding: 20px;
+    background: @menu-back;
+    border-radius: 10px;
+
+    .liquidity-item {
+      padding: 16px 12px;
+      background: @form-back;
+      border-radius: 8px;
+      margin-bottom: 20px;
+
+      // &:nth-child(1) {
+      //   margin-top: 0;
+      // }
+
+      .liquidity-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        .liquidity-logo {
+          img {
+            width: 54px;
+            height: 32px;
+            margin-right: 8px;
+            margin-top: 0px;
+          }
+          .nas-auto-logo {
+            width: 42px;
+            height: 42px;
+            position: absolute;
+            top: 0;
+            left: 0;
+          }
+          .liquidity-naxlogo-img {
+            width: 32px;
+            height: 32px;
+          }
+          .auto {
+            position: absolute;
+            top: -3px;
+            right: 0;
+            img {
+              position: absolute;
+              top: 0;
+              right: 0;
+              width: 92px;
+              height: 40px;
+              cursor: pointer;
+            }
+            &:hover {
+              .auto-hover {
+                display: block;
+              }
+            }
+            .auto-hover {
+              display: none;
+              width: 186px;
+              height: 100px;
+              background: #ecf0f7;
+              color: @text-color;
+              border-radius: 8px;
+              z-index: 99;
+              padding: 10px;
+              line-height: 20px;
+              font-weight: 600;
+              position: absolute;
+              top: 40px;
+              right: 0;
+            }
+          }
+        }
+
+        .liquidity-name {
+          font-size: 18px;
+          font-weight: bold;
+          color: @heading-color;
+          margin-top: 0;
+        }
+        .liquidity-name-auto {
+          position: absolute;
+          top: 8px;
+          left: 48px;
+        }
+
+        .liquidity-source {
+          width: auto;
+          height: 28px;
+          // background: rgba(0, 90, 255, 0.1);
+          background: #d6e4ff;
+          padding: 0 12px;
+          font-weight: 600;
+          color: #909db4;
+          border: 1px solid transparent;
+          border-radius: 15px;
+          // border-image: linear-gradient(to top, #00d9ff, @primary-color);
+          cursor: pointer;
+          border-image-slice: 1;
+
+          &:hover {
+            border: 1px solid #005aff;
+          }
+
+          a {
+            width: auto;
+            height: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            color: #909db4;
+
+            img {
+              width: 18px;
+              height: 18px;
+              margin: 0 3px;
+            }
+
+            .icon {
+              width: 16px;
+              height: 16px;
+              fill: @icon-color;
+              margin-left: 6px;
+            }
+          }
+        }
+      }
+
+      .liquidity-bottom {
+        display: flex;
+        margin-top: 20px;
+        align-items: center;
+        justify-content: space-between;
+
+        .apr {
+          margin-left: 50px;
+        }
+
+        .title {
+          width: 120px;
+          // overflow: hidden;
+          // text-overflow: ellipsis;
+          white-space: nowrap;
+          // display: inline-block;
+          text-align: center;
+          .calculator {
+          }
+          &:hover {
+            svg {
+              fill: @icon-color-hover;
+            }
+          }
+        }
+
+        .text {
+          margin-top: 8px;
+          font-weight: 500;
+          color: #909db4;
+          text-align: center;
+        }
+
+        button {
+          width: 122px;
+          height: 48px;
+          margin-left: 90px;
+          background: @primary-color;
+          box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.1);
+          border-radius: 8px;
+          font-weight: 600;
+          color: @menu-back;
+          span {
+            font-size: 14px;
+          }
+          &:hover {
+            background-color: #0d8fff;
+          }
+        }
+      }
+      .liquidity-bottom-auto {
+        margin-top: 62px;
+      }
+
+      .h5-stake-btn {
+        display: none;
+      }
+
+      .line {
+        display: block;
+        height: 1px;
+        width: 100%;
+        background: #dbe1ea;
+        margin: 20px 0;
+      }
+
+      .claim-unstake {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .claim {
+          width: 48%;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 12px 12px;
+          background: @menu-back;
+          border-radius: 8px;
+
+          .left {
+            span {
+              color: @text-color;
+              font-size: 12px;
+              line-height: 12px;
+              font-weight: 550;
+            }
+
+            p {
+              width: 100px;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+              display: block;
+              color: @heading-color;
+              font-size: 14px;
+              line-height: 14px;
+              font-weight: 550;
+              margin-top: 5px;
+              &:nth-of-type(2){
+                font-size: 12px;
+                color:#909db4;
+              }
+            }
+            .tip {
+              position: relative;
+              .tip-img {
+                position: absolute;
+                top: -13px;
+                right: -20px;
+                width: 14px;
+                height: 14px;
+                cursor: pointer;
+              }
+              &:hover {
+                .tip-hover {
+                  display: block;
+                }
+              }
+              .tip-hover {
+                display: none;
+                width: 206px;
+                height: 80px;
+                background: #ecf0f7;
+                z-index: 9999;
+                padding: 10px;
+                position: absolute;
+                top: 6px;
+                right: -215px;
+                border-radius: 8px;
+                p {
+                  width: 100%;
+                  font-weight: 400;
+                  line-height: 20px;
+                  font-size: 12px;
+                  color: @text-color;
+                  margin-top: 0;
+                }
+              }
+            }
+          }
+
+          .ant-btn {
+            width: 79px;
+            height: 32px;
+            background: @primary-color;
+            box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            font-weight: 600;
+            color: @menu-back;
+            padding: 0;
+            margin-top: 0;
+            span {
+              font-size: 14px;
+            }
+            &:hover {
+              background-color: #0d8fff;
+            }
+          }
+        }
+      }
+    }
+    .liquidity-item-lp {
+      margin-bottom: 0;
+    }
+  }
+}
+
+@media (max-width: 750px) {
+  .staking-container-center {
+    width: 100%;
+  }
+  .staking-right {
+    width: 100%;
+    margin: 0;
+
+    .stake {
+      height: 86px;
+      padding: 45px 0 0 0;
+      background: url('../../img/stake/h5-banner@2x.png') no-repeat;
+      background-size: 100% auto;
+
+      .stake-apr {
+        .apr-title {
+          font-size: 14px;
+        }
+
+        .text {
+          font-size: 12px;
+          margin-top: 8px;
+        }
+      }
+    }
+
+    .ant-tabs-left > .ant-tabs-content-holder > .ant-tabs-content > .ant-tabs-tabpane,
+    .ant-tabs-left > div > .ant-tabs-content-holder > .ant-tabs-content > .ant-tabs-tabpane {
+      padding-left: 12px;
+    }
+
+    .stake-action {
+      .stake-action-list {
+        .ant-tabs-nav {
+          border-radius: 8px;
+          background: #f7f7f7;
+        }
+
+        .ant-tabs-nav-list {
+          width: 66px;
+
+          .ant-tabs-tab {
+            width: 66px;
+            height: 33px;
+          }
+
+          .ant-tabs-tab-active {
+            height: 33px;
+          }
+
+          .ant-tabs-tab-btn {
+            font-size: 12px;
+            line-height: 33px;
+          }
+        }
+      }
+
+      .stake-action-num {
+        .amount {
+          padding: 10px 10px;
+
+          .amount-header {
+            span {
+              font-size: 12px;
+            }
+          }
+        }
+
+        button {
+          height: 40px;
+        }
+      }
+    }
+
+    .liquidity {
+      .liquidity-banner {
+        background: url('../../img/stake/h5-liquidity-banner.png') no-repeat;
+        background-size: 100% auto;
+        padding-top: 45px;
+        height: 86px;
+
+        .total-liquidity-title {
+          font-size: 14px;
+        }
+
+        .total-liquidity-text {
+          font-size: 12px;
+        }
+      }
+
+      .liquidity-content {
+        padding: 10px;
+
+        .liquidity-item {
+          .liquidity-header {
+            width: 100%;
+            display: block;
+
+            .liquidity-logo,
+            .liquidity-source {
+              width: 230px;
+              margin: auto;
+            }
+
+            .liquidity-logo {
+              margin-bottom: 10px;
+            }
+          }
+
+          .liquidity-bottom {
+            justify-content: space-around;
+
+            .pc-stake-btn {
+              display: none;
+            }
+          }
+
+          .h5-stake-btn {
+            margin-top: 12px;
+            display: block;
+            width: 100%;
+            height: 40px;
+            background: #005aff;
+            box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+          }
+
+          .claim-unstake {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+
+            .claim {
+              width: 100%;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              padding: 12px 12px;
+              background: @menu-back;
+              border-radius: 8px;
+              margin-top: 20px;
+
+              &:nth-child(1) {
+                margin-top: 0px;
+              }
+              .left {
+                .tip-hover {
+                  left: 100px;
+                }
+              }
+              .ant-btn {
+                // width: 62px;
+                height: 32px;
+                margin-left: 90px;
+                background: @primary-color;
+                box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.1);
+                border-radius: 8px;
+                font-weight: 600;
+                text-align: center;
+                padding: 0;
+                color: @menu-back;
+
+                &:hover {
+                  background-color: #0d8fff;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,41 @@
+.trade-setting {
+  text-align: left;
+}
+.trade-setting .trade-setting-content .slippage-tolerance {
+  font-size: 14px;
+  font-weight: 400;
+  color: #333333;
+}
+.trade-setting .trade-setting-content .input-content {
+  margin-top: 12px;
+  display: flex;
+  justify-content: space-between;
+}
+.trade-setting .trade-setting-content .input-content .slippage-item {
+  width: 72px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333333;
+  text-align: center;
+  line-height: 32px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+.trade-setting .trade-setting-content .input-content .slippage-item-active {
+  border: 1px solid #000000;
+}
+.trade-setting .trade-setting-content .input-content input {
+  width: 72px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+}
+.trade-setting .trade-setting-content .input-content .ant-input-affix-wrapper {
+  width: 72px;
+  border-radius: 8px;
+}
+.trade-setting .trade-setting-alert {
+  margin-top: 12px;
+  color: #FF4343;
+}
