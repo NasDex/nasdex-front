@@ -1,0 +1,92 @@
+stages:
+  - compile
+  - build
+  - deploy
+  - cleanup
+
+
+#global-vars
+.global-vars:
+  variables:
+    SVC_NAME: "nasdex"
+    COMMIT: $CI_COMMIT_SHORT_SHA
+    GIT_REPO: "git@git.cplus.link:web/df/$SVC_NAME.git"
+    REPO_PATH: "/data/ci/web/$SVC_NAME/$CI_COMMIT_REF_NAME"
+    
+#检查目录是否存在
+.check-dir:
+  extends:
+    - .global-vars
+  before_script:
+    - if [ -d $REPO_PATH ]; then cd $REPO_PATH;rm -rf build;git checkout .; git pull; else git clone --depth 1 -b $CI_COMMIT_REF_NAME $GIT_REPO $REPO_PATH; fi;
+
+#kankio
+.use-kankio:
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+
+
+#compile
+compile:
+  extends:
+    - .check-dir
+  stage: compile
+  only:
+    - tags
+    - /[\w]*-dev/
+  script:
+    - cd $REPO_PATH
+    - bash build.sh compile $CI_COMMIT_REF_NAME
+  tags:
+    - web
+
+#build
+build:
+  extends:
+    - .global-vars
+    - .use-kankio
+  stage: build
+  dependencies:
+    - compile
+  only:
+    - tags
+    - /[\w]*-dev$/
+  script:
+    - cd $REPO_PATH
+    - ls -la
+    - sh build.sh build $CI_COMMIT_REF_NAME
+  tags:
+    - web
+
+
+#deploy
+deploy:
+  extends:
+    - .global-vars
+  stage: deploy
+  dependencies:
+    - compile
+  only:
+    - /[a-zA-Z]*-v[0-9].*.[0-9].*.[1-9].*$/
+    - /[\w]*-dev$/
+  script:
+    - cd $REPO_PATH
+    - bash build.sh deploy $CI_COMMIT_REF_NAME
+  tags:
+    - web
+
+#cleanup
+cleanup:
+  extends:
+    - .global-vars
+  stage: cleanup
+  before_script:
+    - echo "开始清理构建残余目录文件......"
+  script:
+    - if [ -d $REPO_PATH ]; then rm -rf $REPO_PATH; else echo "$REPO_PATH not exist"; fi;
+  only:
+    - tags
+  when: always
+  tags:
+    - web

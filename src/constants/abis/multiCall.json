@@ -1,0 +1,436 @@
+[
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "asset_",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "positionContract_",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "mint_",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "lock_",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "staking_",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "previousOwner",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "newOwner",
+                "type": "address"
+            }
+        ],
+        "name": "OwnershipTransferred",
+        "type": "event"
+    },
+    {
+        "inputs": [],
+        "name": "asset",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "positionId",
+                "type": "uint256"
+            }
+        ],
+        "name": "getPositionInfo",
+        "outputs": [
+            {
+                "components": [
+                    {
+                        "components": [
+                            {
+                                "internalType": "uint256",
+                                "name": "id",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "address",
+                                "name": "owner",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "contract IERC20Extented",
+                                "name": "cAssetToken",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "cAssetAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "contract IAssetToken",
+                                "name": "assetToken",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "assetAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "isShort",
+                                "type": "bool"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "assigned",
+                                "type": "bool"
+                            }
+                        ],
+                        "internalType": "struct Position",
+                        "name": "position",
+                        "type": "tuple"
+                    },
+                    {
+                        "components": [
+                            {
+                                "internalType": "contract IAssetToken",
+                                "name": "token",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "contract AggregatorV3Interface",
+                                "name": "oracle",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint16",
+                                "name": "auctionDiscount",
+                                "type": "uint16"
+                            },
+                            {
+                                "internalType": "uint16",
+                                "name": "minCRatio",
+                                "type": "uint16"
+                            },
+                            {
+                                "internalType": "uint16",
+                                "name": "targetRatio",
+                                "type": "uint16"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "endPrice",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint8",
+                                "name": "endPriceDecimals",
+                                "type": "uint8"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "isInPreIPO",
+                                "type": "bool"
+                            },
+                            {
+                                "components": [
+                                    {
+                                        "internalType": "uint256",
+                                        "name": "mintEnd",
+                                        "type": "uint256"
+                                    },
+                                    {
+                                        "internalType": "uint256",
+                                        "name": "preIPOPrice",
+                                        "type": "uint256"
+                                    },
+                                    {
+                                        "internalType": "uint16",
+                                        "name": "minCRatioAfterIPO",
+                                        "type": "uint16"
+                                    }
+                                ],
+                                "internalType": "struct IPOParams",
+                                "name": "ipoParams",
+                                "type": "tuple"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "delisted",
+                                "type": "bool"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "poolId",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "assigned",
+                                "type": "bool"
+                            }
+                        ],
+                        "internalType": "struct AssetConfig",
+                        "name": "assetConfig",
+                        "type": "tuple"
+                    },
+                    {
+                        "components": [
+                            {
+                                "internalType": "contract IERC20Extented",
+                                "name": "token",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "contract AggregatorV3Interface",
+                                "name": "oracle",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint16",
+                                "name": "multiplier",
+                                "type": "uint16"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "assigned",
+                                "type": "bool"
+                            }
+                        ],
+                        "internalType": "struct CAssetConfig",
+                        "name": "cAssetConfig",
+                        "type": "tuple"
+                    },
+                    {
+                        "components": [
+                            {
+                                "internalType": "uint256",
+                                "name": "positionId",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "address",
+                                "name": "receiver",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "contract IERC20",
+                                "name": "lockedToken",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "lockedAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "unlockTime",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "assigned",
+                                "type": "bool"
+                            }
+                        ],
+                        "internalType": "struct PositionLockInfo",
+                        "name": "lockInfo",
+                        "type": "tuple"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "shortReward",
+                        "type": "uint256"
+                    }
+                ],
+                "internalType": "struct MultiCall.PositionInfo",
+                "name": "",
+                "type": "tuple"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "lock",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "mint",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "owner",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "positionContract",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "renounceOwnership",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "asset_",
+                "type": "address"
+            }
+        ],
+        "name": "setAsset",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "lock_",
+                "type": "address"
+            }
+        ],
+        "name": "setLock",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "mint_",
+                "type": "address"
+            }
+        ],
+        "name": "setMint",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "positionContract_",
+                "type": "address"
+            }
+        ],
+        "name": "setPosition",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "staking_",
+                "type": "address"
+            }
+        ],
+        "name": "setStaking",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "staking",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "newOwner",
+                "type": "address"
+            }
+        ],
+        "name": "transferOwnership",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    }
+]

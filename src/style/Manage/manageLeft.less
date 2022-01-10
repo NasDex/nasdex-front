@@ -1,0 +1,180 @@
+/** @format */
+
+.manageLeft-container {
+  width: 580px;
+  padding: 20px;
+  background: @background-color-base;
+  border-radius: 8px;
+  height: 100%;
+  .title {
+    display: flex;
+    justify-content: space-between;
+
+    .symbol-info {
+      display: flex;
+
+      .logo {
+        width: 40px;
+        height: 40px;
+        background: #f2f4fc;
+        border-radius: 8px;
+        img {
+          width: 40px;
+          height: 40px;
+        }
+      }
+
+      .symbol-name {
+        margin-left: 8px;
+
+        .name {
+          display: flex;
+          align-items: center;
+          font-size: 16px;
+          font-weight: 600;
+          color: #666;
+
+          span {
+            font-size: 18px;
+            color: @heading-color;
+          }
+        }
+
+        .source {
+          color: @modal-close-color;
+          margin-top: 6px;
+          font-size: 14px;
+          img {
+            width: 14px;
+            height: 14px;
+            margin-left: 3px;
+          }
+        }
+      }
+    }
+
+    .symbol-total {
+      display: flex;
+      align-items: center;
+
+      .volume,
+      .liquidity {
+        margin-left: 53px;
+      }
+
+      .liquidity {
+        margin-top: 0;
+        text-align: right;
+      }
+      .title {
+        font-size: 12px;
+        font-weight: 500;
+        color: @text-color;
+      }
+
+      .text {
+        font-size: 12px;
+        font-weight: 600;
+        color: @heading-color;
+        margin-top: 8px;
+      }
+    }
+  }
+
+  .chart-info {
+    margin-top: 24px;
+    display: flex;
+    justify-content: space-between;
+
+    .symbol-price {
+      .price {
+        font-size: 26px;
+        font-weight: 600;
+        color: @heading-color;
+        line-height: 1;
+        position: relative;
+
+        img {
+          width: 14px;
+          height: 14px;
+          margin-left: 5px;
+          &:hover {
+            & + .tips-text {
+              display: block;
+            }
+          }
+        }
+
+        .tips-text {
+          padding: 10px 12px;
+          background: rgba(0, 90, 255, 0.04);
+          border-radius: 4px;
+          line-height: 1;
+          text-align: center;
+          color: @text-color;
+          position: absolute;
+          top: 30px;
+          right: -50px;
+          display: none;
+          z-index: 99;
+          // box-shadow: 0px 0px 10px 0px #0D0F19;
+        }
+      }
+
+      .rise {
+        display: inline-block;
+        margin-top: 8px;
+        padding: 5px 8px;
+        background: @up-back;
+        font-weight: 600;
+        border-radius: 5px;
+        border-radius: 5px;
+        color: @up-color;
+        font-size: 12px;
+        .icon {
+          width: 8px;
+          height: 8px;
+          fill: @up-color;
+          margin-left: 4px;
+        }
+      }
+    }
+
+    .time-type {
+      display: flex;
+      height: 100%;
+      font-size: 12px;
+      font-weight: 600;
+
+      span {
+        cursor: pointer;
+        padding: 4px 7px;
+        border-radius: 4px;
+        color: @text-color;
+        &:not(:last-child) {
+          margin-right: 20px;
+        }
+      }
+    }
+  }
+}
+@media (max-width: 750px) {
+  .manageLeft-container {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    .title {
+      display: block;
+      margin-top: 0px;
+      .symbol-total {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 21px;
+      }
+    }
+    .chart-view,
+    .chart-info {
+      display: none;
+    }
+  }
+}

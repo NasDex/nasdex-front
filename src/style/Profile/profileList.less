@@ -1,0 +1,170 @@
+/** @format */
+.table-content {
+  width: 1000px;
+  height: 100%;
+  background: #ffffff;
+  box-shadow: 0px 2px 30px 0px rgba(190, 200, 221, 0.3);
+  border-radius: 10px;
+  margin-top: 20px;
+  .h5-table {
+    display: none;
+  }
+  .h5-noAccount-table {
+    display: none;
+  }
+  .h5-table-out {
+    display: none;
+  }
+  .icon {
+    width: 20px;
+    height: 20px;
+    fill: #909db4;
+  }
+  .action-btn + .action-btn {
+    margin-left: 20px;
+  }
+  .table-header-tab {
+    display: flex;
+    padding: 0px 16px;
+    border-bottom: solid 1px #f3f7fe;
+    margin-bottom: 0;
+    justify-content: space-between;
+    // width: 70%;
+    .farm {
+      display: flex;
+      align-items: center;
+      margin-left: auto;
+      .item {
+        margin-right: 20px;
+        &:nth-last-child(1) {
+          margin-right: 0;
+        }
+        .totalReward {
+          font-size: 12px;
+          font-weight: 500;
+          color: #909db4;
+          margin-right: 5px;
+        }
+        .totalRewardVale {
+          font-size: 14px;
+          font-weight: 600;
+          color: #333333;
+          margin-right: 5px;
+        }
+      }
+    }
+    .header-tab-item {
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      color: #909db4;
+      display: flex;
+      align-items: center;
+      margin-right: 50px;
+      position: relative;
+      padding: 18px 0px;
+    }
+
+    .header-tab-item-active {
+      font-size: 14px;
+      font-weight: 500;
+      color: #333333;
+      .icon {
+        fill: #005aff;
+      }
+      &::after {
+        content: '';
+        width: 20px;
+        height: 2px;
+        background: #005aff;
+        border-radius: 1px;
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        transform: translateX(-50%);
+      }
+    }
+  }
+}
+@media (max-width: 750px) {
+  .table-content {
+    width: 100%;
+    .table-header-tab {
+      .header-tab-item {
+        font-size: 12px;
+        margin-right: 0px;
+      }
+      .farm {
+        display: none;
+      }
+    }
+    .h5-table-out {
+      display: block;
+    }
+    .pc-table-wallet {
+      display: none;
+    }
+    .h5-noAccount-table {
+      display: none;
+    }
+    .h5-table {
+      display: block;
+      padding: 0px 20px;
+      .tx-fee {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 10px;
+        border-bottom: 1px solid #f3f7fe;
+        .item {
+          display: flex;
+          height: 60px;
+          justify-content: space-between;
+          align-items: center;
+          font-weight: 600;
+          .tx-fee-name {
+            display: flex;
+          }
+          img {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            margin-right: 5px;
+          }
+          .tx-fee-showPrice {
+            .tx-fee-Collateral {
+              display: flex;
+              align-items: center;
+              p {
+                margin-right: 10px;
+                margin-bottom: 0 !important;
+              }
+              .fee-btn {
+                padding: 6px 6px !important;
+              }
+            }
+            text-align: right;
+            p {
+              font-size: 14px;
+              color: #333;
+              margin-bottom: 10px !important;
+            }
+            span {
+              font-size: 12px;
+              color: #909db4;
+            }
+          }
+          button {
+            height: 28px;
+            background: #005aff;
+            color: #fff;
+            padding: 0 10px !important;
+            border-radius: 8px;
+            span {
+              font-size: 14px;
+            }
+          }
+        }
+      }
+    }
+  }
+}

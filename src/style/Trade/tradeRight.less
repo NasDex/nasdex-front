@@ -1,0 +1,74 @@
+/** @format */
+
+.tradeRight-table-content {
+  width: 400px;
+  height: 100%;
+  background: #ffffff;
+  box-shadow: 0px 2px 30px 0px rgba(190, 200, 221, 0.3);
+  border-radius: 8px;
+  padding: 22px 0px 0px;
+  margin-left: 20px;
+  .table-header-tab {
+    padding: 0px 35px 0 20px;
+    display: flex;
+    // border-bottom: 1px solid rgba(#333333, 0.1);
+    border-radius: 1px;
+    // margin-bottom: 26px;
+    margin-bottom: 0;
+    position: relative;
+    .header-tab-item {
+      font-size: 16px;
+      font-weight: 500;
+      color: #909db4;
+      margin-right: 38px;
+      padding-bottom: 14px;
+      cursor: pointer;
+      position: relative;
+    }
+    svg {
+      margin-right: 16px;
+    }
+    .header-tab-item-active {
+      font-size: 16px;
+      font-weight: 500;
+      color: #005aff;
+      &::after {
+        content: '';
+        width: 29px;
+        height: 2px;
+        background: #005aff;
+        border-radius: 1px;
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        transform: translateX(-50%);
+      }
+    }
+    .icon {
+      width: 20px;
+      height: 20px;
+      position: absolute;
+      right: 0;
+    }
+  }
+  .manageRight-addCollateral-container {
+    width: 100%;
+    padding: 0px 0px;
+    .amount + .amount {
+      margin-top: 20px;
+    }
+  }
+}
+@media (max-width: 750px) {
+  .tradeRight-table-content {
+    width: 100%;
+    margin-left: 0;
+    margin-top: 20px;
+    .amount {
+      padding: 10px;
+    }
+    .confirm-order {
+      width: 100%;
+    }
+  }
+}

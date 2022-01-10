@@ -1,0 +1,92 @@
+{
+    "asset": {
+        "nSTA": {
+            "id": "0",
+            "name": "nSTA",
+            "assetDesc": "Sea Limited is a tech conglomerate headquartered in Singapore. Established in 2009, Sea Limited is a holding company for Shopee, SeaMoney, Garena and a football club Lion City Sailors FC which plays in Singapore Premier League. It has over 33,000 employees.",
+            "assetTit": "Sea Ltd",
+            "logo": "",
+            "address": "0xed50Ce4259e4afa184D7d5b1d9e4A5244F12C58e",
+            "decimals": 18,
+            "type": "asset",
+            "fixDPrecise": 6,
+            "feerate": "0",
+            "minCollateral": "150",
+            "swapPrecise": "6",
+            "swapPrice": "0"
+        },
+        "nETH": {
+            "id": "1",
+            "name": "nETH",
+            "assetDesc": "ETH is digital, global money.It's the currency of Ethereum apps. Unlike Bitcoin, Ethereum is based on an account model (vs. UTXO) to record state changes. At its core, Ethereum relies on a Virtual Machine (EVM) with two types of addresses: externally owned addresses (EOAs) and contract addresses that are deployed on the EVM. As of March 2020, Ethereum was the second-largest cryptocurrency by market capitalization. It has popularized the use of smart contracts, and thousands of teams are working on third-party solutions on the network for real business applications.",
+            "assetTit": "Ethereum (ETH)",
+            "logo": "",
+            "address": "0xAE53Ad289fEf1Ff08d07c06808Fb3888150608b9",
+            "decimals": 18,
+            "type": "asset",
+            "fixDPrecise": 6,
+            "feerate": "0",
+            "minCollateral": "150",
+            "swapPrecise": "6",
+            "swapPrice": "0"
+        },
+        "USDC": {
+            "id": "2",
+            "name": "USDC",
+            "logo": "",
+            "assetDesc": "",
+            "assetTit": "",
+            "address": "0x5E76EA44D394025126Fa3BDf30F7EBAbb1E27E35",
+            "decimals": 6,
+            "type": "cAsset",
+            "unitPrice": 1,
+            "fixDPrecise": 4,
+            "feerate": "0",
+            "minCollateral": "150",
+            "swapPrecise": "6",
+            "swapPrice": "0"
+        },
+        "NSDX": {
+            "id": "3",
+            "name": "NSDX",
+            "assetDesc": "",
+            "assetTit": "",
+            "logo": "",
+            "address": "0xD6936Dc98c58C314cB2C5e2e9531FA9df437a3b4",
+            "decimals": 18,
+            "type": "oneAsset",
+            "unitPrice": 1,
+            "fixDPrecise": 4,
+            "feerate": "0",
+            "minCollateral": "150",
+            "swapPrecise": "6",
+            "swapPrice": "0"
+        }
+    },
+    "assetsNameInfo": {
+        "0xed50Ce4259e4afa184D7d5b1d9e4A5244F12C58e": "nSTA",
+        "0x5E76EA44D394025126Fa3BDf30F7EBAbb1E27E35": "USDC",
+        "0xAE53Ad289fEf1Ff08d07c06808Fb3888150608b9": "nETH",
+        "0xd6936dc98c58c314cb2c5e2e9531fa9df437a3b4": "NSDX"
+    },
+    "longFarmingInfo": [
+        {
+            "id": "0",
+            "iconUrl": "/image/coin/nSTA.png",
+            "name": "nSTA",
+            "cAssetName": "USDC",
+            "source": "Sea Ltd",
+            "longId": "0",
+            "shortId": "0"
+        },
+        {
+            "id": "1",
+            "iconUrl": "/image/coin/nETH.png",
+            "name": "nETH",
+            "cAssetName": "USDC",
+            "source": "Ethereum (ETH)",
+            "longId": "1",
+            "shortId": "1"
+        }
+    ]
+}

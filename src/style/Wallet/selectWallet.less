@@ -1,0 +1,43 @@
+/** @format */
+
+.wallet-list {
+  .wallet-item {
+    display: flex;
+    align-items: center;
+    background: @form-back;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    padding: 8px 16px 8px 20px;
+    position: relative;
+    cursor: pointer;
+    &:not(:first-child) {
+      margin-top: 20px;
+    }
+
+    &:hover {
+      background: #dde4ff;
+    }
+    &:focus {
+      border: 1px solid @primary-color;
+      &:after {
+        content: '';
+        width: 8px;
+        height: 8px;
+        background: @primary-color;
+        position: absolute;
+        right: 16px;
+        border-radius: 50%;
+      }
+    }
+    img {
+      width: 32px;
+      height: 32px;
+    }
+    .wallet-name {
+      margin-left: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      color: @heading-color;
+    }
+  }
+}

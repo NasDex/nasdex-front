@@ -1,0 +1,98 @@
+{
+  "name": "dapp-react-template",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@craco/craco": "^6.2.0",
+    "@ethersproject/providers": "^5.4.5",
+    "@reduxjs/toolkit": "^1.6.1",
+    "@testing-library/jest-dom": "^5.11.4",
+    "@testing-library/react": "^11.1.0",
+    "@testing-library/user-event": "^12.1.10",
+    "@types/jest": "^26.0.15",
+    "@types/node": "^12.0.0",
+    "@types/react": "^17.0.0",
+    "@types/react-dom": "^17.0.0",
+    "@types/react-router-dom": "^5.1.8",
+    "@web3-react/core": "^6.1.9",
+    "@web3-react/injected-connector": "^6.0.7",
+    "@web3-react/walletconnect-connector": "^6.2.4",
+    "@web3-react/walletlink-connector": "^6.2.3",
+    "antd": "^4.16.9",
+    "axios": "^0.21.4",
+    "bignumber.js": "^9.0.2",
+    "coingecko-api": "^1.0.10",
+    "craco-antd": "^1.19.0",
+    "craco-less": "^1.18.0",
+    "echarts": "^5.1.2",
+    "ethers": "^5.4.6",
+    "http-proxy-middleware": "^2.0.1",
+    "i18next": "^20.4.0",
+    "i18next-browser-languagedetector": "^6.1.2",
+    "i18next-xhr-backend": "^3.2.2",
+    "lodash": "^4.17.21",
+    "node-gyp": "^8.2.0",
+    "react": "^17.0.2",
+    "react-device-detect": "^1.17.0",
+    "react-dom": "^17.0.2",
+    "react-i18next": "^11.11.4",
+    "react-redux": "^7.2.5",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "4.0.3",
+    "react-sticky": "^6.0.3",
+    "redux-localstorage-simple": "^2.4.1",
+    "typescript": "^4.3.5",
+    "web-vitals": "^1.0.1"
+  },
+  "scripts": {
+    "prepare": "husky install",
+    "start": "craco start",
+    "build": "craco build",
+    "test": "craco test",
+    "lint": "eslint --ext .tsx,.ts,.js --fix ./src",
+    "fix": "prettier --write ./src",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@types/coingecko-api": "^1.0.2",
+    "@types/lodash": "^4.14.172",
+    "@typescript-eslint/eslint-plugin": "^4.29.0",
+    "@typescript-eslint/parser": "^4.29.0",
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "husky": "^7.0.1",
+    "lint-staged": "^11.1.1",
+    "prettier": "^2.3.2"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*{.ts,.js}": [
+      "eslint --ext .tsx,.ts --fix ./src",
+      "prettier --write",
+      "git add"
+    ]
+  }
+}

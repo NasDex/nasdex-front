@@ -1,0 +1,473 @@
+[
+    {
+        "inputs": [],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "previousOwner",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "newOwner",
+                "type": "address"
+            }
+        ],
+        "name": "OwnershipTransferred",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "assetToken",
+                "type": "address"
+            }
+        ],
+        "name": "RegisterAsset",
+        "type": "event"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "nToken",
+                "type": "address"
+            }
+        ],
+        "name": "asset",
+        "outputs": [
+            {
+                "components": [
+                    {
+                        "internalType": "contract IAssetToken",
+                        "name": "token",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "contract AggregatorV3Interface",
+                        "name": "oracle",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint16",
+                        "name": "auctionDiscount",
+                        "type": "uint16"
+                    },
+                    {
+                        "internalType": "uint16",
+                        "name": "minCRatio",
+                        "type": "uint16"
+                    },
+                    {
+                        "internalType": "uint16",
+                        "name": "targetRatio",
+                        "type": "uint16"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "endPrice",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint8",
+                        "name": "endPriceDecimals",
+                        "type": "uint8"
+                    },
+                    {
+                        "internalType": "bool",
+                        "name": "isInPreIPO",
+                        "type": "bool"
+                    },
+                    {
+                        "components": [
+                            {
+                                "internalType": "uint256",
+                                "name": "mintEnd",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "preIPOPrice",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint16",
+                                "name": "minCRatioAfterIPO",
+                                "type": "uint16"
+                            }
+                        ],
+                        "internalType": "struct IPOParams",
+                        "name": "ipoParams",
+                        "type": "tuple"
+                    },
+                    {
+                        "internalType": "bool",
+                        "name": "delisted",
+                        "type": "bool"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "poolId",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "bool",
+                        "name": "assigned",
+                        "type": "bool"
+                    }
+                ],
+                "internalType": "struct AssetConfig",
+                "name": "",
+                "type": "tuple"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "token",
+                "type": "address"
+            }
+        ],
+        "name": "cAsset",
+        "outputs": [
+            {
+                "components": [
+                    {
+                        "internalType": "contract IERC20Extented",
+                        "name": "token",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "contract AggregatorV3Interface",
+                        "name": "oracle",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint16",
+                        "name": "multiplier",
+                        "type": "uint16"
+                    },
+                    {
+                        "internalType": "bool",
+                        "name": "assigned",
+                        "type": "bool"
+                    }
+                ],
+                "internalType": "struct CAssetConfig",
+                "name": "",
+                "type": "tuple"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "cAssetToken",
+                "type": "address"
+            }
+        ],
+        "name": "isCollateralInPreIPO",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "owner",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "assetToken",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "assetOracle",
+                "type": "address"
+            },
+            {
+                "internalType": "uint16",
+                "name": "auctionDiscount",
+                "type": "uint16"
+            },
+            {
+                "internalType": "uint16",
+                "name": "minCRatio",
+                "type": "uint16"
+            },
+            {
+                "internalType": "uint16",
+                "name": "targetRatio",
+                "type": "uint16"
+            },
+            {
+                "internalType": "bool",
+                "name": "isInPreIPO",
+                "type": "bool"
+            },
+            {
+                "internalType": "uint256",
+                "name": "poolId",
+                "type": "uint256"
+            },
+            {
+                "components": [
+                    {
+                        "internalType": "uint256",
+                        "name": "mintEnd",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "preIPOPrice",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint16",
+                        "name": "minCRatioAfterIPO",
+                        "type": "uint16"
+                    }
+                ],
+                "internalType": "struct IPOParams",
+                "name": "ipoParams",
+                "type": "tuple"
+            }
+        ],
+        "name": "registerAsset",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "cAssetToken",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "oracle",
+                "type": "address"
+            },
+            {
+                "internalType": "uint16",
+                "name": "multiplier",
+                "type": "uint16"
+            }
+        ],
+        "name": "registerCollateral",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "assetToken",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "endPrice",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint8",
+                "name": "endPriceDecimals",
+                "type": "uint8"
+            }
+        ],
+        "name": "registerMigration",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "renounceOwnership",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "cAssetToken",
+                "type": "address"
+            }
+        ],
+        "name": "revokeCollateral",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "cAssetToken",
+                "type": "address"
+            },
+            {
+                "internalType": "bool",
+                "name": "value",
+                "type": "bool"
+            }
+        ],
+        "name": "setCollateralInPreIPO",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "newOwner",
+                "type": "address"
+            }
+        ],
+        "name": "transferOwnership",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "assetToken",
+                "type": "address"
+            }
+        ],
+        "name": "triggerIPO",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "assetToken",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "assetOracle",
+                "type": "address"
+            },
+            {
+                "internalType": "uint16",
+                "name": "auctionDiscount",
+                "type": "uint16"
+            },
+            {
+                "internalType": "uint16",
+                "name": "minCRatio",
+                "type": "uint16"
+            },
+            {
+                "internalType": "uint16",
+                "name": "targetRatio",
+                "type": "uint16"
+            },
+            {
+                "internalType": "bool",
+                "name": "isInPreIPO",
+                "type": "bool"
+            },
+            {
+                "internalType": "uint256",
+                "name": "poolId",
+                "type": "uint256"
+            },
+            {
+                "components": [
+                    {
+                        "internalType": "uint256",
+                        "name": "mintEnd",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "preIPOPrice",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint16",
+                        "name": "minCRatioAfterIPO",
+                        "type": "uint16"
+                    }
+                ],
+                "internalType": "struct IPOParams",
+                "name": "ipoParams",
+                "type": "tuple"
+            }
+        ],
+        "name": "updateAsset",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "cAssetToken",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "oracle",
+                "type": "address"
+            },
+            {
+                "internalType": "uint16",
+                "name": "multiplier",
+                "type": "uint16"
+            }
+        ],
+        "name": "updateCollateral",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    }
+]

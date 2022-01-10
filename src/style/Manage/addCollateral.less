@@ -1,0 +1,327 @@
+/** @format */
+
+.manageRight-addCollateral-container {
+  width: 400px;
+  padding: 20px 16px;
+  background: @component-background;
+  border-radius: 8px;
+  // margin-left: 20px;
+  .edit-title {
+    width: 100%;
+    height: 24px;
+    background: #f7f7f7;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 10px;
+    align-items: center;
+    border-radius: 8px;
+    span {
+      font-size: 14px;
+      color: #909db4;
+      font-weight: 500;
+    }
+    p {
+      font-size: 14px;
+      color: #333;
+      font-weight: 600;
+    }
+  }
+  .arrow {
+    width: 12px;
+    margin: 6px auto;
+    svg {
+      width: 12px;
+      height: 12px;
+      fill: #909db4;
+    }
+  }
+  .amount {
+    width: 100%;
+    // margin-top: 20px;
+    padding: 20px 12px;
+    background: @form-back;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    // border: 1px solid #4788FF;
+    .amount-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: @text-color;
+      font-weight: 600;
+      margin-bottom: 5px;
+      .balance {
+        font-weight: 600;
+      }
+      button {
+        width: 40px;
+        height: 20px;
+        background: #d3e2ff;
+        box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.1);
+        border-radius: 4px;
+        color: #005aff;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 0px;
+        margin-left: 5px;
+        &:hover {
+          background-color: #005aff;
+          color: #ffffff;
+        }
+      }
+      .ant-btn[disabled] {
+        background: rgba(#000000, 0.05);
+        border-radius: 4px;
+        font-weight: 600;
+        color: rgba(#000000, 0.1);
+        &:hover {
+        }
+      }
+    }
+
+    .trade-price {
+      display: flex;
+      justify-content: space-between;
+      .ant-skeleton {
+        margin-top: 3px;
+      }
+      input {
+        font-size: 20px;
+        font-weight: 600;
+        color: @heading-color;
+        padding: 0px;
+      }
+      .asset-box {
+        display: flex;
+        align-items: center;
+        img {
+          width: 24px;
+          height: 24px;
+          margin-right: 5px;
+        }
+        span {
+          font-size: 16px;
+          font-weight: 600;
+          color: @heading-color;
+        }
+      }
+
+      .select-box {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        img {
+          width: 24px;
+          height: 24px;
+        }
+        .ant-select-selection-item {
+          font-size: 16px;
+          font-weight: 600;
+          color: @heading-color;
+          img {
+            margin-right: 10px;
+            width: 24px;
+            height: 24px;
+          }
+          span {
+            font-size: 16px;
+            font-weight: 600;
+            color: @heading-color;
+          }
+        }
+        span {
+          font-size: 16px;
+          font-weight: 600;
+          color: @heading-color;
+        }
+        .ant-select-arrow {
+          margin-top: -7px;
+          .icon {
+            fill: rgba(0, 0, 0, 0.5);
+          }
+        }
+      }
+    }
+  }
+  .amountDisabled {
+    background: #f0f0f0 !important;
+  }
+  .amount-active {
+    border: 1px solid #4788ff;
+  }
+
+  .icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .collateral {
+    margin-top: 20px;
+
+    .collateral-ratio-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      .collateral-title- {
+        font-weight: 600;
+      }
+      .input-box {
+        display: flex;
+        align-items: center;
+        padding: 0 12px 0 1px;
+        border-radius: 8px;
+        border: 1px solid #ececec;
+        color: #ffffff;
+
+        .ant-input-suffix {
+          color: @heading-color;
+          font-weight: 600;
+        }
+        .ant-input-affix-wrapper {
+          width: auto;
+        }
+
+        input {
+          width: 40px;
+          font-size: 16px;
+          font-weight: 500;
+          color: @heading-color;
+          font-weight: 600;
+        }
+
+        .input-btn-max {
+          padding: 4px 16px;
+          background: rgba(#00ffc6, 0.1);
+          border-radius: 4px;
+          color: #00b590;
+          font-weight: 600;
+        }
+        .input-btn-middle {
+          padding: 4px 16px;
+          background: rgba(#ffd600, 0.1);
+          border-radius: 4px;
+          color: #ffd600;
+          font-weight: 600;
+        }
+        .input-btn-min {
+          padding: 4px 16px;
+          background: rgba(#fe0c08, 0.1);
+          border-radius: 4px;
+          color: #fe0c08;
+          font-weight: 600;
+        }
+      }
+      .input-box-active {
+        border: 1px solid #4788ff;
+      }
+      .input-box-slide-active {
+        border: 1px solid #fe0c08;
+      }
+    }
+
+    .collateral-slider {
+      margin-top: 16px;
+      .ant-slider {
+        margin-bottom: 40px;
+      }
+    }
+  }
+  .available {
+    margin-top: 20px;
+    width: 100%;
+    // height: 26px;
+    background: #fee6e6;
+    border-radius: 8px;
+    .content {
+      color: #ff0000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      span {
+        line-height: 26px;
+      }
+      img {
+        width: 14px;
+        height: 14px;
+        margin-right: 10px;
+      }
+      svg {
+        width: 12px;
+        height: 12px;
+        margin-left: 2px;
+        fill: @icon-color;
+      }
+    }
+  }
+  .tx-fee {
+    padding: 20px 20px;
+    background-color: @input-back;
+    border-radius: 8px;
+    margin-top: 12px;
+
+    .item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      .tx-fee-text {
+        font-size: 12px;
+        font-weight: 600;
+        color: @modal-close-color;
+      }
+
+      .tx-fee-price {
+        font-size: 12px;
+        font-weight: 500;
+        color: @heading-color;
+      }
+      &:nth-last-child(1) {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  .addCollateral {
+    margin-top: 20px;
+    width: 100%;
+    height: 48px;
+    font-size: 16px !important;
+    font-weight: 600;
+    color: #fff;
+    background: #005aff;
+    // box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    &:hover {
+      background: #0d8fff;
+    }
+    span {
+      font-size: 16px !important;
+    }
+  }
+  .ant-btn[disabled] {
+    span {
+      color: #737373;
+    }
+    &:hover {
+      background: rgba(0, 0, 0, 0.05);
+    }
+  }
+  .ant-btn[disabled],
+  .ant-btn[disabled]:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: #fff;
+  }
+}
+
+@media (max-width: 750px) {
+  .manageRight-addCollateral-container {
+    width: 100%;
+    margin-left: 0;
+    margin-top: 20px;
+    .amount {
+      padding: 10px;
+    }
+    .confirm-order {
+      width: 100%;
+    }
+  }
+}

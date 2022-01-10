@@ -1,0 +1,144 @@
+/** @format */
+.card-list {
+  width: 220px;
+  margin: auto;
+  display: flex;
+  height: 70px;
+  flex-direction: column;
+  justify-content: space-between;
+  .priceTit {
+    color: #005aff;
+    font-weight: 700;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-end;
+    P {
+      font-size: 24px;
+    }
+    span {
+      font-size: 24px;
+    }
+    .symbol {
+      font-size: 20px;
+      margin: 0 4px 2px 18px;
+    }
+    .tvlNum {
+      font-size: 24px;
+    }
+  }
+  .priceTit-nadx {
+    color: #005aff;
+    font-weight: 700;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-end;
+    opacity: 0.5;
+    P {
+      font-size: 18px;
+    }
+    span {
+      font-size: 18px;
+    }
+    .symbol {
+      font-size: 14px;
+      margin: 0 4px 2px 18px;
+    }
+  }
+  .price {
+    color: #000;
+    font-weight: 700;
+    margin-top: 15px;
+    font-size: 28px;
+  }
+}
+.profile-content {
+  margin-top: 20px;
+}
+.ant-table-thead > tr > th {
+  background: white !important;
+}
+
+.card-content-total {
+  width: 248px;
+  height: 90px;
+  background: white url(../../img/profile/profile-total-value-bg.png) no-repeat center right;
+  background-size: 85px 85px;
+  border-radius: 16px;
+  padding: 20px 0 20px 20px;
+  // background-size: auto auto;
+}
+
+.card-header {
+  font-size: 12px;
+  font-weight: 500;
+  color: #909db4;
+  line-height: 12px;
+  display: flex;
+  align-items: center;
+
+  img {
+    width: 20px;
+    height: 20px;
+    margin-right: 4px;
+  }
+}
+
+.card-footer {
+  margin-top: 14px;
+
+  span {
+    display: inline-block;
+    transform: scale(1);
+  }
+
+  font-size: 18px;
+  font-weight: 600;
+  color: #000000;
+}
+
+.card-list-item {
+  width: 516px;
+  display: flex;
+  justify-content: space-between;
+}
+.card-content-staked {
+  width: 516px;
+  background: white url(../../img/profile/profile-staked-bg.png) no-repeat center right;
+  background-size: 85px 85px;
+  margin-top: 20px;
+}
+.card-content-price {
+  background: white url(../../img/profile/profile-price-bg.png) no-repeat center right;
+  background-size: 85px 85px;
+}
+
+@media (max-width: 750px) {
+  .card-list {
+    width: 100%;
+    padding: 0 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    height: 100px;
+    .priceTit {
+      // display: inline-block;
+      font-size: 20px;
+      color: #005aff;
+      font-weight: 700;
+      p {
+        font-size: 20px;
+      }
+    }
+  }
+  .card-list-item {
+    width: 100%;
+    flex-direction: column;
+  }
+  .card-content-total {
+    width: 100%;
+    margin-top: 10px;
+    &:nth-child(1) {
+      margin-top: 0;
+    }
+  }
+}

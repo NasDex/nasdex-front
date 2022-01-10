@@ -1,0 +1,166 @@
+/** @format */
+
+.stake-container {
+  .img {
+    width: 42px;
+    height: 42px;
+    margin: 10px 0;
+  }
+
+  .liquidity-source-stake {
+    width: 226px;
+    height: 28px;
+    // background: rgba(0, 90, 255, 0.1);
+    background: #d6e4ff;
+    padding: 0 12px;
+    font-weight: 600;
+    color: #909db4;
+    border: 1px solid transparent;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    // border-image: linear-gradient(to top, #00d9ff, @primary-color);
+    border-image-slice: 1;
+    &:hover {
+      border: 1px solid #005aff;
+    }
+    a {
+      width: auto;
+      height: 26px;
+      color: #909db4;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      img {
+        width: 18px;
+        height: 18px;
+        margin: 0 3px;
+      }
+
+      .icon {
+        width: 16px;
+        height: 16px;
+        fill: @icon-color;
+        margin-left: 2px;
+      }
+    }
+  }
+  .liquidity-logo {
+    display: flex;
+    align-items: center;
+
+    .CoinLogo-img {
+      width: 44px;
+      height: 28px;
+      margin-right: 8px;
+    }
+    .Auto-img {
+      width: 42px;
+      height: 42px;
+      margin-right: 8px;
+    }
+    .NSDX-img {
+      width: 32px;
+      height: 32px;
+      margin-right: 8px;
+    }
+  }
+
+  .liquidity-name {
+    font-size: 14px;
+    font-weight: 550;
+    color: @heading-color;
+  }
+
+  .amount {
+    background: @form-back;
+    border-radius: 8px;
+    padding: 20px 12px;
+    margin-top: 12px;
+
+    .amount-header {
+      font-weight: 600;
+      color: #909db4;
+      display: flex;
+      justify-content: space-between;
+
+      span {
+        font-weight: 600;
+        color: @heading-color;
+        font-size: 16px;
+      }
+    }
+
+    .amount-input {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-top: 8px;
+
+      input {
+        font-size: 18px;
+        font-weight: 600;
+        color: @heading-color;
+        padding: 0;
+        margin-bottom: -5px;
+      }
+
+      .max-btn {
+        padding: 4px 8px;
+        max-height: 20px;
+        // background: rgba(@primary-color, 0.23);
+        background: #d6e4ff;
+        border-radius: 4px;
+        font-weight: 600;
+        line-height:1;
+        font-size:12px;
+        color: @primary-color;
+
+        &:hover {
+          background-color: #005aff;
+          color: #ffffff;
+        }
+      }
+      // .ant-btn[disabled]{
+      //   background: rgba(#000000,0.05);
+      //   border-radius: 4px;
+      //   font-weight: 600;
+      //   color: rgba(#000000,0.1);
+      //   &:hover {
+          
+      //   }
+      // }
+    }
+  }
+  .stake-btn {
+    width: 100%;
+    height: 48px;
+    background: @primary-color;
+    box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    margin-top: 20px;
+    font-weight: 600;
+    color: @menu-back;
+    span {
+      font-size: 16px;
+    }
+    &:hover {
+      background-color: #0d8fff;
+    }
+  }
+  .ant-btn[disabled]{
+    background: rgba(#000000,0.05);
+    border-radius: 4px;
+    font-weight: 600;
+    box-shadow: none;
+    border-radius: 8px;
+    color: rgba(#000000,0.1);
+    &:hover {
+      
+    }
+  }
+}
+@media (max-width: 750px) {
+  .img {
+    margin-top: 0px;
+  }
+}

@@ -1,0 +1,122 @@
+/** @format */
+
+.farm-setting {
+  text-align: left;
+
+  .farm-setting-content {
+    .slippage-tolerance {
+      font-size: 14px;
+      font-weight: 400;
+      color: #333333;
+    }
+
+    .input-content {
+      margin-top: 12px;
+      display: flex;
+      justify-content: space-between;
+
+      .slippage-item {
+        width: 72px;
+        height: 32px;
+        background: rgba(#ffffff, 0.1);
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #333333;
+        text-align: center;
+        line-height: 32px;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+      }
+      .slippage-item-active {
+        border: 1px solid #005aff;
+        color: #005aff;
+      }
+
+      input {
+        width: 72px;
+        background: rgba(#ffffff, 0.1);
+        border-radius: 8px;
+      }
+
+      .ant-input-affix-wrapper {
+        width: 72px;
+        border-radius: 8px;
+      }
+    }
+  }
+  .tips-available {
+    margin-top: 20px;
+    width: 100%;
+    // height: 26px;
+    padding: 5px;
+    background: rgba(#fe6012, 0.1);
+    border-radius: 8px;
+    .content {
+      color: #fe5d0d;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      span {
+        line-height: 18px;
+      }
+      img {
+        width: 14px;
+        height: 14px;
+        margin-right: 10px;
+      }
+      svg {
+        width: 12px;
+        height: 12px;
+        margin-left: 2px;
+        fill: @icon-color;
+      }
+    }
+  }
+  .available {
+    margin-top: 20px;
+    width: 100%;
+    // height: 26px;
+    background: #fee6e6;
+    border-radius: 8px;
+    .content {
+      color: #ff0000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      span {
+        line-height: 26px;
+      }
+      img {
+        width: 14px;
+        height: 14px;
+        margin-right: 10px;
+      }
+      svg {
+        width: 12px;
+        height: 12px;
+        margin-left: 2px;
+        fill: @icon-color;
+      }
+    }
+  }
+  .deadline {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    p {
+      font-size: 14px;
+      font-weight: 400;
+      color: #333333;
+    }
+    .ant-input {
+      width: 72px !important;
+      background: rgba(#ffffff, 0.1);
+      border-radius: 8px;
+    }
+  }
+  .farm-setting-alert {
+    margin-top: 12px;
+    color: #ff4343;
+  }
+}

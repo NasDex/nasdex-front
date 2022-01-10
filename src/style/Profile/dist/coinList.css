@@ -1,0 +1,41 @@
+.coin-list {
+  width: 464px;
+  background: #FFFFFF;
+  box-shadow: 0px 2px 30px 0px rgba(190, 200, 221, 0.3);
+  border-radius: 10px;
+  padding: 7px 40px;
+  height: 200px;
+  overflow: auto;
+}
+.coin-list .coin-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 0;
+  border-bottom: 1px solid #F3F7FE;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333333;
+}
+.coin-list .coin-item img {
+  width: 32px;
+  height: 32px;
+  margin-right: 10px;
+}
+.coin-list .coin-item .coin-item-left {
+  font-size: 14px;
+}
+.coin-list .coin-item .coin-balance {
+  text-align: right;
+}
+.coin-list .coin-item .coin-balance .balance-num {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333333;
+}
+.coin-list .coin-item .coin-balance .balance-price {
+  font-size: 12px;
+  font-weight: 400;
+  color: #909DB4;
+  margin-top: 6px;
+}

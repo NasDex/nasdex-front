@@ -1,0 +1,373 @@
+/** @format */
+
+.container {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  background: @body-background;
+  color: @text-color;
+  .sidebar {
+    .lanage-select-box {
+      width: 160px;
+      margin: auto;
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+      span {
+        font-size: 14px;
+        font-weight: 500;
+        color: @heading-color;
+      }
+      .ant-select-arrow {
+        margin-top: -7px;
+        .icon {
+          fill: rgba(0, 0, 0, 0.5);
+        }
+      }
+    }
+    height: 100vh;
+    width: 200px;
+    background: @menu-back;
+    position: relative;
+    box-shadow: 10px 0px 50px 0px rgba(186, 200, 224, 0.2);
+
+    .h5-nav {
+      display: none;
+    }
+    .menu-list-block {
+      height: 100%;
+      .logo {
+        padding-left: 20px;
+        padding-top: 20px;
+        position: relative;
+        img {
+          height: 40px;
+        }
+        .toggle-btn {
+          display: inline-block;
+          width: 16px;
+          height: 16px;
+          position: absolute;
+          right: 0px;
+          top: 32px;
+          svg {
+            width: 100%;
+            height: 100%;
+            fill: #fff;
+          }
+        }
+      }
+      .menu-container {
+        display: flex;
+        justify-content: space-between;
+        flex-direction: column;
+        height: calc(100% - 150px);
+      }
+    }
+    .wallet-btn {
+      display: flex;
+      align-items: center;
+      color: @heading-color;
+      cursor: pointer;
+      margin-left: 20px;
+      margin-top: 28px;
+      font-weight: 600;
+    }
+    .connect-wallet-btn {
+      width: 152px;
+      height: 38px;
+      justify-content: center;
+      background: @menu-active-back;
+      border-radius: 10px;
+      &:hover {
+        background: #dde4ff;
+      }
+      svg {
+        width: 16px;
+        height: 16px;
+        fill: @icon-color;
+        margin-right: 8px;
+      }
+    }
+    .wallet-account {
+      width: 160px;
+      height: 42px;
+      border-radius: 5px;
+      background: #f2f4fc;
+      // display: none;
+      .network {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: 1;
+        i {
+          display: inline-block;
+          width: 4px;
+          height: 4px;
+          border-radius: 100%;
+          background: #0083ff;
+          margin-right: 4px;
+        }
+      }
+      .address {
+        width: 93px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 5px;
+        border: 1px solid #8d9db6;
+      }
+    }
+
+    .total-protfolio {
+      padding-left: 20px;
+      margin-top: 30px;
+      p {
+        display: flex;
+        align-items: center;
+        font-size: 12px;
+        color: @text-color;
+        font-weight: 600;
+        svg {
+          width: 16px;
+          height: 16px;
+          fill: rgba(0, 0, 0, 0.5);
+          margin-left: 7px;
+        }
+      }
+      .total-num {
+        display: flex;
+        align-items: center;
+        > span {
+          font-size: 16px;
+          color: @heading-color;
+          font-weight: 600;
+        }
+        .rate {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 4px;
+          min-width: 43px;
+          padding: 0px 4px;
+          height: 16px;
+          background: fade(@primary-color, 10%);
+          color: @primary-color;
+          font-size: 12px;
+          margin-left: 4px;
+          font-weight: 600;
+          svg {
+            width: 8px;
+            height: 8px;
+            fill: @primary-color;
+            margin-left: 2px;
+          }
+        }
+      }
+    }
+
+    .menu-list {
+      padding-left: 12px;
+      margin-top: 40px;
+      a {
+        display: flex;
+        height: 48px;
+        border-radius: 24px 0px 0px 24px;
+        align-items: center;
+        padding-left: 8px;
+        color: @text-color;
+        font-size: 14px;
+        svg {
+          width: 20px;
+          height: 20px;
+          fill: @text-color;
+        }
+        span {
+          margin-left: 10px;
+          font-size: 14px !important;
+          font-weight: 600;
+        }
+        img {
+          width: 90px;
+          height: 40px;
+          z-index: 99;
+        }
+        &:hover,
+        &.active {
+          color: @menu-active-color;
+          background: @menu-active-back;
+          font-weight: 600;
+          svg {
+            fill: @menu-active-color;
+          }
+        }
+      }
+    }
+    .menu-bottom {
+      .tip {
+        padding: 8px;
+        border: 1px solid #ececec;
+        width: 160px;
+        border-radius: 8px;
+        margin: auto;
+        text-align: left;
+        .tit {
+          display: flex;
+          justify-content: left;
+          align-items: center;
+          img {
+            width: 12px;
+            height: 12px;
+          }
+          span {
+            font-size: 12px;
+            color: #909db4;
+            margin-left: 3px;
+          }
+        }
+        p {
+          margin-top: 5px;
+          line-height: 15px;
+        }
+      }
+      width: 200px;
+      // position: absolute;
+      // left: 0px;
+      // bottom: 0px;
+      background: @menu-back;
+      padding-top: 20px;
+      .docs {
+        width: 160px;
+        height: 38px;
+        margin: 16px auto 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        background: @menu-active-back;
+        color: @text-color;
+      }
+      .link-list {
+        display: flex;
+        padding: 20px 30px;
+        align-items: center;
+        justify-content: space-around;
+        a {
+          svg {
+            width: 16px;
+            height: 16px;
+            fill: @icon-color;
+          }
+          &:hover {
+            svg {
+              fill: @icon-color-hover;
+            }
+          }
+        }
+      }
+      .theme-mode-box {
+        display: flex;
+        padding: 13px 20px 20px;
+        align-items: center;
+        justify-content: space-between;
+        border-top: 1px solid @border-color-base;
+        .mode-select {
+          cursor: pointer;
+          img {
+            height: 25px;
+          }
+        }
+      }
+    }
+  }
+  .main {
+    flex: 1;
+    height: 100vh;
+    overflow-y: auto;
+  }
+}
+@media (max-width: 750px) {
+  .container {
+    flex-direction: column;
+    position: relative;
+    .menu-list-block {
+      display: none;
+      background: @body-background;
+      &.show {
+        display: block;
+        position: fixed;
+        left: 0px;
+        right: 0px;
+        top: 50px;
+        bottom: 0px;
+        // width: 100%;
+        // height: 100vh;
+        // height: calc(100vh - 50px);
+        z-index: 1000;
+      }
+    }
+    .sidebar {
+      // display: none;
+      width: 100%;
+      height: auto;
+      .logo {
+        display: none;
+      }
+      .wallet-btn {
+        margin-top: 20px;
+      }
+      .total-protfolio {
+        display: none;
+      }
+      .h5-nav {
+        height: 50px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: @menu-back;
+        padding: 0px 20px;
+        box-shadow: 10px 0px 50px 0px rgba(186, 200, 224, 0.2);
+        > img {
+          height: 28px;
+        }
+        svg {
+          width: 16px;
+          height: 16px;
+          fill: @primary-color;
+        }
+      }
+
+      .menu-list {
+        padding-left: 0px;
+        margin-top: 20px;
+        a {
+          border-bottom: 1px solid #e9edf5;
+          border-radius: 0px;
+          padding-left: 22px;
+          &:first-child {
+            border-top: 1px solid #e9edf5;
+          }
+        }
+      }
+
+      .menu-bottom {
+        width: 100%;
+        background: none;
+        .docs {
+          background: @form-back;
+        }
+        .link-list {
+          width: 160px;
+          margin: 0 auto;
+        }
+      }
+    }
+    .main {
+      width: 100%;
+    }
+  }
+}

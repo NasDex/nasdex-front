@@ -1,0 +1,108 @@
+/** @format */
+
+.symbol-list {
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  .symbol-item {
+    width: 200px;
+    background: @background-color-base;
+    padding: 16px;
+
+    .symbol {
+      display: flex;
+      align-items: center;
+      img {
+        width: 24px;
+        height: 24px;
+      }
+      .name {
+        margin-left: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        color: @heading-color;
+      }
+    }
+
+    .convert-usd {
+      margin-top: 15px;
+      font-size: 18px;
+      font-weight: 600;
+      color: @text-color;
+
+      span {
+        font-size: 12px;
+        font-weight: 400;
+        color: @text-color;
+        margin-right: 2px;
+      }
+    }
+    .rise {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 5px 8px;
+      background: @up-back;
+      font-weight: 600;
+      border-radius: 5px;
+      color: @up-color;
+      .icon {
+        width: 8px;
+        height: 8px;
+        fill: @up-color;
+        margin-left: 4px;
+      }
+    }
+    .fall {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 5px 8px;
+      background: @down-back;
+      border-radius: 5px;
+      color: @down-color;
+      .icon {
+        width: 8px;
+        height: 8px;
+        fill: @down-color;
+        margin-left: 4px;
+      }
+    }
+  }
+  .symbol-list-menu {
+    width: 36px;
+    height: 36px;
+    position: absolute;
+    background: #f2f4fc;
+    border-radius: 8px 0px 0px 8px;
+    right: 0px;
+    top: 50%;
+    transform: translateY(-50%);
+    text-align: center;
+    line-height: 39.5px;
+    .icon {
+      width: 14px;
+      height: 12px;
+      fill: @text-color;
+    }
+  }
+}
+@media screen and (max-width: 750px) {
+  .symbol-list {
+    width: 100%;
+    margin-top: 10px;
+    background: rgba(#bac8e0, 0.2);
+    .symbol-item {
+      min-width: 118px;
+      margin-right: 2px;
+      padding: 10px;
+      .name {
+        display: none;
+      }
+    }
+    .symbol-list-menu {
+      display: none;
+    }
+  }
+}
