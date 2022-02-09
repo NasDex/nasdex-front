@@ -75,7 +75,6 @@ const Staking: React.FC<any> = props => {
   const { t, i18n } = useTranslation()
   const params = props.match.params.assetName
   const cAssetName = props.match.params.cAssetName
-  // localStorage.clear()
   const { account } = useActiveWeb3React()
   const commonState = useCommonState()
   const dispatch = useDispatch()
