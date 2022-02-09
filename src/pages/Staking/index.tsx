@@ -1,15 +1,16 @@
 /** @format */
 
-import React, {useEffect, useState} from 'react'
+import React, { useEffect, useState } from 'react'
 import '../../style/Staking/staking.less'
 import Title from '../../components/Title'
 import StakingLeft from '../../components/Staking/StakingLeft/index'
 import StakingRight from '../../components/Staking/StakingRight/index'
-import {getpriceList} from 'utils'
-import {useDispatch} from 'react-redux'
-import {setPriceList} from 'state/stake/actions'
-
+import { getpriceList } from 'utils'
+import { useDispatch } from 'react-redux'
+import { setPriceList } from 'state/stake/actions'
+import { useTranslation } from 'react-i18next'
 export default function Staking() {
+  const { t, i18n } = useTranslation()
   // const dispatch = useDispatch()
   // async function initPrice() {
   //   const price = await getpriceList()
@@ -20,7 +21,7 @@ export default function Staking() {
     <div className="stake-container">
       <div className="container-center">
         <div className="staking-container-center">
-          <Title title="Stake"></Title>
+          <Title title={t('Stake')}></Title>
           <div className="container-box">
             <StakingLeft></StakingLeft>
             <StakingRight></StakingRight>

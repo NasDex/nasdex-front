@@ -27,11 +27,15 @@ import { getLibrary } from 'utils/getLibrary'
 import { getApr, getRecevied } from 'utils/getAPR'
 import { ethers } from 'ethers'
 import lTokenAbi from 'constants/abis/ltoken.json'
+import { useStakeState } from 'state/stake/hooks'
 import { useTranslation } from 'react-i18next'
+import { simpleRpcProvider } from 'utils/providers'
 const LongFarming: React.FC<any> = props => {
   const { t, i18n } = useTranslation()
   const [load, setLoad] = useState(true)
   const [clickUnstakeBtn, setClickUnstakeBtn] = useState(false)
+  const stakeState = useStakeState()
+  const { priceList } = stakeState
   const [poolInfo, setPoolInfo] = useState({})
   const { account } = useWeb3React()
   const commonState = useCommonState()
@@ -45,7 +49,7 @@ const LongFarming: React.FC<any> = props => {
 
   const { login, logout } = useAuth()
   const provider = window.ethereum
-  const library = getLibrary(provider)
+  const library = getLibrary(provider) ?? simpleRpcProvider
   const { onPresentConnectModal, onPresentAccountModal } = useWalletModal(login, logout, account || undefined)
   const LongStakingContract = useLongStakingContract()
   const MasterChefTestContract = useMasterChefTestContract()
@@ -69,8 +73,7 @@ const LongFarming: React.FC<any> = props => {
   const [openNoifcation] = useModal(<OrderNoifcation type="success" title={t('Claim')} from="farming"></OrderNoifcation>)
 
   async function setData(id: any) {
-    // const price = props.priceList
-    const price = await getpriceList()
+    const price = priceList
     const data: any = []
     if (id) {
       setLoad(true)
@@ -97,7 +100,6 @@ const LongFarming: React.FC<any> = props => {
       setDataSource([])
       setLoad(false)
     }
-    // dispatch(upDateOpenConfirmSuccess({ openConfirmSuccess: '' }))
     setConfirmSuccess('')
   }
 
@@ -155,7 +157,6 @@ const LongFarming: React.FC<any> = props => {
       const tx = await LongStakingContract.getReward(id)
       dispatch(upDateTxHash({ hash: tx.hash }))
       openNoifcation()
-      // setLoad(true)
       const receipt = await tx.wait()
       if (receipt.status) {
         openNotificationWithIcon('success', 'Success')
@@ -169,15 +170,12 @@ const LongFarming: React.FC<any> = props => {
         const Info = { ...commonState.assetBaseInfoObj['NSDX'], ...assetNewInfo }
         dispatch(upDateOneAssetBaseInfo({ oneAssetBaseInfo: Info }))
       } else {
-        // setLoad(false)
         openWaringNoifcation()
         openNotificationWithIcon('error', 'Error')
       }
       setClickRewardsBtn(false)
     } catch (error: any) {
-      // console.log(error.message.includes('transaction was replaced'), 999)
       if (error.message.includes('transaction was replaced')) {
-        // setData(id)
         const assetNewInfo = await getOneAssetInfo(
           'NSDX',
           commonState.assetBaseInfoObj['NSDX'].address,
@@ -201,7 +199,6 @@ const LongFarming: React.FC<any> = props => {
   }
   useEffect(() => {
     if (clickUnstakeBtn) {
-      // openUnstake()
       setIsModalVisible(true)
       setClickUnstakeBtn(false)
     }
@@ -209,8 +206,6 @@ const LongFarming: React.FC<any> = props => {
   useEffect(() => {
     let timer: any
     const getBaseData = () => {
-      // initData()
-      // setData(commonState.openConfirmSuccess)
       setData('')
       return getBaseData
     }
@@ -226,14 +221,13 @@ const LongFarming: React.FC<any> = props => {
   }, [account])
   async function getLongFarmingInfo() {
     const config = await getAssetList()
-    setFarmListArray(config.longFarmingInfo)
-    if (config.longFarmingInfo.length <= 0) {
+    setFarmListArray(config.longFarmingInfoPre)
+    if (config.longFarmingInfoPre.length <= 0) {
       setLoad(false)
     }
   }
   useEffect(() => {
     if (account && confirmSuccess) {
-      // setData(commonState.openConfirmSuccess)
       setData(confirmSuccess)
     }
   }, [account, confirmSuccess])

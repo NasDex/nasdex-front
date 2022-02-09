@@ -8,24 +8,27 @@ import FarmPoolItem from './nSTAPoolItem'
 import { getAssetList } from 'utils/getList'
 import { useDispatch } from 'react-redux'
 
-const FarmPoolList = () => {
+interface ProfileCardProps {
+  priceList?: any
+}
+const FarmPoolList: React.FC<ProfileCardProps> = props => {
   const { account } = useActiveWeb3React()
   const [farmListArray, setFarmListArray] = useState([])
   const dispatch = useDispatch()
   async function getLongFarmingInfo() {
     const config = await getAssetList()
-    setFarmListArray(config.longFarmingInfo)
+    setFarmListArray(config.longFarmingInfoPre)
   }
   useEffect(() => {
     getLongFarmingInfo()
   }, [account])
   return (
     <div className="farm-pool-list">
-      {farmListArray.map((ele: any, key: any) =>
+      {farmListArray ? farmListArray.map((ele: any, key: any) =>
         ele.name == 'NSDX' ?
-          <NSDXPoolItem farmPoolItem={farmListArray[0]}></NSDXPoolItem>
-          : <FarmPoolItem farmPoolItem={ele} key={key}></FarmPoolItem>,
-      )}
+          <NSDXPoolItem farmPoolItem={farmListArray[0]} priceList={props.priceList}></NSDXPoolItem>
+          : <FarmPoolItem farmPoolItem={ele} key={key} priceList={props.priceList}></FarmPoolItem>,
+      ) : null}
     </div>
   )
 }

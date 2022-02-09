@@ -47,7 +47,6 @@ const OrderConfirm = ({
   setEditConfirmBtn = defaultSetEditConfirmBtn,
   setCollateralConfirm = defaultSetCollateralConfirm,
   setCollateralConfirmBtn = defaultSetCollateralConfirmBtn,
-  // openNotificationWithIcon = defaultOpenNotificationWithIcon,
   confirmType = '',
 }: OrderConfirmModalProps) => {
   const { t, i18n } = useTranslation()
@@ -99,7 +98,7 @@ const OrderConfirm = ({
     })
   }
   const [openWaringNoifcation] = useModal(
-    <OrderNoifcation type="waring" title={t('MintAssets')} from="manage"></OrderNoifcation>,
+    <OrderNoifcation type="waring" title={positionInfo.isShort ? `${t('Shorted')}` : `${t('MintAssets')}`} from="manage"></OrderNoifcation>,
   )
   const [openWaiting] = useModal(
     <OrderNoifcation
@@ -345,7 +344,6 @@ const OrderConfirm = ({
             </div>
           </div>
         </div>
-        {/* <FeeWarning feeRate={commonState.feeRate}></FeeWarning> */}
         <Button className="confirm-btn">
           <span className="mintSpan" onClick={() => submitOrder()}>
             {t('Confirm')}

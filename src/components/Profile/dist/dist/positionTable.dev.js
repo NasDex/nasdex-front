@@ -405,14 +405,14 @@ var columns = [
 var PositionTable = function PositionTable(props) {
   var pagination = {
     pageSize: 5,
-  } // 创建mint合约
+  } 
   // const MintContract = useMintContract()
 
   var MintContract = {
     getPositions: function getPositions(args1, args2, args3) {
       return null
     }
-  } /// @param ownerAddr 用户地址
+  } 
 
   var account = hooks_1.useActiveWeb3React().account
 

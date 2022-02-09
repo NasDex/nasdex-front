@@ -33,12 +33,12 @@ export interface ApplicationState {
   profileSlippageTolerance: any
   profileMintDeadline: any
   feeRate: any
-  defaultAsset: any
-  defaultCAsset: any
+  defaultAsset: string
+  defaultCAsset: string
 }
 
 const initialState: ApplicationState = {
-  defaultAsset: 'nETH',
+  defaultAsset: 'nSE',
   defaultCAsset: 'USDC',
   openConfirmManageSuccess: false,
   openWeb: false,
@@ -46,38 +46,27 @@ const initialState: ApplicationState = {
   assetsListInfo: [],
   cAssetsListInfo: [],
   allAssetsListInfo: [],
-  profileSlippageTolerance: '0.1',
+  profileSlippageTolerance: '1',
   profileMintDeadline: '20',
   feeRate: '',
   longFarmingInfo: [],
   assetsNameInfo: {},
   assetBaseInfoObj: {
-    nSTA: {
+    nSE: {
       id: '0',
-      name: 'nSTA',
-      address: '0xed50Ce4259e4afa184D7d5b1d9e4A5244F12C58e',
+      name: 'nSE',
+      address: '0xc7D14a939eE0265BEAB7456394E50Ccc6C665298',
       type: 'asset',
       balance: '',
       decimals: 18,
       unitPrice: 35,
       fixDPrecise: 18,
       oraclePrice: '',
-    },
-    nETH: {
-      id: '1',
-      name: 'nETH',
-      address: '0xAE53Ad289fEf1Ff08d07c06808Fb3888150608b9',
-      decimals: 18,
-      type: 'asset',
-      unitPrice: 35,
-      fixDPrecise: 18,
-      oraclePrice: '',
-      balance: '',
     },
     USDC: {
       id: '4',
       name: 'USDC',
-      address: '0x5E76EA44D394025126Fa3BDf30F7EBAbb1E27E35',
+      address: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
       decimals: 6,
       type: 'cAsset',
       unitPrice: 1,
@@ -86,7 +75,7 @@ const initialState: ApplicationState = {
     NSDX: {
       id: '5',
       name: 'NSDX',
-      address: '0xd6936dc98c58c314cb2c5e2e9531fa9df437a3b4',
+      address: '0xE8d17b127BA8b9899a160D9a07b69bCa8E08bfc6',
       decimals: 18,
       type: 'oneAsset',
       unitPrice: 1,
@@ -110,7 +99,7 @@ export default createReducer(initialState, builder =>
       state.manageOpenConfirm = action.payload.manageOpenConfirm
     })
     .addCase(upDateAssetBaseInfoObj, (state, action) => {
-      // console.log(action.payload.assetBaseInfoObj,'action.payload.assetBaseInfoObj9888888898')
+      // console.log(action.payload.assetBaseInfoObj,'action.payload.assetBaseInfoObj11')
       state.assetBaseInfoObj = action.payload.assetBaseInfoObj
     })
     .addCase(upDateOneAssetBaseInfo, (state, action) => {

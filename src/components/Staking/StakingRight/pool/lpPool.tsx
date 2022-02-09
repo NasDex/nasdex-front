@@ -26,7 +26,7 @@ import { useStakeState } from 'state/stake/hooks'
 import { Skeleton } from 'antd'
 import { useDispatch } from 'react-redux'
 import { setPriceList } from 'state/stake/actions'
-
+import { useTranslation } from 'react-i18next'
 interface LpPoolItem {
   pid: string
   symbol: string
@@ -56,6 +56,7 @@ const LPPool: React.FC<LpPoolProps> = props => {
   )
 }
 const LpPoolItem: React.FC<any> = props => {
+  const { t, i18n } = useTranslation()
   const [amount, setAmount] = useState('')
   const [balance, setBalance] = useState('')
   const [isApproved, setIsApproved] = useState(false)
@@ -83,7 +84,6 @@ const LpPoolItem: React.FC<any> = props => {
     setPoolInfo(info)
     const totalNadx = formatUnits(await LPContract.balanceOf(MasterChefAddress), lpPoolItem.decimals)
     setTotalLiquidity(totalNadx)
-
   }
 
   async function getUserInfo() {
@@ -106,6 +106,7 @@ const LpPoolItem: React.FC<any> = props => {
       setIsApproved(false)
     }
   }
+
   const { onApprove } = useApproveFarm(LPContract)
   const [requestedApproval, setRequestedApproval] = useState(false)
   const handleApprove = useCallback(async () => {
@@ -130,6 +131,8 @@ const LpPoolItem: React.FC<any> = props => {
     setTotalSupply(totalSupplyValue)
     const reservesValue = await LPContract.getReserves()
     setReserves(reservesValue)
+
+
   }
   useEffect(() => {
     const tvlF = totalLiquidity
@@ -141,7 +144,7 @@ const LpPoolItem: React.FC<any> = props => {
     if (reserves && reserves[1]) {
       currencyBNum = Number(formatUnits(reserves[1], lpPoolItem.decimals))
     }
-    const num = (Number(tvlF) / Number(totalSupply)) * Number(currencyANum) * 2
+    const num = currencyANum + fixD(currencyANum / currencyBNum, 2) * currencyBNum
     const accountNum = (Number(amount) / Number(totalSupply)) * Number(currencyANum) * 2
     dispatch(
       setPriceList({
@@ -160,12 +163,13 @@ const LpPoolItem: React.FC<any> = props => {
       let aprP: any = 0
       const tvlF = totalLiquidity
       const price = priceList.NSDX
+      const totalAllocPoint = await MasterChefContract.totalAllocPoint()
+      const nsdxPerBlock = await MasterChefContract.nsdxPerBlock()
+      const day = Number(formatUnits(nsdxPerBlock, 18)) * 43200
 
-      const day = lpPoolItem.nsdxPerBlock * 43200
-
-      if (lpPoolItem.nsdxPerBlock && Number(tvlF)) {
+      if (Number(formatUnits(nsdxPerBlock, 18)) && Number(tvlF)) {
         aprP =
-          ((day * (poolInfo.allocPoint / lpPoolItem.totalAllocPoint) * price * 365) / Number(totalSupplyPrice)) * 100
+          ((day * (poolInfo.allocPoint / Number(totalAllocPoint.toString())) * price * 365) / Number(totalSupplyPrice)) * 100
       } else {
         aprP = ''
       }
@@ -236,9 +240,9 @@ const LpPoolItem: React.FC<any> = props => {
           <a
             href="https://quickswap.exchange/#/add/0x3813e82e6f7098b9583FC0F33a962D02018B6803/0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174"
             target="_blank">
-            From
+            {t('From')}
             <img src={SourceImg} alt="" />
-            Get NSDX-USDC LPT
+            {t('Get')}
             <svg className="icon" aria-hidden="true">
               <use xlinkHref="#icon-link"></use>
             </svg>
@@ -249,7 +253,7 @@ const LpPoolItem: React.FC<any> = props => {
       <div className="liquidity-bottom">
         <div className="total-liquidity">
           <div className="title">$ {fixD(totalSupplyPrice, 4)} </div>
-          <div className="text">Total Liquidity</div>
+          <div className="text">{t('TotalLiquidity')}</div>
         </div>
         <div className="apr">
           <div className="title">
@@ -259,33 +263,33 @@ const LpPoolItem: React.FC<any> = props => {
               <use xlinkHref="#icon-calculator"></use>
             </svg>
           </div>
-          <div className="text">APR</div>
+          <div className="text">{t('APR')}</div>
         </div>
         {!account ? (
           <Button className="pc-stake-btn" onClick={() => onPresentConnectModal()}>
-            Connect
+            {t('Connect')}
           </Button>
         ) : !isApproved ? (
           <Button className="pc-stake-btn" onClick={openStakeCard}>
-            Stake
+            {t('Stake')}
           </Button>
         ) : (
           <Button className="pc-stake-btn" onClick={() => handleApprove()} loading={requestedApproval}>
-            Approve
+            {t('Approve')}
           </Button>
         )}
       </div>
       {!account ? (
         <Button className="h5-stake-btn" onClick={() => onPresentConnectModal()}>
-          Connect
+          {t('Connect')}
         </Button>
       ) : !isApproved ? (
         <Button className="h5-stake-btn" onClick={openStakeCard}>
-          Stake
+          {t('Stake')}
         </Button>
       ) : (
         <Button className="h5-stake-btn" onClick={() => handleApprove()} loading={requestedApproval}>
-          Approve
+          {t('Approve')}
         </Button>
       )}
       {Number(harvestBalance) > 0 ? (
@@ -296,41 +300,42 @@ const LpPoolItem: React.FC<any> = props => {
         <span className="line"></span>
       ) : null}
 
+      {/* <span className="line"></span> */}
       <div className="claim-unstake">
         {Number(harvestBalance) > 0 ? (
           <div className="claim">
             <div className="left">
-              <span>Rewards (NSDX)</span>
+              <span>{t('Rewards')} (NSDX)</span>
               <p>{fixD(harvestBalance, 4)}</p>
               <p>≈${fixD(Number(harvestBalance) * priceList.NSDX, 4)}</p>
             </div>
             {!account ? (
               <Button className="pc-stake-btn" onClick={() => onPresentConnectModal()}>
-                Connect
+                {t('Connect')}
               </Button>
             ) : (
-              <Button onClick={() => openClaimCard()}>Claim</Button>
+              <Button onClick={() => openClaimCard()}>{t('Claim')}</Button>
             )}
           </div>
         ) : null}
         {Number(amount) > 0 ? (
           <div className="claim">
             <div className="left">
-              <span>Staked</span>
+              <span>{t('Staked')}</span>
               <p>{fixD(amount, 4)}</p>
               <p>≈${fixD(accountLpPrice, 4)}</p>
             </div>
             {!account ? (
               <Button className="pc-stake-btn" onClick={() => onPresentConnectModal()}>
-                Connect
+                {t('Connect')}
               </Button>
             ) : !isApproved ? (
               <Button className="pc-stake-btn" onClick={openUntakeCard}>
-                Unstake
+                {t('Unstake')}
               </Button>
             ) : (
               <Button className="pc-stake-btn" onClick={() => handleApprove()} loading={requestedApproval}>
-                Approve
+                {t('Approve')}
               </Button>
             )}
           </div>

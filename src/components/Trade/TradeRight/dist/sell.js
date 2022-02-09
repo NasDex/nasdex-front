@@ -218,7 +218,6 @@ var Sell = function () {
   var _m = react_1.useState(false),
     isChangeTokenB = _m[0],
     setIsChangeTokenB = _m[1]
-  // 获取swap代币余额
   var commonState = hooks_2.useCommonState()
   react_1.useEffect(
     function () {
@@ -231,11 +230,8 @@ var Sell = function () {
     },
     [commonState.assetBaseInfoObj[tokenA].balance],
   )
-  // 判断有没有授权
   var tokenAaddress = commonState.assetBaseInfoObj[tokenA].address
   var tokenBaddress = commonState.assetBaseInfoObj[tokenB].address
-  // console.log(tokenAaddress,'tokenAaddress##')
-  // console.log(tokenBaddress,'tokenBaddress##')
   var tokenAContract = useContract_1.useErc20Contract(tokenAaddress)
   var onApprove = approve_1['default'](tokenA, tokenAContract, index_2.SwapRouterAddress, 'swap').onApprove
   var _o = react_1.useState(false),

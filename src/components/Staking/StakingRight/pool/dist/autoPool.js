@@ -91,7 +91,6 @@ var AutoPoolItem = function (props) {
     var NSDXVaultContract = useContract_1.useNSDXVault()
     var account = hooks_1.useActiveWeb3React().account
     var _h = WalletModal_1.useWalletModal(login, logout, account || undefined), onPresentConnectModal = _h.onPresentConnectModal, onPresentAccountModal = _h.onPresentAccountModal
-    // 获取池子信息 
     var _j = react_1.useState({
         allocPoint: 0,
         lastRewardBlock: ''
@@ -124,7 +123,6 @@ var AutoPoolItem = function (props) {
             })
         })
     }
-    // 获取用户信息
     function getUserInfo() {
         return __awaiter(this, void 0, void 0, function () {
             var balance, _a, stakedBalance, amountValue, cakeAtLastUserAction, pricePerFullShare, _b, recentNsdxProfit, totalPendingNSDXRewards, _c, totalNadx, _d, _e
@@ -164,7 +162,6 @@ var AutoPoolItem = function (props) {
             })
         })
     }
-    // 是否授权
     function getAllowance() {
         return __awaiter(this, void 0, void 0, function () {
             var result, allowance
@@ -185,7 +182,6 @@ var AutoPoolItem = function (props) {
             })
         })
     }
-    // 授权
     var onApprove = useApproveFarm_1["default"](NADXContract).onApprove
     var _k = react_1.useState(false), requestedApproval = _k[0], setRequestedApproval = _k[1]
     var handleApprove = react_1.useCallback(function () { return __awaiter(void 0, void 0, void 0, function () {
@@ -208,7 +204,6 @@ var AutoPoolItem = function (props) {
             }
         })
     }) }, [onApprove, account])
-    // 设置Apr
     var _l = react_1.useState('0'), apr = _l[0], setApr = _l[1]
     var _m = react_1.useState('0'), apy = _m[0], setApy = _m[1]
     var openCalculatorCard = useModal_1["default"](react_1["default"].createElement(calculator_1["default"], { apr: apr }))[0]

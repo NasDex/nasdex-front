@@ -45,7 +45,7 @@ const AccountModal: React.FC<Props> = ({ account, logout, onDismiss = () => null
             }}>
             {t('Disconnect')}
           </Button>
-          <a className="view" href={`https://mumbai.polygonscan.com/address/${account}`} target="_blank">
+          <a className="view" href={`https://polygonscan.com/address/${account}`} target="_blank">
             {t('ViewExplorer')}
           </a>
         </div>

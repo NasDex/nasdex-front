@@ -45,6 +45,7 @@ const ShortOrderConfirm = ({
   const dispatch = useDispatch()
   const { account } = useActiveWeb3React()
   const [openNoifcation] = useModal(<OrderNoifcation type="success" title={t('ShortFarm')} from="farm"></OrderNoifcation>)
+
   const MintContract = useMintContract()
   const [openWaringNoifcation] = useModal(
     <OrderNoifcation type="warning" title={t('ShortFarm')} from="farm"></OrderNoifcation>,
@@ -57,13 +58,10 @@ const ShortOrderConfirm = ({
     setShortConfirmBtn(true)
     const nAssetsInfo = commonState.assetBaseInfoObj[farmState.farmCoinStock]
     const cAssetInfo = commonState.assetBaseInfoObj[farmState.farmCoinSelect]
-
     const assetToken = nAssetsInfo.address
     const cAssetToken = cAssetInfo.address
-
     const cAssetAmount = parseUnits(farmState.farmTradeCollateral, cAssetInfo.decimals)
     const cRatio = Number(farmState.farmCollateralRatio) * 10
-
     const swapAmountMin = parseUnits(fixD(farmState.farmMinimumReceived, cAssetInfo.decimals).toString(), cAssetInfo.decimals)
     const newDate = new Date()
     const nowtime = newDate.getTime()
@@ -120,7 +118,7 @@ const ShortOrderConfirm = ({
         <div className="price">
           <div>
             <img src={require(`../../../img/coin/${farmState.farmCoinStock}.png`).default} alt="" />
-            <span>Short Assets</span>
+            <span>{t('ShortAssets')}</span>
           </div>
           <div className="mint-assets">
             {farmState.farmTradeAmount} <span>{farmState.farmCoinStock}</span>
@@ -137,19 +135,19 @@ const ShortOrderConfirm = ({
               {farmState.farmTradeCollateral} {farmState.farmCoinSelect}
             </div>
           </div>
-          <div className="detail-item">
+          {/* <div className="detail-item">
             <div className="leabl">{t('Returned')}</div>
             <div className="text">
               {fixD(farmState.farmReturned, commonState.assetBaseInfoObj[farmState.farmCoinSelect].fixDPrecise)}{' '}
               {farmState.farmCoinSelect}
             </div>
-          </div>
+          </div> */}
           {/* <div className="detail-item">
             <div className="leabl">Slippage Tolerance</div>
             <div className="text">{farmState.slippageTolerance}%</div>
           </div> */}
           <div className="detail-item">
-            <div className="leabl">{t('MinimumReceived')}</div>
+            <div className="leabl">{t('MinimumReturned')}</div>
             <div className="text">
               {fixD(farmState.farmMinimumReceived, commonState.assetBaseInfoObj[farmState.farmCoinSelect].fixDPrecise)}{' '}
               {farmState.farmCoinSelect}

@@ -51,12 +51,7 @@ const SymbolTrade: React.FC<any> = props => {
   const commonState = useCommonState()
   const [mintConfirm, setMintConfirm] = useState(false)
   const [mintConfirmBtn, setMintConfirmBtn] = useState(false)
-  const [openConfirmOrder] = useModal(
-    <ConfirmOrder
-      openNotificationWithIcon={openNotificationWithIcon}
-      setMintConfirm={setMintConfirm}
-      setMintConfirmBtn={setMintConfirmBtn}
-    ></ConfirmOrder>)
+
   const dispatch = useDispatch()
   const [tradeAmount, setAmount] = useState('')
   const [tradeCollateral, setTradeCollateral] = useState('')
@@ -70,10 +65,10 @@ const SymbolTrade: React.FC<any> = props => {
   const [selectCoin, setSelectCoin] = useState(commonState.defaultCAsset)
   const [selectStock, setSelectStock] = useState(commonState.defaultAsset)
   const [data, setData] = useState('')
-  const [minCollateral, setMinCollateral] = useState('')
-  const [red, setRed] = useState('')
-  const [orange, setOrange] = useState('')
-  const [safe, setSafe] = useState('')
+  const [minCollateral, setMinCollateral] = useState('150')
+  const [red, setRed] = useState('165')
+  const [orange, setOrange] = useState('180')
+  const [safe, setSafe] = useState('200')
   const myDate = new Date()
   const inputReftwo = React.useRef<any>(null)
   const marksMock: any = {}
@@ -144,6 +139,16 @@ const SymbolTrade: React.FC<any> = props => {
     return dtext
   }
 
+  const [openConfirmOrder] = useModal(
+    <ConfirmOrder
+      openNotificationWithIcon={openNotificationWithIcon}
+      setMintConfirm={setMintConfirm}
+      setMintConfirmBtn={setMintConfirmBtn}
+      setTradeCollateral={setTradeCollateral}
+      setAmount={setTradeCollateral}
+      setSliderValue={setSliderValue}
+      safe={safe}
+    ></ConfirmOrder>)
   function handleConfirm() {
     dispatch(upDateMintTradeAmount({ mintTradeAmount: tradeAmount }))
     dispatch(upDateMintCollateralRatio({ mintCollateralRatio: sliderValue }))
@@ -194,6 +199,7 @@ const SymbolTrade: React.FC<any> = props => {
     collateralInputFocus,
     commonState.assetBaseInfoObj,
   ])
+
   useEffect(() => {
     if (!props.assetName) {
       dispatch(upDateCoinStock({ mintCoinStock: commonState.defaultAsset }))
@@ -233,10 +239,10 @@ const SymbolTrade: React.FC<any> = props => {
   }, [mintState.mintCoinStock, mintState.mintCoinSelect, commonState.assetBaseInfoObj[selectCoin].balance])
   useEffect(() => {
     if (selectStock) {
-      const minCollateral = Number(commonState.assetBaseInfoObj[selectStock].minCollateral)
-      const red = Number(commonState.assetBaseInfoObj[selectStock].minCollateral) + 15
-      const orange = Number(commonState.assetBaseInfoObj[selectStock].minCollateral) + 30
-      const safe = Number(commonState.assetBaseInfoObj[selectStock].minCollateral) + 50
+      const minCollateral = Number(commonState.assetBaseInfoObj[selectStock]?.minCollateral)
+      const red = Number(commonState.assetBaseInfoObj[selectStock]?.minCollateral) + 15
+      const orange = Number(commonState.assetBaseInfoObj[selectStock]?.minCollateral) + 30
+      const safe = Number(commonState.assetBaseInfoObj[selectStock]?.minCollateral) + 50
       setMinCollateral(minCollateral.toString())
       setRed(red.toString())
       setOrange(orange.toString())
@@ -486,18 +492,14 @@ const SymbolTrade: React.FC<any> = props => {
         ) : (
           <Button
             disabled={
-              // data == '七' || data == '六' || discText() ||
               !Number(tradeAmount) ||
                 !Number(tradeCollateral) ||
                 Number(sliderValue) < Number(minCollateral) ||
-                mintConfirmBtn ||
-                // Number(tradeCollateral) < 50 ||
-                Number(tradeCollateral) > Number(assetsBalance)
+                mintConfirmBtn
                 ? true
                 : false
             }
             className="confirm-order"
-            // disabled={!tradeAmount || !tradeCollateral || Number(sliderValue) <= 0 || discText()}
             onClick={() => handleConfirm()}>
             <span>{t('ConfirmOrder')}</span>
           </Button>
@@ -505,7 +507,6 @@ const SymbolTrade: React.FC<any> = props => {
           <Button
             className="confirm-order"
             loading={requestedApproval}
-            // disabled={!tradeAmount || !tradeCollateral || Number(sliderValue) <= 0 || discText()}
             onClick={() => handleApprove()}>
             <span>{t('Approve')}</span>
           </Button>

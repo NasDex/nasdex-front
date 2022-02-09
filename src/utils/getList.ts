@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 /** @format */
 
-import {STAOracleAddress, ETHOracleAddress, mintAddress, USDCaddress, SwapFactoryAddress, SwapRouterAddress, LongStakingAddress} from 'constants/index'
+import {SEOracleAddress, ETHOracleAddress, mintAddress, USDCaddress, SwapFactoryAddress, SwapRouterAddress, LongStakingAddress} from 'constants/index'
 import {ethers} from 'ethers'
 import {formatUnits} from 'ethers/lib/utils'
 import {fixD} from 'utils'
@@ -12,6 +13,8 @@ import Erc20Abi from 'constants/abis/erc20.json'
 import SwapFactoryAbi from 'constants/abis/swapFactory.json'
 import lpContractAbi from 'constants/abis/lpContract.json'
 import store from '../state/index'
+import {simpleRpcProvider} from './providers'
+
 import {
   upDateAssetBaseInfoObj,
   upDateAssetsNameInfo,
@@ -26,32 +29,39 @@ import {
 import { upDateCoinSelect as upDateMintCoinSelect, upDateCoinStock as upDateMintCoinStock } from 'state/mint/actions'
 import { upDateFarmCoinSelect, upDateCoinStock as upDateFarmCoinStock } from 'state/farm/actions'
 import { upDateTradeCoinSelect, upDateCoinStock as upDateTradeCoinStock } from 'state/trade/actions'
-
+import { upDatePositionInfo} from 'state/manage/actions'
 export async function getCommonAssetInfo(account?: string) {
   const dispatch = store.dispatch
-  dispatch(upDateOpenWeb({ openWeb: false }))
+  dispatch(upDatePositionInfo({ positionInfo: {
+    assetTokenName: 'nSE',
+    assetToken: '',
+    cAssetToken: '',
+    cAssetTokenName: 'USDC',
+    assetAmount: '',
+    cAssetAmount: '',
+    cRatio: '',
+    isShort: '',
+  } }))
   dispatch(upDateMintCoinSelect({ mintCoinSelect: '' }))
   dispatch(upDateMintCoinStock({ mintCoinStock: '' }))
   dispatch(upDateFarmCoinSelect({ farmCoinSelect: '' }))
   dispatch(upDateFarmCoinStock({ farmCoinStock: '' }))
   dispatch(upDateTradeCoinSelect({ tradeCoinSelect: '' }))
   dispatch(upDateTradeCoinStock({ tradeCoinStock: '' }))
-  // const {account} = ''
-  // useActiveWeb3React()
+  dispatch(upDateOpenWeb({openWeb: false}))
   const provider = window.ethereum
-  const library = getLibrary(provider)
+  const library = getLibrary(provider) || simpleRpcProvider
   const assetBaseInfo: any = []
   let assetBaseInfoArr: any = []
   const config = await getAssetList()
-  // const config = await require(`../common/asset.json`)
-  const assetBaseInfoObj: any = config.asset
-  dispatch(updateDefaultCAsset({defaultCAsset: 'USDC'}))
-  dispatch(updateDefaultAsset({ defaultAsset:'nETH'}))
+  dispatch(updateDefaultCAsset({defaultCAsset: config.default.cAsset}))
+  dispatch(updateDefaultAsset({ defaultAsset: config.default.asset }))
+  const assetBaseInfoObj: any = config.assetPre
   Object.keys(assetBaseInfoObj).forEach(function (assetName) {
     assetBaseInfo.push(assetBaseInfoObj[assetName])
   })
   assetBaseInfoArr = assetBaseInfo
-  const assetsName: any = config.assetsNameInfo
+  const assetsName: any = config.assetsNameInfoPre
   const assetsListInfo: any = []
   const allAssetsListInfo: any = []
   const cAssetsListInfo: any = []
@@ -63,7 +73,6 @@ export async function getCommonAssetInfo(account?: string) {
       if (assetBaseInfoObj[asset] && account) {
         assetBaseInfoObj[asset].balance = balance
       }
-
       const result = await contract.allowance(account, mintAddress)
       const allowance = Number(formatUnits(result.toString(), assetBaseInfoObj[asset].decimals))
       if (allowance <= 0 && assetBaseInfoObj[asset]) {
@@ -71,7 +80,6 @@ export async function getCommonAssetInfo(account?: string) {
       } else {
         assetBaseInfoObj[asset].mintContractAllowance = true
       }
-
       const swapResult = await contract.allowance(account, SwapRouterAddress)
       const swapContractAllowance = Number(formatUnits(swapResult.toString(), assetBaseInfoObj[asset].decimals))
       if (swapContractAllowance <= 0 && assetBaseInfoObj[asset]) {
@@ -79,7 +87,6 @@ export async function getCommonAssetInfo(account?: string) {
       } else {
         assetBaseInfoObj[asset].swapContractAllowance = true
       }
-
       const longFarmResult = await contract.allowance(account, LongStakingAddress)
       const longFarmAllowance = Number(formatUnits(longFarmResult.toString(), assetBaseInfoObj[asset].decimals))
       if (longFarmAllowance <= 0 && assetBaseInfoObj[asset]) {
@@ -93,6 +100,7 @@ export async function getCommonAssetInfo(account?: string) {
       if (swapPriceResult) {
         const token0Name = assetsName[swapPriceResult.token0]
         const token1Name = assetsName[swapPriceResult.token1]
+        
         const reserves0 = Number(formatUnits(swapPriceResult.reserves[0], assetBaseInfoObj[token0Name].decimals))
         const reserves1 = Number(formatUnits(swapPriceResult.reserves[1], assetBaseInfoObj[token1Name].decimals))
         if (swapPriceResult.token0 == assetBaseInfoObj[asset].address) {
@@ -101,7 +109,6 @@ export async function getCommonAssetInfo(account?: string) {
           assetBaseInfoObj[asset].swapPrice = reserves0 / reserves1
         }
       }
-
     }
     if (assetBaseInfoObj[asset].type == 'asset') {
       assetsListInfo.push(assetBaseInfoObj[asset])
@@ -116,12 +123,9 @@ export async function getCommonAssetInfo(account?: string) {
   }
   const MintContract = new ethers.Contract(mintAddress, MintAbi, library)
   const feerate = (await MintContract.feeRate()) / 1000
-  const ETHOracleContract = new ethers.Contract(ETHOracleAddress, ETHOracle, library)
-  const STAOracleContract = new ethers.Contract(STAOracleAddress, STAOracle, library)
-  const ETHOraclePrice = await ETHOracleContract.latestRoundData()
-  const STAOraclePrice = await STAOracleContract.latestRoundData()
-  assetBaseInfoObj['nETH'].oraclePrice = fixD(formatUnits(ETHOraclePrice.answer, 8), 4)
-  assetBaseInfoObj['nSTA'].oraclePrice = fixD(formatUnits(STAOraclePrice.answer, 8), 4)
+  const SEOracleContract = new ethers.Contract(SEOracleAddress, STAOracle, library)
+  const SEOraclePrice = await SEOracleContract.latestRoundData()
+  assetBaseInfoObj['nSE'].oraclePrice = fixD(formatUnits(SEOraclePrice.answer, 8), 4)
   dispatch(upDateAssetsNameInfo({assetsNameInfo: assetsName}))
   dispatch(upDateAssetBaseInfoObj({assetBaseInfoObj: assetBaseInfoObj}))
   dispatch(upDateAssetsListInfo({assetsListInfo: assetsListInfo}))
@@ -141,8 +145,9 @@ export async function getAssetList(): Promise<any> {
 }
 
 export async function getSwapPrice(tokenAaddress: any, tokenBaddress: any) {
+  let price: any
   const provider = window.ethereum
-  const library = getLibrary(provider)
+  const library = getLibrary(provider)??simpleRpcProvider
   const swapFactoryContract = new ethers.Contract(SwapFactoryAddress, SwapFactoryAbi, library)
   const result = await swapFactoryContract.getPair(tokenAaddress, tokenBaddress)
   if (Number(formatUnits(result, 18)) > 0) {
@@ -159,7 +164,7 @@ export async function getOneAssetInfo(asset: string, address: string, account: a
     return false
   }
   const provider = window.ethereum
-  const library = getLibrary(provider)
+  const library = getLibrary(provider)??simpleRpcProvider
   const contract = new ethers.Contract(address, Erc20Abi, library)
   const balance = formatUnits(await contract.balanceOf(account), assetBaseInfoObj[asset].decimals)
   return {balance}

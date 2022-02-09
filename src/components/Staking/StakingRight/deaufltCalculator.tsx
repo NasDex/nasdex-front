@@ -4,7 +4,7 @@ import react from 'react'
 import { Modal, Button } from 'antd'
 import '../../../style/Staking/calculator.less'
 import { fixD } from 'utils'
-
+import { useTranslation } from 'react-i18next'
 const defaultOnDismiss = () => null
 
 type TikerInfoProps = {
@@ -13,6 +13,7 @@ type TikerInfoProps = {
 }
 
 const TikerInfo = ({ onDismiss = defaultOnDismiss, apr = '' }: TikerInfoProps) => {
+  const { t, i18n } = useTranslation()
   const d1 = Number(apr) ? Number(apr) / 365 : 0
   const str = Number(apr) ? Number(apr) / 365 / 100 : 0
   const d7 = Number(str) * 7 * 100
@@ -26,12 +27,12 @@ const TikerInfo = ({ onDismiss = defaultOnDismiss, apr = '' }: TikerInfoProps) =
     return fixD(val, 2)
   }
   return (
-    <Modal title="ROI" width={420} footer={null} visible={true} onOk={onDismiss} onCancel={onDismiss}>
+    <Modal title={t('ROI')} width={420} footer={null} visible={true} onOk={onDismiss} onCancel={onDismiss}>
       <div className="calculator-container">
         <div className="calculator-card">
           <div className="item">
-            <p className="itemp">TIMEFRAME</p>
-            <span>ROI</span>
+            <p className="itemp">{t('timeframe')}</p>
+            <span>{t('ROI')}</span>
           </div>
           <div className="item">
             <p className="itemp">1d</p>
@@ -51,8 +52,7 @@ const TikerInfo = ({ onDismiss = defaultOnDismiss, apr = '' }: TikerInfoProps) =
           </div>
         </div>
         <div className="calculator-describe">
-          Calculated based on current rates. Rates are estimates provided for your convenience only,and by no means
-          represent guaranteed returns.
+          {t('Calculated')}
         </div>
         {/* <Button className="calculator-btn">
           <span>Get NSDX</span>

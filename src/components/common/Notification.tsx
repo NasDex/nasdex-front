@@ -65,7 +65,7 @@ const RenderSuccess: React.FC<any> = props => {
     if (from == 'close') {
       location.href = '/profile'
     } else {
-      location.href = '/profile/Farming'
+      location.href = `/profile/${t('Farming')}`
     }
   }
   function dispatchHandle() {
@@ -79,7 +79,7 @@ const RenderSuccess: React.FC<any> = props => {
       <img src={tradesubmittedImg} alt="" />
       <p>{t('TransactionSubmitted')}</p>
       {hash ? (
-        <a href={'https://mumbai.polygonscan.com/tx/' + hash} target="_blank">
+        <a href={'https://polygonscan.com/tx/' + hash} target="_blank">
           {t('ViewExplorer')}
         </a>
       ) : null}
@@ -105,7 +105,7 @@ const RenderRejected: React.FC<any> = props => {
       <img src={rejectedImg} alt="" />
       <p>{t('TransactionRejected')}</p>
       {hash ? (
-        <a href={'https://mumbai.polygonscan.com/tx/' + hash} target="_blank">
+        <a href={'https://polygonscan.com/tx/' + hash} target="_blank">
           {t('ViewExplorer')}
         </a>
       ) : null}
@@ -120,18 +120,16 @@ const RenderRejected: React.FC<any> = props => {
 
 const OrderNoifcation = ({ onDismiss = defaultOnDismiss, type, title, message, from }: NotificationProps) => {
   const dispatch = useDispatch()
+  const { t, i18n } = useTranslation()
   const mintState = useMintState()
   const hash = mintState.hash
-  // dispatch(upDateNewPositionInfo({newPositionInfo: false}))
   function handle() {
     onDismiss()
-    // getPositonInfo(id)
     if (from == 'close') {
       location.href = '/profile'
     } else {
-      location.href = '/profile/Farming'
+      location.href = `/profile/${t('Farming')}`
     }
-    // dispatch(upDateNewPositionInfo({newPositionInfo: true}))
   }
   function disPatchHandle() {
     onDismiss()

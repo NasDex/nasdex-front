@@ -41,8 +41,8 @@ const initialState: ApplicationState = {
   mintCollateralRatio: '',
   mintInitInfo: '',
   mintNowPrice: 35,
-  mintCoinSelect: 'USDC',
-  mintCoinStock: 'nETH',
+  mintCoinSelect: '',
+  mintCoinStock: '',
   slippageTolerance: '0',
   deadline: '',
 }

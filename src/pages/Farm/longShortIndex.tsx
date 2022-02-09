@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import '../../style/Farm/farm.less'
 import FarmLeft from '../../components/common/SymbolChart'
 import FarmRight from '../../components/Farm/FarmRight'
@@ -15,6 +15,8 @@ import { formatUnits } from 'ethers/lib/utils'
 import Erc20Abi from 'constants/abis/erc20.json'
 import { upDateAssetBaseInfoObj } from 'state/common/actions'
 import { useDispatch } from 'react-redux'
+import { useTranslation } from 'react-i18next'
+import { simpleRpcProvider } from 'utils/providers'
 const symbolMock = [
   {
     id: '0',
@@ -62,15 +64,8 @@ const symbolMock = [
     changeRate: '8.06',
   },
 ]
-const SymoblChart = {
-  symbolName: '',
-  symbolLogo: '',
-  premium: '--',
-  volume: '43,123.09',
-  liquidity: '25,93M',
-  from: 'farm',
-}
 const Farm: React.FC<any> = props => {
+  const { t, i18n } = useTranslation()
   const params = props.match.params.poolType
   const cAssetName = props.match.params.cAssetName
   const assetName = props.match.params.assetName
@@ -78,9 +73,18 @@ const Farm: React.FC<any> = props => {
   const commonState = useCommonState()
   const dispatch = useDispatch()
   const provider = window.ethereum
-  const library = getLibrary(provider)
+  const library = getLibrary(provider) ?? simpleRpcProvider
   const assetBaseInfo: any = []
   const { assetBaseInfoObj } = commonState
+  const [longOrShort, setLongOrShort] = useState(`${t('Long')}`)
+  const SymoblChart = {
+    symbolName: '',
+    symbolLogo: '',
+    premium: '--',
+    volume: '43,123.09',
+    liquidity: '25,93M',
+    from: longOrShort == 'Long' || longOrShort == '做多' ? 'longFarm' : 'farm',
+  }
   async function getMintAssetInfo() {
     const assetBaseInfoMock = JSON.parse(JSON.stringify(assetBaseInfoObj))
     Object.keys(assetBaseInfoMock).forEach(function (assetName) {
@@ -96,7 +100,6 @@ const Farm: React.FC<any> = props => {
       } else {
         assetBaseInfoMock[asset].longFarmAllowance = true
       }
-
       const result = await contract.allowance(account, mintAddress)
       const allowance = Number(formatUnits(result.toString(), assetBaseInfoMock[asset].decimals))
       if (allowance <= 0 && assetBaseInfoObj[asset]) {
@@ -107,20 +110,13 @@ const Farm: React.FC<any> = props => {
     }
     dispatch(upDateAssetBaseInfoObj({ assetBaseInfoObj: assetBaseInfoMock }))
   }
-  // useEffect(() => {
-  //   if (account) {
-  //     getMintAssetInfo()
-  //   }
-  // }, [account])
   return (
     <div className="farm-container">
       <div className="container-center">
-        {/* <NavLink to={`/farm`} activeClassName="active"> */}
         <Title title="farm" hasOpen />
-        {/* </NavLink> */}
         <div className="farm-symbol-trade">
           <FarmLeft SymoblChart={SymoblChart} assetName={assetName} cAssetName={cAssetName}></FarmLeft>
-          <FarmRight poolType={params} assetName={assetName} cAssetName={cAssetName}></FarmRight>
+          <FarmRight poolType={params} assetName={assetName} cAssetName={cAssetName} setLongOrShort={setLongOrShort}></FarmRight>
         </div>
       </div>
     </div>

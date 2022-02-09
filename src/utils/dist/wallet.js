@@ -159,7 +159,7 @@ exports.setupNetwork = function () {
                 //     symbol: 'matic',
                 //     decimals: 18,
                 //   },
-                //   rpcUrls: ['https://rpc-mumbai.maticvigil.com/'],
+                //   rpcUrls: ['https://polygon-rpc.com/'],
                 //   blockExplorerUrls: ['https://explorer.matic.network/'],
                 // },
                 {
@@ -170,7 +170,7 @@ exports.setupNetwork = function () {
                     symbol: 'matic',
                     decimals: 18,
                   },
-                  rpcUrls: ['https://rpc-mumbai.maticvigil.com/'],
+                  rpcUrls: ['https://polygon-rpc.com/'],
                   blockExplorerUrls: ['https://polygonscan.com/'],
                 },
               ],

@@ -152,7 +152,6 @@ var OrderConfirm = function (_a) {
   var openNoifcation = useModal_1['default'](
     React.createElement(index_1['default'], {type: 'success', title: 'Mint nTENCT'}),
   )[0]
-  // 创建mint合约
   var MintContract = useContract_1.useMintContract()
   var positionInfo = manageState.positionInfo
   function submitOrder() {

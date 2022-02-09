@@ -11,7 +11,7 @@ import useStakeFarms from 'hooks/autoStake/useStakeFarms'
 import useMasterStakeFarms from 'hooks/deaufltPool/useStakeFarms'
 import notification from 'utils/notification'
 import { parseUnits } from 'ethers/lib/utils'
-
+import { useTranslation } from 'react-i18next'
 const defaultOnDismiss = () => null
 
 type StakeProps = {
@@ -20,6 +20,7 @@ type StakeProps = {
 }
 
 const Stake = ({ onDismiss = defaultOnDismiss, poolInfo = {} }: StakeProps) => {
+  const { t, i18n } = useTranslation()
   const [amount, setAmount] = useState('')
   const { onStake } = useStakeFarms(0)
   const { onMasterStake } = useMasterStakeFarms(poolInfo.pid)
@@ -37,14 +38,14 @@ const Stake = ({ onDismiss = defaultOnDismiss, poolInfo = {} }: StakeProps) => {
     onDismiss()
   }
   return (
-    <Modal title="Stake" width={420} footer={null} visible={true} onOk={onDismiss} onCancel={onDismiss}>
+    <Modal title={t('Stake')} width={420} footer={null} visible={true} onOk={onDismiss} onCancel={onDismiss}>
       <div className="stake-container">
         {poolInfo.poolType === 'Lpfarming' ? (
           <div className="liquidity-source-stake">
             <a href="https://quickswap.exchange/#/pool" target="_blank">
-              From
+              {t('From')}
               <img src={SourceImg} alt="" />
-              Get NSDX-USDC LPT
+              {t('Get')}
               <svg className="icon" aria-hidden="true">
                 <use xlinkHref="#icon-link"></use>
               </svg>
@@ -60,14 +61,13 @@ const Stake = ({ onDismiss = defaultOnDismiss, poolInfo = {} }: StakeProps) => {
               poolInfo.poolType === 'vault' ? 'Auto-img' : poolInfo.poolType === 'PreIDO' ? 'NSDX-img' : 'CoinLogo-img'
             }
           />
-          {/* <img src={CoinLogo} alt="" /> */}
           <div className="liquidity-name">{poolInfo.symbol}</div>
         </div>
         <div className="amount">
           <div className="amount-header">
-            <div className="amount-header-text">Input</div>
+            <div className="amount-header-text">{t('Input')}</div>
             <div className="amount-header-available">
-              Available <span>{poolInfo.balance}</span>
+              {t('Available')} <span>{poolInfo.balance}</span>
             </div>
           </div>
           <div className="amount-input">
@@ -85,7 +85,7 @@ const Stake = ({ onDismiss = defaultOnDismiss, poolInfo = {} }: StakeProps) => {
               onClick={() => {
                 setAmount(poolInfo.balance)
               }}>
-              MAX
+              {t('MAX')}
             </Button>
           </div>
         </div>
@@ -94,7 +94,7 @@ const Stake = ({ onDismiss = defaultOnDismiss, poolInfo = {} }: StakeProps) => {
           disabled={Number(amount) > poolInfo.balance || !amount}
           onClick={() => handleStake(amount)}
           loading={requestedLoading}>
-          Stake
+          {t('Stake')}
         </Button>
       </div>
     </Modal>

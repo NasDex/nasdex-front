@@ -146,7 +146,6 @@ var Stake = function (_a) {
   var _e = react_1.useState(false),
     requestedLoading = _e[0],
     setRequestedLoading = _e[1]
-  // 提取
   var onUnstake = useUnstakeFarms_1['default'](0).onUnstake
   var onMasterUnstake = useUnstakeFarms_2['default'](poolInfo.pid).onMasterUnstake
   var handleUnstake = function (amount) {

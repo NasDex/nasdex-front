@@ -2,34 +2,18 @@
 /** @format */
 
 import react from 'react'
-import {Table, Slider, Button} from 'antd'
-import {useWeb3React} from '@web3-react/core'
-import {useWalletModal} from 'components/WalletModal'
+import { Table, Slider, Button } from 'antd'
+import { useWeb3React } from '@web3-react/core'
+import { useWalletModal } from 'components/WalletModal'
 import wallet from '../../img/common/wallet.png'
 import useAuth from 'hooks/useAuth'
 
 const HistoryTable: React.FC<any> = props => {
-  const dataSource = [
-    // {
-    //   key: '1',
-    //   name: 'nSTA - USDT LP',
-    //   coin: 'USDC',
-    //   logo: nSTA,
-    //   staked: '1,012.666',
-    //   rewards: '385,08189 UST',
-    //   date: '2021.01.12 03:45:56',
-    //   description: 'Add Collateral',
-    //   amount: '+1000 USDT',
-    // },
-  ]
+  const dataSource = []
   const columns = [
     {
       title: 'Date',
-      // dataIndex: 'name',
-      // key: 'name',
       render: (text: any, record: any) => <div className="table-cell">{record.date}</div>,
-      // render: (text:any, record:any, index:any) => {
-      // }
     },
     {
       title: 'Description',
@@ -60,9 +44,9 @@ const HistoryTable: React.FC<any> = props => {
       ),
     },
   ]
-  const {account} = useWeb3React()
-  const {login, logout} = useAuth()
-  const {onPresentConnectModal, onPresentAccountModal} = useWalletModal(login, logout, account || undefined)
+  const { account } = useWeb3React()
+  const { login, logout } = useAuth()
+  const { onPresentConnectModal, onPresentAccountModal } = useWalletModal(login, logout, account || undefined)
   const connectWallet = [
     {
       render: (text: any, record: any) => (
@@ -83,7 +67,7 @@ const HistoryTable: React.FC<any> = props => {
           <Table dataSource={dataSource} columns={columns} pagination={pagination}></Table>
         ) : (
           <Table
-            dataSource={[{key: '1'}]}
+            dataSource={[{ key: '1' }]}
             columns={connectWallet}
             pagination={false}
             loading={false}
@@ -99,7 +83,6 @@ const HistoryTable: React.FC<any> = props => {
   )
 }
 const TableList: React.FC<any> = props => {
-  // console.log(props,'propse##')
   const record = props.TableItem
   return (
     <div className="tx-fee">

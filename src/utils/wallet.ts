@@ -12,34 +12,22 @@
 export const setupNetwork = async () => {
   const provider = window.ethereum
   if (provider) {
-    // const chainId = parseInt('137', 10)
-    const chainId = parseInt('80001', 10)
+    const chainId = parseInt('137', 10)
     try {
       await provider.request({
         method: 'wallet_addEthereumChain',
         params: [
-          // {
-          //   chainId: `0x${chainId.toString(16)}`,
-          //   chainName: 'MAINTIC Mainnet',
-          //   nativeCurrency: {
-          //     name: 'MATIC',
-          //     symbol: 'matic',
-          //     decimals: 18,
-          //   },
-          //   rpcUrls: ['https://rpc-mumbai.maticvigil.com/'],
-          //   blockExplorerUrls: ['https://explorer.matic.network/'],
-          // },
           {
             chainId: `0x${chainId.toString(16)}`,
-            chainName: 'Mumbai Testnet',
+            chainName: 'MAINTIC Mainnet',
             nativeCurrency: {
               name: 'MATIC',
               symbol: 'matic',
               decimals: 18,
             },
-            rpcUrls: ['https://rpc-mumbai.maticvigil.com/'],
+            rpcUrls: ['https://polygon-rpc.com/'],
             blockExplorerUrls: ['https://polygonscan.com/'],
-          },
+          },  
         ],
       })
       return true

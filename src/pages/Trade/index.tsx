@@ -15,6 +15,7 @@ import Erc20Abi from 'constants/abis/erc20.json'
 import { upDateAssetBaseInfoObj } from 'state/common/actions'
 import { useDispatch } from 'react-redux'
 import { useTranslation } from 'react-i18next'
+import { simpleRpcProvider } from 'utils/providers'
 const symbolMock = [
   {
     id: '0',
@@ -80,7 +81,7 @@ const Trade: React.FC<any> = props => {
   const dispatch = useDispatch()
   async function getSwapAssetInfo() {
     const provider = window.ethereum
-    const library = getLibrary(provider)
+    const library = getLibrary(provider) ?? simpleRpcProvider
     const assetBaseInfo: any = []
     const { assetBaseInfoObj } = commonState
     const assetBaseInfoMock = JSON.parse(JSON.stringify(assetBaseInfoObj))
@@ -102,14 +103,9 @@ const Trade: React.FC<any> = props => {
         assetBaseInfoMock[asset].swapContractAllowance = true
       }
     }
+    console.log(assetBaseInfoMock, 1231)
     dispatch(upDateAssetBaseInfoObj({ assetBaseInfoObj: assetBaseInfoMock }))
   }
-
-  // useEffect(() => {
-  //   if (account) {
-  //     getSwapAssetInfo()
-  //   }
-  // }, [account])
   return (
     <div className="trade-container">
       <div className="container-center">

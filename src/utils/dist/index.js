@@ -140,10 +140,8 @@ function toSignificantNew(value, decimals) {
   return value === null || value === void 0 ? void 0 : value.toSignificant(decimals + c)
 }
 exports.toSignificantNew = toSignificantNew
-// 精度计算
 function fixD(num, precision) {
   precision = precision > -1 ? precision : 0
-  // num初始化
   if (Number.isInteger(num)) {
     return num
   }
@@ -152,11 +150,6 @@ function fixD(num, precision) {
   }
   if ('' + num === '0') {
     return '0.0'
-    // if (!window.parseFloat(precision)) {
-    // if (!parseFloat(precision)) {
-    //   return 0
-    // }
-    // return '0.'.padEnd(precision + 2, '0')
   }
   if (!num) {
     return ''
@@ -170,7 +163,6 @@ function fixD(num, precision) {
     return '--'
   }
   var fixNum = newnum
-  // 科学计数法计算
   if (newnum.toLowerCase().indexOf('e') > -1) {
     if (newnum.toLowerCase().indexOf('+') > -1) return fixDEAdd(newnum, precision)
     var a = newnum.toLowerCase().split('e')
@@ -188,8 +180,6 @@ function fixD(num, precision) {
     }
     fixNum = '0.' + d + b
   }
-  // 精度格式化
-  // precision初始化
   if ('' + precision !== '0' && !precision) {
     return (flag ? '-' : '') + fixNum
   }
@@ -228,13 +218,11 @@ function fixD(num, precision) {
   return (flag ? 0 : '') + fixNum.replace(regexp, '$1')
 }
 exports.fixD = fixD
-// 精度计算E+处理方法
 var fixDEAdd = function (num, precision, autoFix) {
   if (autoFix === void 0) {
     autoFix = true
   }
   if ('' + num === '0') {
-    // if (!window.parseFloat(precision) || !autoFix) return 0;
     if (!parseFloat(precision) || !autoFix) return 0
     return '0.'.padEnd(precision + 2, '0')
   }
@@ -245,10 +233,10 @@ var fixDEAdd = function (num, precision, autoFix) {
   var result = strN
   if (strN.toLowerCase().indexOf('e') > -1) {
     var n = strN.match(/(\d+?)(?:\.(\d*))?e([+-])(\d+)/)
-    var nl = n[1] // 小数点左边
-    var nr = n[2] // 小数点右边
-    var type = n[3] //  + / -
-    var floatN = n[4] // 科学计数法的位数
+    var nl = n[1] 
+    var nr = n[2] 
+    var type = n[3] 
+    var floatN = n[4] 
     var params = ''
     var pr = nr ? nr.substr(floatN) : ''
     if (pr) pr = '.' + pr

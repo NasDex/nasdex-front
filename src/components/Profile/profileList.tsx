@@ -33,14 +33,6 @@ const ProfileList: React.FC<any> = props => {
       label: t('Farming'),
       icon: '#profile-farming',
     },
-    // {
-    //   label: 'Staking',
-    //   icon: '#profile-staking',
-    // },
-    // {
-    //   label: 'History',
-    //   icon: '#profile-history',
-    // },
   ]
   const [headerActive, setHeaderActive] = useState(`${t('Positions')}`)
   const [clickHeaderActive, setClickHeaderActive] = useState(false)
@@ -191,27 +183,6 @@ const ProfileList: React.FC<any> = props => {
             {ele.label}
           </li>
         ))}
-        {/* {
-          headerActive === `${t('Farming')}` ? (
-          <div className="farm">
-            <div className="item">
-              <span className="totalReward">Total Reward</span>
-              <span className="totalRewardVale">356.703834 MIR</span>
-            </div>
-            <div className="item">
-              <span className="totalReward">Total Reward</span>
-              <span className="totalRewardVale">356.703834 MIR</span>
-            </div>
-          </div>
-          ) :
-          headerActive === `${t(Holding')}` ? (
-          <div className="farm holding"> 
-            <div className="item">
-              <span className="totalReward">Total Reward</span>
-              <span className="totalRewardVale">≈172122.1223 USDC</span>
-            </div>
-          </div>
-        ) : <div className="farm"></div>} */}
         <div className="farm"></div>
       </ul>
       <div className="table-container">{showTable(headerActive)}</div>

@@ -23,12 +23,13 @@ import { upDateOneAssetBaseInfo } from 'state/common/actions'
 import { useDispatch } from 'react-redux'
 import { LongStakingAddress } from '../../../constants/index'
 import { getLibrary } from 'utils/getLibrary'
-import { getAssetList } from 'utils/getList'
 import { ethers } from 'ethers'
 import Erc20Abi from 'constants/abis/erc20.json'
 import { useSwapFactoryContract } from 'constants/hooks/useContract'
 import lpContractAbi from '../../../constants/abis/lpContract.json'
+import { getAssetList } from 'utils/getList'
 import { useTranslation } from 'react-i18next'
+import { simpleRpcProvider } from 'utils/providers'
 const { Option } = Select
 
 const Long: React.FC<any> = props => {
@@ -42,8 +43,6 @@ const Long: React.FC<any> = props => {
   const dispatch = useDispatch()
   const farmState = useFarmState()
   const commonState = useCommonState()
-  // const [LP, setLP] = useState('')
-  // const [sharePool, setSharePool] = useState('')
   const [tokenAamount, setTokenAamount] = useState('')
   const [tokenBamount, setTokenBamount] = useState('')
   const [longConfirm, setLongConfirm] = useState(false)
@@ -88,7 +87,7 @@ const Long: React.FC<any> = props => {
 
   const [requestedApproval, setRequestedApproval] = useState(false)
   const provider = window.ethereum
-  const library = getLibrary(provider)
+  const library = getLibrary(provider) ?? simpleRpcProvider
   const handleApprove = useCallback(
     async (asset: any) => {
       const contract = new ethers.Contract(commonState.assetBaseInfoObj[asset].address, Erc20Abi, library?.getSigner())
@@ -101,9 +100,22 @@ const Long: React.FC<any> = props => {
         dispatch(upDateOneAssetBaseInfo({ oneAssetBaseInfo: oneAssetInfo }))
         setRequestedApproval(false)
         return receipt.status
-      } catch (e) {
-        console.error(e)
-        setRequestedApproval(false)
+      } catch (e: any) {
+        if (e.message.includes('transaction was replaced')) {
+          let longFarmAllowance: any
+          const longFarmResult = await contract.allowance(account, LongStakingAddress)
+          const longAllowance = Number(formatUnits(longFarmResult.toString(), commonState.assetBaseInfoObj[asset].decimals))
+          if (longAllowance <= 0 && commonState.assetBaseInfoObj[asset]) {
+            longFarmAllowance = false
+          } else {
+            longFarmAllowance = true
+          }
+          const oneAssetInfo = { ...commonState.assetBaseInfoObj[asset], longFarmAllowance }
+          dispatch(upDateOneAssetBaseInfo({ oneAssetBaseInfo: oneAssetInfo }))
+          setRequestedApproval(false)
+        } else {
+          setRequestedApproval(false)
+        }
       }
     },
     [account],
@@ -152,6 +164,9 @@ const Long: React.FC<any> = props => {
       setTokenBamount('')
     }
   }, [tokenA, tokenB])
+
+  const [farmListArray, setFarmListArray] = useState([])
+
   async function getPid(tokenA: any, tokenB: any) {
     const config = await getAssetList()
     let assetName: any
@@ -163,7 +178,7 @@ const Long: React.FC<any> = props => {
       assetName = tokenB
       cAssetName = tokenA
     }
-    const obj = config.longFarmingInfo.find(function (obj: any) {
+    const obj = config.longFarmingInfoPre.find(function (obj: any) {
       return (obj.name == assetName && obj.cAssetName == cAssetName)
     })
     setPid(obj.longId)
@@ -194,17 +209,16 @@ const Long: React.FC<any> = props => {
 
   async function getReserver(result: string) {
     const provider = window.ethereum
-    const library = getLibrary(provider)
+    const library = getLibrary(provider) ?? simpleRpcProvider
     const contract = new ethers.Contract(result, lpContractAbi, library)
     const reserves = await contract.getReserves()
     const token0 = await contract.token0()
     const token1 = await contract.token1()
     const token0Name = commonState.assetsNameInfo[token0]
     const token1Name = commonState.assetsNameInfo[token1]
-    const reserves0 = Number(formatUnits(reserves[0], commonState.assetBaseInfoObj[token0Name].decimals))
-    const reserves1 = Number(formatUnits(reserves[1], commonState.assetBaseInfoObj[token1Name].decimals))
+    const reserves0 = Number(formatUnits(reserves[0], commonState.assetBaseInfoObj[token0Name]?.decimals))
+    const reserves1 = Number(formatUnits(reserves[1], commonState.assetBaseInfoObj[token1Name]?.decimals))
     setToken0Addresss(token0)
-    console.log(token0, token1)
     if (token0 == commonState.assetBaseInfoObj[tokenA].address) {
       const tokenAPrice = reserves1 / reserves0
       const tokenBPrice = reserves0 / reserves1
@@ -289,7 +303,6 @@ const Long: React.FC<any> = props => {
             <Select
               defaultValue={tokenA}
               value={tokenA}
-              // style={{width: 98}}
               onSelect={LabeledValue => {
                 setTokenA(LabeledValue)
                 dispatch(upDateCoinStock({ farmCoinStock: LabeledValue }))
@@ -382,7 +395,6 @@ const Long: React.FC<any> = props => {
           <div className="select-box">
             <Select
               defaultValue={tokenB}
-              // style={{width: 98}}
               value={tokenB}
               bordered={false}
               onSelect={LabeledValue => {

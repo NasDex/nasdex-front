@@ -198,20 +198,16 @@ var SymbolTrade = function () {
   var mintState = hooks_1.useMintState()
   var manageState = hooks_3.useManageState()
   var commonState = hooks_2.useCommonState()
-  //confirm按钮弹框
   var openConfirmOrder = useModal_1['default'](
     react_2['default'].createElement(index_1['default'], {openNotificationWithIcon: openNotificationWithIcon}),
   )[0]
   var dispatch = react_redux_1.useDispatch()
-  //n资产得值
   var _e = react_1.useState(''),
     tradeAmount = _e[0],
     setAmount = _e[1]
-  //质押资产的值
   var _f = react_1.useState(''),
     tradeCollateral = _f[0],
     setTradeCollateral = _f[1]
-  //滑杆的值
   var _g = react_1.useState('200'),
     sliderValue = _g[0],
     setSliderValue = _g[1]
@@ -219,15 +215,12 @@ var SymbolTrade = function () {
   var _h = react_2['default'].useState(true),
     input = _h[0],
     setInput = _h[1]
-  //n资产输入框
   var _j = react_1.useState(false),
     amountInputFocus = _j[0],
     setamountInputFocus = _j[1]
-  //质押资产输入框
   var _k = react_1.useState(false),
     collateralInputFocus = _k[0],
     setCollateralInputFocus = _k[1]
-  //滑杆输入框
   var _l = react_1.useState(false),
     sliderInputFocus = _l[0],
     setSliderInputFocus = _l[1]
@@ -240,11 +233,9 @@ var SymbolTrade = function () {
   var _p = react_1.useState(false),
     openConfirm = _p[0],
     setOpenConfirm = _p[1]
-  //选择的质押资产
   var _q = react_1.useState('USDT'),
     selectCoin = _q[0],
     setSelectCoin = _q[1]
-  //选择的n资产
   var _r = react_1.useState('nSTA'),
     selectStock = _r[0],
     setSelectStock = _r[1]
@@ -253,7 +244,6 @@ var SymbolTrade = function () {
     setData = _s[1]
   var myDate = new Date()
   var inputReftwo = react_2['default'].useRef(null)
-  //创建合约
   var contract = useContract_1.useErc20Contract(commonState.assetBaseInfoObj[selectCoin].address)
   // const account = useActiveWeb3React()
   var _t = react_1.useState('0'),
@@ -263,7 +253,6 @@ var SymbolTrade = function () {
   var _u = react_1.useState(false),
     requestedApproval = _u[0],
     setRequestedApproval = _u[1]
-  // 授权
   var handleApprove = react_1.useCallback(
     function () {
       return __awaiter(void 0, void 0, void 0, function () {
@@ -301,7 +290,7 @@ var SymbolTrade = function () {
   function discText() {
     var newDate = new Date()
     var geDays = newDate.getDay()
-    var dtext = true // 判断日期是否处于周末
+    var dtext = true 
     if (geDays > 0 && geDays < 6) {
       var dates = newDate.toLocaleDateString()
       var nowtime = newDate.getTime()

@@ -23,6 +23,14 @@ const ProfileList: React.FC<any> = props => {
     <div className="tradeRight-table-content">
       <ul className="table-header-tab">
         <li className="header-tab-item">{t('Swap')}</li>
+        {/* {tablieNav.map((ele, key) => (
+          <li
+            className={['header-tab-item', ele.label === headerActive ? 'header-tab-item-active' : null].join(' ')}
+            key={key}
+            onClick={() => setHeaderActive(ele.label)}>
+            {ele.label}
+          </li>
+        ))} */}
         <svg className="icon" aria-hidden="true" fill="#999999" onClick={openTradeSetting}>
           <use xlinkHref="#Icon-Set-Active"></use>
         </svg>

@@ -5,7 +5,7 @@ import { Button, Skeleton } from 'antd'
 import '../../style/Farm/farmPool.less'
 import { NavLink } from 'react-router-dom'
 import { useNSDXTestContract, useMasterChefTestContract } from 'constants/hooks/useContract'
-import { fixD, getpriceList } from 'utils'
+import { fixD } from 'utils'
 import { useCommonState } from 'state/common/hooks'
 import { upDateCoinStock, upDateFarmCoinSelect } from 'state/farm/actions'
 import { formatUnits } from 'ethers/lib/utils'
@@ -49,14 +49,9 @@ const FarmPoolItem: React.FC<any> = props => {
     dispatch(upDateFarmCoinSelect({ farmCoinSelect: cAssetName }))
   }
 
-  async function initPrice() {
-    const price = await getpriceList()
-    setSwapPrice(price.NSDX)
-  }
-
   useEffect(() => {
     async function calculateApr() {
-      const priceList = await getpriceList()
+      const { priceList } = props
       let longApr: any
       const tvlF = totalLiquidity
       const price = priceList.NSDX
@@ -78,7 +73,6 @@ const FarmPoolItem: React.FC<any> = props => {
     }
   }, [totalLiquidity, totalAllocPoint, nsdxPerBlock])
   useEffect(() => {
-    initPrice()
     let timer: any
     const getBaseData = () => {
       getPoolInfo()

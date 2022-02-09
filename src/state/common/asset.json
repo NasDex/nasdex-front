@@ -88,5 +88,74 @@
             "longId": "1",
             "shortId": "1"
         }
-    ]
+    ],
+    "assetPre": {
+        "nSE": {
+            "id": "0",
+            "name": "nSE",
+            "assetDesc": "Sea Limited is a tech conglomerate headquartered in Singapore. Established in 2009, Sea Limited is a holding company for Shopee, SeaMoney, Garena and a football club Lion City Sailors FC which plays in Singapore Premier League. It has over 33,000 employees.",
+            "assetTit": "Sea Ltd",
+            "logo": "",
+            "address": "0xc7D14a939eE0265BEAB7456394E50Ccc6C665298",
+            "decimals": 18,
+            "type": "asset",
+            "fixDPrecise": 6,
+            "feerate": "0",
+            "minCollateral": "150",
+            "swapPrecise": "6",
+            "swapPrice": "0"
+        },
+        "USDC": {
+            "id": "1",
+            "name": "USDC",
+            "logo": "",
+            "assetDesc": "",
+            "assetTit": "",
+            "address": "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+            "decimals": 6,
+            "type": "cAsset",
+            "unitPrice": 1,
+            "fixDPrecise": 4,
+            "feerate": "0",
+            "minCollateral": "150",
+            "swapPrecise": "6",
+            "swapPrice": "0"
+        },
+        "NSDX": {
+            "id": "2",
+            "name": "NSDX",
+            "assetDesc": "",
+            "assetTit": "",
+            "logo": "",
+            "address": "0xE8d17b127BA8b9899a160D9a07b69bCa8E08bfc6",
+            "decimals": 18,
+            "type": "oneAsset",
+            "unitPrice": 1,
+            "fixDPrecise": 4,
+            "feerate": "0",
+            "minCollateral": "150",
+            "swapPrecise": "6",
+            "swapPrice": "0"
+        }
+    },
+    "assetsNameInfoPre": {
+        "0xc7D14a939eE0265BEAB7456394E50Ccc6C665298": "nSE",
+        "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174": "USDC",
+        "0xE8d17b127BA8b9899a160D9a07b69bCa8E08bfc6": "NSDX"
+    },
+    "longFarmingInfoPre": [
+        {
+            "id": "0",
+            "iconUrl": "/image/coin/nSE.png",
+            "name": "nSE",
+            "cAssetName": "USDC",
+            "source": "Sea Ltd",
+            "longId": "1",
+            "shortId": "1"
+        }
+    ],
+    "default": {
+        "asset": "nSE",
+        "cAsset": "USDC"
+    }
 }

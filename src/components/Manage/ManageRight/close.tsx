@@ -29,7 +29,7 @@ const Close: React.FC<any> = props => {
   const dispatch = useDispatch()
   const manageState = useManageState()
   const commonState = useCommonState()
-  const positionInfo = manageState.positionInfo
+  const { positionInfo } = props
   const { assetTokenName, cAssetTokenName } = positionInfo
   const { login, logout } = useAuth()
   const { account } = useActiveWeb3React()
@@ -176,12 +176,8 @@ const Close: React.FC<any> = props => {
         <Button
           className="close"
           onClick={() => burn()}
-          disabled={
-            positionInfo.assetAmount > commonState.assetBaseInfoObj[assetTokenName]?.balance || openConfirm
-              ? true
-              : false
-          }>
-          {t('Close')}
+          disabled={openConfirm ? true : false}>
+          Close
         </Button>
       ) : (
         <Button className="close" loading={requestedApproval} onClick={() => handleApprove()}>

@@ -174,8 +174,8 @@ const Stake = ({ onDismiss = defaultOnDismiss, poolInfo,
       if (swapPrice) {
         const token0Name = commonState.assetsNameInfo[swapPrice.token0]
         const token1Name = commonState.assetsNameInfo[swapPrice.token1]
-        const reserves0 = Number(formatUnits(swapPrice.reserves[0], commonState.assetBaseInfoObj[token0Name].decimals))
-        const reserves1 = Number(formatUnits(swapPrice.reserves[1], commonState.assetBaseInfoObj[token1Name].decimals))
+        const reserves0 = Number(formatUnits(swapPrice.reserves[0], commonState.assetBaseInfoObj[token0Name]?.decimals))
+        const reserves1 = Number(formatUnits(swapPrice.reserves[1], commonState.assetBaseInfoObj[token1Name]?.decimals))
         LPtotal = poolInfo.totalStakedNum
         const token0Type = commonState.assetBaseInfoObj[token0Name].type
         setToken0Type(token0Type)
@@ -204,7 +204,7 @@ const Stake = ({ onDismiss = defaultOnDismiss, poolInfo,
     if (Number(amount) <= Number(poolInfo.Staked)) {
       getRecevied(amount)
     }
-  }, [amount])
+  }, [amount, commonState.profileSlippageTolerance])
 
   return (
     <Modal

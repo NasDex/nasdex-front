@@ -16,26 +16,44 @@ import ETHOracle from '../../constants/abis/ETHOracle.json'
 import STAOracle from '../../constants/abis/STAOracle.json'
 import { getSwapPrice } from 'utils/getList'
 import {
-  ETHOracleAddress,
-  STAOracleAddress,
+  SEOracleAddress,
   USDCaddress
 } from '../../constants/index'
+import { useStakeState } from 'state/stake/hooks'
+import { useLpContract } from 'constants/hooks/useContract'
+import { setPriceList } from 'state/stake/actions'
 import Erc20Abi from '../../constants/abis/erc20.json'
 import { formatUnits } from 'ethers/lib/utils'
 import { useTranslation } from 'react-i18next'
+import { simpleRpcProvider } from 'utils/providers'
 const Farm = () => {
   const { t, i18n } = useTranslation()
   const { account } = useActiveWeb3React()
   const commonState = useCommonState()
   const dispatch = useDispatch()
   const provider = window.ethereum
-  const library = getLibrary(provider)
+  const library = getLibrary(provider) ?? simpleRpcProvider
   const { assetBaseInfoObj } = commonState
-  const [priceList, setPriceList] = useState({ NSDX: '0.0' })
+  const stakeState = useStakeState()
+  const { priceList } = stakeState
+  const LPContract = useLpContract()
   async function initPrice() {
-    const price = await getpriceList()
-    // const price = {NSDX: '0.62'}
-    setPriceList(price)
+    const reservesValue = await LPContract.getReserves()
+    let currencyANum: any
+    let currencyBNum: any
+    if (reservesValue && reservesValue[0]) {
+      currencyANum = Number(formatUnits(reservesValue[0], 6))
+    }
+    if (reservesValue && reservesValue[1]) {
+      currencyBNum = Number(formatUnits(reservesValue[1], 18))
+    }
+    dispatch(
+      setPriceList({
+        priceList: {
+          NSDX: fixD(currencyANum / currencyBNum, 2),
+        },
+      }),
+    )
   }
   async function initData() {
     let swapPrice: any
@@ -53,10 +71,10 @@ const Farm = () => {
           const token0Name = commonState.assetsNameInfo[swapPriceObj.token0]
           const token1Name = commonState.assetsNameInfo[swapPriceObj.token1]
           const reserves0 = Number(
-            formatUnits(swapPriceObj.reserves[0], commonState.assetBaseInfoObj[token0Name].decimals),
+            formatUnits(swapPriceObj.reserves[0], commonState.assetBaseInfoObj[token0Name]?.decimals),
           )
           const reserves1 = Number(
-            formatUnits(swapPriceObj.reserves[1], commonState.assetBaseInfoObj[token1Name].decimals),
+            formatUnits(swapPriceObj.reserves[1], commonState.assetBaseInfoObj[token1Name]?.decimals),
           )
           if (swapPriceObj.token0 == commonState.assetBaseInfoObj[asset].address) {
             swapPrice = reserves1 / reserves0
@@ -64,14 +82,10 @@ const Farm = () => {
             swapPrice = reserves0 / reserves1
           }
         }
-        if (asset == 'nSTA') {
-          const STAOracleContract = new ethers.Contract(STAOracleAddress, STAOracle, library)
+        if (asset == 'nSE') {
+          const STAOracleContract = new ethers.Contract(SEOracleAddress, STAOracle, library)
           const STAOraclePrice = await STAOracleContract.latestRoundData()
           oraclePrice = fixD(formatUnits(STAOraclePrice.answer, 8), 4)
-        } else if (asset == 'nETH') {
-          const ETHOracleContract = new ethers.Contract(ETHOracleAddress, ETHOracle, library)
-          const ETHOraclePrice = await ETHOracleContract.latestRoundData()
-          oraclePrice = fixD(formatUnits(ETHOraclePrice.answer, 8), 4)
         }
       } else {
         if (asset == 'NSDX') {
@@ -90,17 +104,12 @@ const Farm = () => {
       initData()
       return getBaseData
     }
-    const getpriceBaseData = () => {
-      initPrice()
-      return getpriceBaseData
-    }
+    initPrice()
     if (account) {
       timer = setInterval(getBaseData(), 30000)
     }
-    const priceTimer = setInterval(getpriceBaseData(), 30000)
     return () => {
       clearInterval(timer)
-      clearInterval(priceTimer)
     }
   }, [account])
 
@@ -109,8 +118,7 @@ const Farm = () => {
       <div className="container-center">
         <Title title={t('Farm')}></Title>
         <div className="farm-banner"></div>
-        {/* <img  src={FarmBanner} alt="" /> */}
-        <FarmPool></FarmPool>
+        <FarmPool priceList={priceList}></FarmPool>
       </div>
     </div>
   )

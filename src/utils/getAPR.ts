@@ -1,6 +1,5 @@
 /** @format */
 
-
 export async function getApr(
   price: any,
   ele: any,
@@ -152,11 +151,10 @@ export async function getCommonLongApr(
   const day = Number(formatUnits(nsdxPerBlock, 18)) * 43200
   if (Number(formatUnits(nsdxPerBlock, 18)) > 0 && longTvlF > 0) {
     longAprP =
-      ((((day * Number(info.longAllocPoint)) / Number(totalAllocPoint)) * 365 * Number(price.NSDX)) / longTvlF) * 100
+      ((((day * Number(info.longAllocPoint)) / Number(totalAllocPoint.toString())) * 365 * Number(price.NSDX)) / longTvlF) * 100
   } else {
     longAprP = ''
   }
-  // console.log(day,token0Name,token1Name, Number(price.NSDX),swapPrice,asset,cAsset,longTvlF,'longAPR,asset,cAsset,longTvlF',Number(info.longAllocPoint), Number(totalAllocPoint))
   return {longAprP,swapPrice,longTvlF}
 }
 
@@ -196,7 +194,7 @@ export async function getCommonShortApr(
   const day = Number(formatUnits(nsdxPerBlock, 18)) * 43200
   if (Number(formatUnits(nsdxPerBlock, 18)) > 0 && shortTvlF > 0) {
     shortAprP =
-      ((((day * Number(info.shortAllocPoint)) / Number(totalAllocPoint)) * 365 * price.NSDX) / shortTvlF) * 100
+      ((((day * Number(info.shortAllocPoint)) / Number(Number(totalAllocPoint.toString()))) * 365 * price.NSDX) / shortTvlF) * 100
   } else {
     shortAprP = ''
   }

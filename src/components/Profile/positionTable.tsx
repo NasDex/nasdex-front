@@ -17,23 +17,6 @@ import { useWalletModal } from 'components/WalletModal'
 import useAuth from 'hooks/useAuth'
 import { fixD } from 'utils'
 import { useTranslation } from 'react-i18next'
-// const dataSource = [
-//   {
-//     key: '1',
-//     assetTokenName: 'nSTA',
-//     cAssetTokenName: 'USDC',
-//     logo: tencentLogo,
-//     assetAmount: '172122.1223',
-//     cAssetAmount: '2.1223',
-//     mintAmount: '172122.1223',
-//     mintAmountUsd: '172122.1223',
-//     collateralUsd: '172122.1223',
-//     collateral: '150',
-//     riskLevel: 'SAFE',
-//     oraclePrice:'35',
-//     minCollateral:'150'
-//   },
-// ]
 
 const PositionTable: React.FC<any> = props => {
   const { t, i18n } = useTranslation()
@@ -75,8 +58,6 @@ const PositionTable: React.FC<any> = props => {
           </div>
         </div>
       ),
-      // render: (text:any, record:any, index:any) => {
-      // }
     },
     {
       title: `${t('OraclePrice')}`,

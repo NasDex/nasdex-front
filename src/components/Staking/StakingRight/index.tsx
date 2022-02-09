@@ -19,59 +19,64 @@ import LpAbi from '../../../constants/abis/lpContract.json'
 import { ethers } from 'ethers'
 import { useStakeState } from 'state/stake/hooks'
 import { setPriceList } from 'state/stake/actions'
-
-const poolBaseInfo = [
-  {
-    pid: '0',
-    symbol: 'Auto NSDX',
-    poolType: 'vault',
-    decimals: 18,
-    address: '0xf495C59dF44a9784FEcaC65307C2848a99a59D00',
-    allocPoint: 0,
-    totalAllocPoint: 0,
-    nsdxPerBlock: 0,
-    vaultStakedBalance: 0,
-    stakedBalance: 0,
-    balance: 0,
-    usdPrice: '',
-  },
-  {
-    pid: '0',
-    symbol: 'NSDX',
-    poolType: 'PreIDO',
-    decimals: 18,
-    address: '0xf495C59dF44a9784FEcaC65307C2848a99a59D00',
-    allocPoint: 4000,
-    totalAllocPoint: 6000,
-    nsdxPerBlock: 0.175,
-    vaultStakedBalance: 0,
-    stakedBalance: 0,
-    balance: 0,
-    usdPrice: '',
-  },
-  {
-    pid: '1',
-    symbol: 'NSDX - USDC LP',
-    poolType: 'Lpfarming',
-    decimals: 18,
-    address: '0x56B8936a96cD5EE5C5837F385a19B4c2999fD74a',
-    allocPoint: 2000,
-    totalAllocPoint: 6000,
-    nsdxPerBlock: 0.175,
-    vaultStakedBalance: 0,
-    stakedBalance: 0,
-    balance: 0,
-    usdPrice: '',
-    abi: LpAbi,
-    currencyA: 'USDC',
-    currencyB: 'NSDX',
-  },
-]
+import { useTranslation } from 'react-i18next'
 
 const StakingRight = () => {
+  const { t, i18n } = useTranslation()
   const { account } = useActiveWeb3React()
   const NSDXContract = useNSDX()
   const MasterChefContract = useMasterchef()
+
+  const [totalAllocPoint, setTotalAllocPoint] = useState(12000)
+  const [nsdxPerBlock, setNsdxPerBlock] = useState(0.35)
+  const poolBaseInfo = [
+    {
+      pid: '0',
+      symbol: 'Auto NSDX',
+      poolType: 'vault',
+      decimals: 18,
+      address: '0xf495C59dF44a9784FEcaC65307C2848a99a59D00',
+      allocPoint: 0,
+      totalAllocPoint: 0,
+      nsdxPerBlock: 0,
+      vaultStakedBalance: 0,
+      stakedBalance: 0,
+      balance: 0,
+      usdPrice: '',
+    },
+    {
+      pid: '0',
+      symbol: 'NSDX',
+      poolType: 'PreIDO',
+      decimals: 18,
+      address: '0xf495C59dF44a9784FEcaC65307C2848a99a59D00',
+      allocPoint: 4000,
+      totalAllocPoint: totalAllocPoint,
+      nsdxPerBlock: nsdxPerBlock,
+      vaultStakedBalance: 0,
+      stakedBalance: 0,
+      balance: 0,
+      usdPrice: '',
+    },
+    {
+      pid: '1',
+      symbol: 'NSDX - USDC LP',
+      poolType: 'Lpfarming',
+      decimals: 18,
+      address: '0x56B8936a96cD5EE5C5837F385a19B4c2999fD74a',
+      allocPoint: 2000,
+      totalAllocPoint: totalAllocPoint,
+      nsdxPerBlock: nsdxPerBlock,
+      vaultStakedBalance: 0,
+      stakedBalance: 0,
+      balance: 0,
+      usdPrice: '',
+      abi: LpAbi,
+      currencyA: 'USDC',
+      currencyB: 'NSDX',
+    },
+  ]
+
   const stakeState = useStakeState()
   const { priceList } = stakeState
 
@@ -111,12 +116,12 @@ const StakingRight = () => {
   return (
     <div className="staking-right">
       <div className="liquidity">
-        <div className="liquidity-banner">
+        <div className={i18n.language == 'zh-CN' ? "liquidity-banner-zh liquidity-banner" : "liquidity-banner"}>
           <div className="total-liquidity">
             <div className="total-liquidity-title">
               $ {fixD(Number(totalLiquidity) * Number(priceList.NSDX) + lpTotalPrice, 4)}
             </div>
-            <div className="total-liquidity-text">Total Value Locked</div>
+            <div className="total-liquidity-text">{t('TotalValueLocked')}</div>
           </div>
         </div>
         <div className="liquidity-content">

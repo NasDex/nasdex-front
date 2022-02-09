@@ -17,4 +17,3 @@ export const upDateFarmReturned = createAction<{farmReturned: string}>('app/upDa
 export const upDateFarmMinimumReceived = createAction<{farmMinimumReceived: string}>('app/upDateFarmMinimumReceived')
 export const upDateTxHash = createAction<{hash: string}>('app/upDateTxHash')
 export const upDateFarmInitInfo = createAction<{farmInitInfo: string}>('app/upDateFarmInitInfo')
-// export const upDateFarmSwapPrice = createAction<{farmSwapPrice: number}>('app/upDateFarmSwapPrice')

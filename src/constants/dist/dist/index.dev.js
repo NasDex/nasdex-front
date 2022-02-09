@@ -23,8 +23,8 @@ var ChainId
 
 exports.NSDXPrice = 0.25
 exports.NetworkContextName = 'NETWORK'
-exports.NSDXVaultAddress = '0x954757d5fd408E562b9a7B60f6377706BCc8274A' //自动复投代理合约
+exports.NSDXVaultAddress = '0x954757d5fd408E562b9a7B60f6377706BCc8274A' 
 
-exports.MasterChefAddress = '0xCc89c6A9f0b86F9ec2B03e458A4Ac2969528eac1' //主矿池
+exports.MasterChefAddress = '0xCc89c6A9f0b86F9ec2B03e458A4Ac2969528eac1' 
 
-exports.NSDXToken = '0xf495C59dF44a9784FEcaC65307C2848a99a59D00' //代币
+exports.NSDXToken = '0xf495C59dF44a9784FEcaC65307C2848a99a59D00' 

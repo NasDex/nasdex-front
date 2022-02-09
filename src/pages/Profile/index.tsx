@@ -16,14 +16,18 @@ import { useDispatch } from 'react-redux'
 import Erc20Abi from '../../constants/abis/erc20.json'
 import { getLibrary } from 'utils/getLibrary'
 import { ethers } from 'ethers'
+import { useStakeState } from 'state/stake/hooks'
+import { useLpContract } from 'constants/hooks/useContract'
+import { setPriceList } from 'state/stake/actions'
 import { upDateOneAssetBaseInfo } from 'state/common/actions'
 import {
   ETHOracleAddress,
-  STAOracleAddress,
+  SEOracleAddress,
 } from '../../constants/index'
 import ETHOracle from '../../constants/abis/ETHOracle.json'
 import STAOracle from '../../constants/abis/STAOracle.json'
 import { useTranslation } from 'react-i18next'
+import { simpleRpcProvider } from 'utils/providers'
 
 const Profile: React.FC<any> = props => {
   const { t, i18n } = useTranslation()
@@ -31,18 +35,33 @@ const Profile: React.FC<any> = props => {
   const { account } = useWeb3React()
   const commonState = useCommonState()
   const dispatch = useDispatch()
-  const [priceList, setPriceList] = useState({ NSDX: '0.0' })
+  const stakeState = useStakeState()
+  const { priceList } = stakeState
+  const LPContract = useLpContract()
   async function initPrice() {
-    const price = await getpriceList()
-    // const price = {NSDX: '0.62'}
-    setPriceList(price)
+    const reservesValue = await LPContract.getReserves()
+    let currencyANum: any
+    let currencyBNum: any
+    if (reservesValue && reservesValue[0]) {
+      currencyANum = Number(formatUnits(reservesValue[0], 6))
+    }
+    if (reservesValue && reservesValue[1]) {
+      currencyBNum = Number(formatUnits(reservesValue[1], 18))
+    }
+    dispatch(
+      setPriceList({
+        priceList: {
+          NSDX: fixD(currencyANum / currencyBNum, 2),
+        },
+      }),
+    )
   }
   async function initData() {
     let swapPrice: any
     let balance: any
     let oraclePrice: any
     const provider = window.ethereum
-    const library = getLibrary(provider)
+    const library = getLibrary(provider) ?? simpleRpcProvider
     for (let i = 0; i < commonState.allAssetsListInfo.length; i++) {
       const asset = commonState.allAssetsListInfo[i].name
       const contract = new ethers.Contract(commonState.assetBaseInfoObj[asset].address, Erc20Abi, library)
@@ -55,10 +74,10 @@ const Profile: React.FC<any> = props => {
           const token0Name = commonState.assetsNameInfo[swapPriceObj.token0]
           const token1Name = commonState.assetsNameInfo[swapPriceObj.token1]
           const reserves0 = Number(
-            formatUnits(swapPriceObj.reserves[0], commonState.assetBaseInfoObj[token0Name].decimals),
+            formatUnits(swapPriceObj.reserves[0], commonState.assetBaseInfoObj[token0Name]?.decimals),
           )
           const reserves1 = Number(
-            formatUnits(swapPriceObj.reserves[1], commonState.assetBaseInfoObj[token1Name].decimals),
+            formatUnits(swapPriceObj.reserves[1], commonState.assetBaseInfoObj[token1Name]?.decimals),
           )
           if (swapPriceObj.token0 == commonState.assetBaseInfoObj[asset].address) {
             swapPrice = reserves1 / reserves0
@@ -66,14 +85,10 @@ const Profile: React.FC<any> = props => {
             swapPrice = reserves0 / reserves1
           }
         }
-        if (asset == 'nSTA') {
-          const STAOracleContract = new ethers.Contract(STAOracleAddress, STAOracle, library)
-          const STAOraclePrice = await STAOracleContract.latestRoundData()
-          oraclePrice = fixD(formatUnits(STAOraclePrice.answer, 8), 4)
-        } else if (asset == 'nETH') {
-          const ETHOracleContract = new ethers.Contract(ETHOracleAddress, ETHOracle, library)
-          const ETHOraclePrice = await ETHOracleContract.latestRoundData()
-          oraclePrice = fixD(formatUnits(ETHOraclePrice.answer, 8), 4)
+        if (asset == 'nSE') {
+          const SEOracleContract = new ethers.Contract(SEOracleAddress, STAOracle, library)
+          const SEOraclePrice = await SEOracleContract.latestRoundData()
+          oraclePrice = fixD(formatUnits(SEOraclePrice.answer, 8), 4)
         }
       } else {
         if (asset == 'NSDX') {
@@ -92,17 +107,12 @@ const Profile: React.FC<any> = props => {
       initData()
       return getBaseData
     }
-    const getpriceBaseData = () => {
-      initPrice()
-      return getpriceBaseData
-    }
+    initPrice()
     if (account) {
       timer = setInterval(getBaseData(), 5000)
     }
-    const priceTimer = setInterval(getpriceBaseData(), 30000)
     return () => {
       clearInterval(timer)
-      clearInterval(priceTimer)
     }
   }, [account])
   return (
@@ -111,7 +121,6 @@ const Profile: React.FC<any> = props => {
         <Title title={t('Profile')} hasOpen hasAddress />
         <div className="profile-content">
           <div className="profile-data">
-            {/* <ProfileCard priceList={priceList.NSDX}></ProfileCard> */}
             <ProfileCard priceList={priceList}></ProfileCard>
             <CoinList priceList={priceList}></CoinList>
           </div>

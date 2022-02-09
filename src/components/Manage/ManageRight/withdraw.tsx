@@ -35,7 +35,7 @@ const Withdraw: React.FC<any> = props => {
   const { account } = useActiveWeb3React()
   const manageState = useManageState()
   const commonState = useCommonState()
-  const positionInfo = manageState.positionInfo
+  const { positionInfo } = props
   const { assetTokenName, cAssetTokenName } = positionInfo
   const { onPresentConnectModal, onPresentAccountModal } = useWalletModal(login, logout, account || undefined)
   const [tradeAmount, setAmount] = useState('1')
@@ -165,7 +165,6 @@ const Withdraw: React.FC<any> = props => {
       }
     }
   }, [tradeCollateral, sliderValue])
-
   useEffect(() => {
     setTradeCollateral(fixD(positionInfo.cAssetAmountSub, commonState.assetBaseInfoObj[cAssetTokenName].fixDPrecise))
     setAmount(fixD(positionInfo.assetAmountSub, commonState.assetBaseInfoObj[assetTokenName].fixDPrecise))

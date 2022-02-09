@@ -49,16 +49,15 @@ const ProfileList: React.FC<any> = props => {
   const MintContract = useMintContract()
   const MultiCallContract = useMultiCallContract()
   const [positionInfo, setPositionInfo] = useState({
-    assetTokenName: '',
+    assetTokenName: 'nSE',
     assetToken: '',
     cAssetToken: '',
-    cAssetTokenName: '',
+    cAssetTokenName: 'USDC',
     assetAmount: '',
     cAssetAmount: '',
     cRatio: '',
     isShort: '',
   })
-
   async function getPosition() {
     if (positionId && account) {
       const position = await PositionsContract.getPosition(positionId)

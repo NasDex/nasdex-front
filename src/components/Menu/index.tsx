@@ -20,16 +20,13 @@ import useAuth from 'hooks/useAuth'
 import { useTranslation } from 'react-i18next'
 import { Select, Button } from 'antd'
 import '../../style/title.less'
+import i18n from '../../react-i18next-config'
+
 const { Option } = Select
 const Menu: React.FC = props => {
-  const { t, i18n } = useTranslation()
-  function handleChange(value: string) {
-    i18n.changeLanguage(value)
-  }
+  const { t } = useTranslation()
   const { children } = props
   const [showListMenu, setShowListMenu] = useState(false)
-  const [lang, setLang] = useState(i18n.language == 'zh-CN' ? '中文' : 'English')
-
   const [openWalletCard] = useModal(<WalletCard></WalletCard>)
   const [openAccountCard] = useModal(<AccountCard></AccountCard>)
   const [openNetwork] = useModal(<NetworkCard></NetworkCard>)
@@ -38,24 +35,30 @@ const Menu: React.FC = props => {
   const { login, logout } = useAuth()
   const { onPresentConnectModal, onPresentAccountModal } = useWalletModal(login, logout, account || undefined)
   const accountEllipsis = account ? `${account.substring(0, 4)}...${account.substring(account.length - 4)}` : null
-  const tablieNav = [
-    {
-      label: '中文',
-      value: 'zh-CN'
-    },
+  const selectList = [
     {
       label: 'English',
       value: 'en'
+    },
+    {
+      label: '中文',
+      value: 'zh-CN'
     }
   ]
   const { pathname } = useLocation()
   useEffect(() => {
     setShowListMenu(false)
   }, [pathname])
-
-  // useEffect(() => {
-  //   setLang(i18n.language)
-  // }, [account, i18n.language])
+  const [isOpen, setIsOpen] = useState(false)
+  function clickLabel(label: any, value: any) {
+    i18n.changeLanguage(value)
+  }
+  useEffect(() => {
+    const lan = localStorage.getItem('i18nextLng')
+    if (lan) {
+      i18n.changeLanguage(lan)
+    }
+  }, [])
   return (
     <div className="container">
       <div className="sidebar">
@@ -168,29 +171,14 @@ const Menu: React.FC = props => {
                 </svg>
                 <span>{t('Farm')}</span>
               </NavLink>
-              {/* <NavLink to={`/staking`} activeClassName="active">
+              <NavLink to={`/staking`} activeClassName="active">
                 <svg className="icon" aria-hidden="true">
                   <use xlinkHref="#Icon-Stake-Active"></use>
                 </svg>
-                <span>Stake</span>
-              </NavLink> */}
+                <span>{t('Stake')}</span>
+              </NavLink>
             </div>
             <div className="menu-bottom">
-              <div className="lanage-select-box">
-                {/* <Select
-                  defaultValue={lang}
-                  style={{ width: 120 }}
-                  onChange={handleChange}
-                  onSelect={LabeledValue => {
-                    setLang(LabeledValue)
-                  }}>
-                  {tablieNav.map((ele: any, index: any) => (
-                    <Option value={ele.value} className="customize-option-label-item" key={index} >
-                      <span>{ele.label}</span>
-                    </Option>
-                  ))}
-                </Select> */}
-              </div>
               <div className="tip">
                 <div className="tit">
                   <img src={waring} alt="" />
@@ -227,6 +215,24 @@ const Menu: React.FC = props => {
                   <use xlinkHref="#icon_Discord"></use>
                 </svg>
               </a> */}
+              </div>
+              <div className="language-select" onClick={() => setIsOpen(!isOpen)}>
+                <i></i>
+                <div className="select-name" >
+                  <svg className="icon" aria-hidden="true" >
+                    <use xlinkHref="#language"></use>
+                  </svg>
+                  <span>{i18n.language == 'zh-CN' ? '语言' : 'Language'}</span>
+                </div>
+                {isOpen ? (
+                  <ul onClick={() => setIsOpen(!isOpen)}>
+                    {selectList.map((ele, index) => (
+                      <li className="customize-option-label-item" key={index} onClick={() => clickLabel(ele.label, ele.value)}>
+                        {ele.label}
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
               </div>
               {/* <div className="theme-mode-box">
             <span>Dark Mode</span>

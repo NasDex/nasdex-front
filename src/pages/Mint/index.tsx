@@ -15,6 +15,7 @@ import Erc20Abi from 'constants/abis/erc20.json'
 import { upDateAssetBaseInfoObj } from 'state/common/actions'
 import { useDispatch } from 'react-redux'
 import { useTranslation } from 'react-i18next'
+import { simpleRpcProvider } from 'utils/providers'
 const symbolMock = [
   {
     id: '0',
@@ -80,7 +81,7 @@ const Staking: React.FC<any> = props => {
   const dispatch = useDispatch()
   async function getMintAssetInfo() {
     const provider = window.ethereum
-    const library = getLibrary(provider)
+    const library = getLibrary(provider) ?? simpleRpcProvider
     const assetBaseInfo: any = []
     const { assetBaseInfoObj } = commonState
     const assetBaseInfoMock = JSON.parse(JSON.stringify(assetBaseInfoObj))
@@ -104,17 +105,10 @@ const Staking: React.FC<any> = props => {
     }
     dispatch(upDateAssetBaseInfoObj({ assetBaseInfoObj: assetBaseInfoMock }))
   }
-
-  // useEffect(() => {
-  //   if (account) {
-  //     getMintAssetInfo()
-  //   }
-  // }, [account])
   return (
     <div className="mint-container">
       <div className="container-center">
         <Title title={t('Mint')} hasOpen />
-        {/* <SymbolList SymbolListArray={symbolMock}></SymbolList> */}
         <div className="symbol-trade">
           <SymbolTradeChart SymoblChart={symoblChart}></SymbolTradeChart>
           <SymbolTrade assetName={params} cAssetName={cAssetName}></SymbolTrade>

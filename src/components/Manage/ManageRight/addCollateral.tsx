@@ -11,6 +11,7 @@ import { fixD } from 'utils'
 import { formatUnits } from 'ethers/lib/utils'
 import { useActiveWeb3React } from 'hooks'
 import { useWalletModal } from 'components/WalletModal'
+import { useSwapRouterContract } from 'constants/hooks/useContract'
 import useAuth from 'hooks/useAuth'
 import {
   upDateManageTradeCollateral,
@@ -35,12 +36,14 @@ import precision from 'utils/precision'
 const { Option } = Select
 type IconType = 'success' | 'info' | 'error' | 'warning'
 import { useTranslation } from 'react-i18next'
+import { parseUnits } from 'ethers/lib/utils'
 const AddCollateral: React.FC<any> = props => {
   const { t, i18n } = useTranslation()
   const manageState = useManageState()
   const commonState = useCommonState()
   const farmState = useFarmState()
-  const positionInfo = manageState.positionInfo
+  const swapRouterContract = useSwapRouterContract()
+  const { positionInfo } = props
   const [editConfirm, setEditConfirm] = useState(false)
   const [editConfirmBtn, setEditConfirmBtn] = useState(false)
   const dispatch = useDispatch()
@@ -56,15 +59,15 @@ const AddCollateral: React.FC<any> = props => {
   const { account } = useActiveWeb3React()
   const { onPresentConnectModal, onPresentAccountModal } = useWalletModal(login, logout, account || undefined)
   const [selectCoin, setSelectCoin] = useState(manageState.manageCoinSelect)
-  const [minimum, setMinimum] = useState('')
+  const [minimum, setMinimum] = useState('--')
   const [returned, setReturned] = useState('')
   const [data, setData] = useState('')
   const myDate = new Date()
   const marksMock: any = {}
-  const minCollateral = Number(commonState.assetBaseInfoObj[assetTokenName].minCollateral)
-  const red = Number(commonState.assetBaseInfoObj[assetTokenName].minCollateral) + 15
-  const orange = Number(commonState.assetBaseInfoObj[assetTokenName].minCollateral) + 30
-  const safe = Number(commonState.assetBaseInfoObj[assetTokenName].minCollateral) + 50
+  const minCollateral = Number(commonState.assetBaseInfoObj[assetTokenName]?.minCollateral)
+  const red = Number(commonState.assetBaseInfoObj[assetTokenName]?.minCollateral) + 15
+  const orange = Number(commonState.assetBaseInfoObj[assetTokenName]?.minCollateral) + 30
+  const safe = Number(commonState.assetBaseInfoObj[assetTokenName]?.minCollateral) + 50
   const marks = {
     150: {
       style: {
@@ -186,31 +189,34 @@ const AddCollateral: React.FC<any> = props => {
         setAmount('')
       }
     }
-    if (tradeAmount) {
+  }, [tradeAmount, sliderValue])
+  function useDebounceHook(value: any, delay: any) {
+    const [debounceValue, setDebounceValue] = useState(0)
+    useEffect(() => {
+      const timer = setTimeout(() => setDebounceValue(value), delay)
+      return () => clearTimeout(timer)
+    }, [value, delay])
+    return debounceValue
+  }
+  const debounce = useDebounceHook(tradeAmount, 1000)
+  useEffect(() => {
+    if (tradeAmount && precision.minus(Number(tradeAmount),
+      Number(fixD(positionInfo.assetAmountSub, commonState.assetBaseInfoObj[assetTokenName].fixDPrecise))) > 0) {
       getPrice()
     }
-  }, [tradeAmount, sliderValue])
+  }, [farmState.slippageTolerance, debounce])
+
   async function getPrice() {
-    let price
-    const swapPrice = await getSwapPrice(
-      commonState.assetBaseInfoObj[cAssetTokenName].address,
-      commonState.assetBaseInfoObj[assetTokenName].address,
-    )
-    if (swapPrice) {
-      const token0Name = commonState.assetsNameInfo[swapPrice.token0]
-      const token1Name = commonState.assetsNameInfo[swapPrice.token1]
-      const reserves0 = Number(formatUnits(swapPrice.reserves[0], commonState.assetBaseInfoObj[token0Name].decimals))
-      const reserves1 = Number(formatUnits(swapPrice.reserves[1], commonState.assetBaseInfoObj[token1Name].decimals))
-      if (swapPrice.token0 == commonState.assetBaseInfoObj[assetTokenName].address) {
-        price = (reserves1 / reserves0).toString()
-      } else {
-        price = (reserves0 / reserves1).toString()
-      }
-      const returned = (Number(tradeAmount) * Number(price)).toString()
-      setReturned(returned)
-      const minimum = Number(returned) - Number(returned) * Number(farmState.slippageTolerance) * 0.01
-      setMinimum(minimum.toString())
-    }
+    const parseAmount = parseUnits((precision.minus(Number(tradeAmount),
+      Number(fixD(positionInfo.assetAmountSub, commonState.assetBaseInfoObj[assetTokenName].fixDPrecise)))).toString(),
+      commonState.assetBaseInfoObj[assetTokenName].decimals)
+    const amountsOut = await swapRouterContract.getAmountsOut(parseAmount,
+      [commonState.assetBaseInfoObj[assetTokenName].address,
+      commonState.assetBaseInfoObj[cAssetTokenName].address])
+    const amount = formatUnits(amountsOut[1], commonState.assetBaseInfoObj[cAssetTokenName].decimals)
+    const minReceive = precision.minus(fixD(Number(amount), commonState.assetBaseInfoObj[cAssetTokenName].fixDPrecise),
+      (fixD(Number(amount), commonState.assetBaseInfoObj[cAssetTokenName].fixDPrecise) * Number(farmState.slippageTolerance) * 0.01))
+    setMinimum(minReceive.toString())
   }
   useEffect(() => {
     setTradeCollateral(fixD(positionInfo.cAssetAmountSub, commonState.assetBaseInfoObj[cAssetTokenName].fixDPrecise))
@@ -337,12 +343,8 @@ const AddCollateral: React.FC<any> = props => {
             onChange={(value: number) => {
               changeSlider(value.toString())
               setamountInputFocus(false)
-              // setSliderInputFocus(true)
               setCollateralInputFocus(false)
             }}
-          // onAfterChange={(value: number) => {
-          //   Number(sliderValue) > 150?setSliderInputFocus(false):null
-          // }}
           ></Slider>
         </div>
       </div>
@@ -399,7 +401,7 @@ const AddCollateral: React.FC<any> = props => {
       </div>
       <div className={amountActive ? 'amount-active amount' : 'amount'}>
         <div className="amount-header">
-          <p>{positionInfo.isShort == true ? 'Edit' : 'Edit'}</p>
+          <p>{positionInfo.isShort == true ? `${t('Edit')}` : `${t('Edit')}`}</p>
           <div className="balance">
             {t('Balance')}{' '}
             {account ? (
@@ -475,8 +477,6 @@ const AddCollateral: React.FC<any> = props => {
       ) : commonState.assetBaseInfoObj[assetTokenName]?.mintContractAllowance ? (
         <Button
           disabled={
-            // (assetTokenName == 'nETH' ? null : Number(sliderValue) >= cRatio ? null :
-            //   data == '七' || data == '六' || discText()) ||
             Number(positionInfo.assetAmount) - Number(tradeAmount) >
               Number(commonState.assetBaseInfoObj[assetTokenName]?.balance) ||
               tradeAmount ==
@@ -495,8 +495,6 @@ const AddCollateral: React.FC<any> = props => {
         fixD(positionInfo.assetAmountSub, commonState.assetBaseInfoObj[assetTokenName].fixDPrecise) || Number(tradeAmount) == 0 ? (
         <Button
           disabled={
-            // (assetTokenName == 'nETH' ? null : Number(sliderValue) >= cRatio ? null :
-            //   data == '七' || data == '六' || discText()) ||
             Number(positionInfo.assetAmount) - Number(tradeAmount) >
               Number(commonState.assetBaseInfoObj[assetTokenName]?.balance) ||
               tradeAmount ==
@@ -541,19 +539,12 @@ const AddCollateral: React.FC<any> = props => {
             <div className="tx-fee-price">{farmState.slippageTolerance}%</div>
           </div>
         ) : null}
-        {positionInfo.isShort ? (
+        {positionInfo.isShort && precision.minus(Number(tradeAmount),
+          Number(fixD(positionInfo.assetAmountSub, commonState.assetBaseInfoObj[assetTokenName].fixDPrecise))) > 0 ? (
           <div className="item">
-            <div className="tx-fee-text">{t('MinimumReceived')}</div>
+            <div className="tx-fee-text">{t('MinimumReturned')}</div>
             <div className="tx-fee-price">
               {fixD(minimum, commonState.assetBaseInfoObj[cAssetTokenName].fixDPrecise)} {farmState.farmCoinSelect}
-            </div>
-          </div>
-        ) : null}
-        {positionInfo.isShort ? (
-          <div className="item">
-            <div className="tx-fee-text">{t('Returned')}</div>
-            <div className="tx-fee-price">
-              {fixD(returned, commonState.assetBaseInfoObj[cAssetTokenName].fixDPrecise)} {farmState.farmCoinSelect}
             </div>
           </div>
         ) : null}

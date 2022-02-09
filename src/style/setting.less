@@ -25,6 +25,7 @@
         color: #333333;
         text-align: center;
         line-height: 32px;
+        cursor: pointer;
         border: 1px solid rgba(0, 0, 0, 0.05);
       }
       .slippage-item-active {
@@ -118,5 +119,37 @@
   .farm-setting-alert {
     margin-top: 12px;
     color: #ff4343;
+  }
+  .btnBox {
+    margin-top: 20px;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    button {
+      cursor: pointer;
+      width: 45%;
+      height: 35px;
+      font-size: 14px !important;
+      font-weight: 500;
+      color: #fff;
+      // color: #000;
+      // background: #fff;
+      background: #005aff;
+      border-radius: 8px;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      &:hover {
+        background: #0d8fff;
+      }
+      &:nth-child(1) {
+        color: #000;
+        background: #fff;
+        border: 1px solid #005aff;
+        &:hover {
+          background: #f2f4fc;
+          color: #005aff;
+        }
+      }
+    }
   }
 }

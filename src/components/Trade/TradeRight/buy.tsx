@@ -29,7 +29,8 @@ import iconSwap from '../../../img/swap/icon-swap-hover-light.png'
 import active from '../../../img/swap/active.png'
 import { getLibrary } from 'utils/getLibrary'
 import lpContractAbi from '../../../constants/abis/lpContract.json'
-
+import precision from 'utils/precision'
+import warning from 'img/mint/warning.png'
 import { ethers } from 'ethers'
 import { useHistory, useLocation, useParams } from 'react-router'
 import { upDateCoinStock, upDateTradeCoinSelect } from '../../../state/trade/actions'
@@ -37,12 +38,11 @@ import { useDispatch } from 'react-redux'
 import { useMintState } from 'state/mint/hooks'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
+import { simpleRpcProvider } from 'utils/providers'
 const { Option } = Select
 
 const Buy: React.FC<any> = props => {
   const { t, i18n } = useTranslation()
-  const mintState = useMintState()
-  const hash = mintState.hash
   const openNotificationWithIcon = (type: IconType) => {
     Notification({
       type,
@@ -62,7 +62,7 @@ const Buy: React.FC<any> = props => {
   const [tokenB, setTokenB] = useState(commonState.defaultCAsset)
 
   const [tokenFeeAamount, setFeeTokenAamount] = useState('')
-  const [tokenFeeBamount, setFeeTokenBamount] = useState('')
+  const [show, setShow] = useState(false)
   const [tokenAamount, setTokenAamount] = useState('')
   const [tokenBamount, setTokenBamount] = useState('')
   const [tokenABalance, setTokenABalance] = useState('')
@@ -73,7 +73,8 @@ const Buy: React.FC<any> = props => {
   const [isChildTab, setChildTab] = useState(true)
   const [tokenAPrice, setTokenAPrice] = useState('')
   const [tokenBPrice, setTokenBPrice] = useState('')
-
+  const [APrice, setAPrice] = useState(Number(tokenAamount) / Number(tokenBamount))
+  const [BPrice, setBPrice] = useState(Number(tokenBamount) / Number(tokenAamount))
   const { assetBaseInfoObj } = commonState
   useEffect(() => {
     if (commonState.assetBaseInfoObj[tokenA].balance) {
@@ -110,18 +111,17 @@ const Buy: React.FC<any> = props => {
   const [priceTo, setPriceTo] = useState(0)
   const [priceForm, setPriceForm] = useState(0)
   const [reserves0, setReserves0] = useState(0)
-
   async function getReserver(result: string) {
     const provider = window.ethereum
-    const library = getLibrary(provider)
+    const library = getLibrary(provider) ?? simpleRpcProvider
     const contract = new ethers.Contract(result, lpContractAbi, library)
     const reserves = await contract.getReserves()
     const token0 = await contract.token0()
     const token1 = await contract.token1()
     const token0Name = commonState.assetsNameInfo[token0]
     const token1Name = commonState.assetsNameInfo[token1]
-    const reserves0 = Number(formatUnits(reserves[0], commonState.assetBaseInfoObj[token0Name].decimals))
-    const reserves1 = Number(formatUnits(reserves[1], commonState.assetBaseInfoObj[token1Name].decimals))
+    const reserves0 = Number(formatUnits(reserves[0], commonState.assetBaseInfoObj[token0Name]?.decimals))
+    const reserves1 = Number(formatUnits(reserves[1], commonState.assetBaseInfoObj[token1Name]?.decimals))
 
     if (token0 == tokenAaddress) {
       const priceTo = reserves0 / reserves1
@@ -135,7 +135,6 @@ const Buy: React.FC<any> = props => {
       setPriceTo(priceForm)
     }
     setReserves0(reserves0)
-
   }
   const dispatch = useDispatch()
 
@@ -154,19 +153,27 @@ const Buy: React.FC<any> = props => {
   const swapRouterContract = useSwapRouterContract()
   useEffect(() => {
     if (tokenBamount && isChangeTokenB) {
+      setShow(true)
+      setTimeout(() => {
+        setShow(false)
+      }, 1200)
       getAmountsIn()
     }
     if (tokenAamount && isChangeTokenA) {
+      setShow(true)
+      setTimeout(() => {
+        setShow(false)
+      }, 1200)
       getAmountsOut()
     }
     setTimer(false)
     setTimeout(() => {
       setTimer(true)
     }, 5000)
-  }, [tokenAamount, tokenBamount, isChangeTokenA, isChangeTokenB])
+  }, [tokenAamount, tokenBamount, isChangeTokenA, isChangeTokenB, tokenA, tokenB])
 
-  const fixDPreciseA = assetBaseInfoObj[tokenA].swapPrecise
-  const fixDPreciseB = assetBaseInfoObj[tokenB].swapPrecise
+  const fixDPreciseA = assetBaseInfoObj[tokenA].fixDPrecise
+  const fixDPreciseB = assetBaseInfoObj[tokenB].fixDPrecise
   async function getAmountsOut() {
     if (tokenAamount == '' || tokenAamount == '0') {
       return false
@@ -186,22 +193,25 @@ const Buy: React.FC<any> = props => {
     const tokenBAmount = formatUnits(amountsIn[0], assetBaseInfoObj[tokenA].decimals)
     setTokenAamount(fixD(tokenBAmount, fixDPreciseA))
   }
-
-  async function getPrice() {
-    const parseAmount = parseUnits('1', assetBaseInfoObj[tokenA].decimals)
-    const parseBmount = parseUnits('1', assetBaseInfoObj[tokenB].decimals)
-    const amountsOut = await swapRouterContract.getAmountsOut(parseAmount, [tokenAaddress, tokenBaddress])
-    const amountsIn = await swapRouterContract.getAmountsIn(parseBmount, [tokenAaddress, tokenBaddress])
-    const tokenAPrice = formatUnits(amountsIn[0], assetBaseInfoObj[tokenA].decimals)
-    const tokenBPrice = formatUnits(amountsOut[1], assetBaseInfoObj[tokenB].decimals)
-    setTokenAPrice(tokenAPrice)
-    setTokenBPrice(tokenBPrice)
+  useEffect(() => {
+    setBPrice(Number(tokenBamount) / Number(tokenAamount))
+    setAPrice(Number(tokenAamount) / Number(tokenBamount))
+  }, [tokenAamount, tokenBamount])
+  function minusNum(a: any, b: any, price: any) {
+    if (a && b && price) {
+      let num
+      if (precision.minus(Number(a), Number(b)) > 0) {
+        num = precision.minus(Number(a), Number(b))
+      } else {
+        num = precision.minus(Number(b), Number(a))
+      }
+      return (fixD(Number(num) / Number(price) * 100, 2))
+    }
   }
   useEffect(() => {
     if (account) {
       setTokenAPrice('')
       setTokenBPrice('')
-      getPrice()
     }
   }, [account, tokenA, tokenB])
   const [timer, setTimer] = useState(false)
@@ -223,9 +233,14 @@ const Buy: React.FC<any> = props => {
     return () => clearInterval(interval)
   }, [timer])
 
+
   const [isModalVisible, setIsModalVisible] = useState(false)
 
   function tabCoin() {
+    setShow(true)
+    setTimeout(() => {
+      setShow(false)
+    }, 1200)
     const templateTokenA = tokenA
     const templateTokenB = tokenB
     const templateTokenAPrice = tokenAPrice
@@ -271,7 +286,6 @@ const Buy: React.FC<any> = props => {
       dispatch(upDateTradeCoinSelect({ tradeCoinSelect: props.cAssetName }))
     }
   }, [])
-
   useEffect(() => {
     if (!swapConfirmBtn) {
       setTokenBamount('')
@@ -284,7 +298,6 @@ const Buy: React.FC<any> = props => {
 
   return (
     <div className="buy-container">
-      {/* <div className="trade-title">Trade nAPPL</div> */}
       <div className={amountActive ? 'amount-active amount' : 'amount'}>
         <div className="amount-header">
           <p className="amount-text">{t('Pay')}</p>
@@ -463,6 +476,21 @@ const Buy: React.FC<any> = props => {
             </div>
           </div>
           <div className="item">
+            <div className="tx-fee-text">{t('PriceImpact')}</div>
+            {!show ? <div className="tx-fee-price">
+              {isChildTab ?
+                fixD(Number(tokenBamount) / Number(tokenAamount), commonState.assetBaseInfoObj[tokenB]?.fixDPrecise) == 'Infinity' ||
+                  fixD(Number(tokenBamount) / Number(tokenAamount), commonState.assetBaseInfoObj[tokenB]?.fixDPrecise) == '0'
+                  ? `--` : Number(minusNum(BPrice, priceTo, priceTo)) >= 0.01 ?
+                    minusNum(BPrice, priceTo, priceTo) : '<0.01'
+                :
+                fixD(Number(tokenAamount) / Number(tokenBamount), commonState.assetBaseInfoObj[tokenA]?.fixDPrecise) == 'Infinity' ||
+                  fixD(Number(tokenAamount) / Number(tokenBamount), commonState.assetBaseInfoObj[tokenA]?.fixDPrecise) == '0'
+                  ? `--` :
+                  Number(minusNum(APrice, priceForm, priceForm)) >= 0.01 ?
+                    minusNum(APrice, priceForm, priceForm) : '<0.01'}%</div> : '-- %'}
+          </div>
+          <div className="item">
             <div className="tx-fee-text">{isChangeTokenA ? t('MinimumReceived') : t('MaximumSold')} </div>
             <div className="tx-fee-price">
               {
@@ -482,6 +510,23 @@ const Buy: React.FC<any> = props => {
           </div>
         </div>
       ) : null}
+      {!show ? isChildTab ? fixD(Number(tokenBamount) / Number(tokenAamount), commonState.assetBaseInfoObj[tokenB]?.fixDPrecise) == 'Infinity' ||
+        fixD(Number(tokenBamount) / Number(tokenAamount), commonState.assetBaseInfoObj[tokenB]?.fixDPrecise) == '0'
+        ? null : (minusNum(BPrice, priceTo, priceTo) && Number(minusNum(BPrice, priceTo, priceTo)) > 20 ?
+          <div className="available">
+            <div className="content">
+              <img src={warning} alt="" />
+              <span>{t('highPriceImpact')}</span>
+            </div>
+          </div> : null) :
+        fixD(Number(tokenAamount) / Number(tokenBamount), commonState.assetBaseInfoObj[tokenA]?.fixDPrecise) == 'Infinity' ||
+          fixD(Number(tokenAamount) / Number(tokenBamount), commonState.assetBaseInfoObj[tokenA]?.fixDPrecise) == '0'
+          ? null : minusNum(APrice, priceForm, priceForm) && Number(minusNum(APrice, priceForm, priceForm)) > 20 ? <div className="available">
+            <div className="content">
+              <img src={warning} alt="" />
+              <span>{t('highPriceImpact')}</span>
+            </div>
+          </div> : null : null}
       {!account ? (
         <Button className="confirmOrder" onClick={() => onPresentConnectModal()}>
           {t('Connect')}

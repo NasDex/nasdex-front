@@ -21,6 +21,7 @@ import { ethers } from 'ethers'
 import ltokenAbi from 'constants/abis/ltoken.json'
 import { useTranslation } from 'react-i18next'
 import { MasterChefTestAddress } from '../../../constants/index'
+import { simpleRpcProvider } from 'utils/providers'
 const defaultOnDismiss = () => null
 const defaultOpenNotificationWithIcon = () => null
 const defaultSetLongConfirm = () => null
@@ -30,8 +31,6 @@ type OrderConfirmModalProps = {
   openNotificationWithIcon?: (IconType: any) => void
   setLongConfirm?: (LongConfirm: any) => void
   setLongConfirmBtn?: (LongConfirmBtn: any) => void
-  // LP: any
-  // sharePool: any
   token0Address: any
   pid: any
   tokenAPrice: any
@@ -44,7 +43,6 @@ type OrderConfirmModalProps = {
 
 const LongOrderConfirm = ({
   onDismiss = defaultOnDismiss,
-  // LP, sharePool,
   token0Address,
   pid,
   tokenAPrice,
@@ -57,7 +55,6 @@ const LongOrderConfirm = ({
   setLongConfirm = defaultSetLongConfirm,
   setLongConfirmBtn = defaultSetLongConfirmBtn,
 }: OrderConfirmModalProps) => {
-  // console.log(tokenAamount, tokenBamount, 'LP11')
   const { t, i18n } = useTranslation()
   const farmState = useFarmState()
   const commonState = useCommonState()
@@ -67,7 +64,7 @@ const LongOrderConfirm = ({
   const { account } = useActiveWeb3React()
   const [isChildTab, setChildTab] = useState(true)
   const provider = window.ethereum
-  const library = getLibrary(provider)
+  const library = getLibrary(provider) ?? simpleRpcProvider
   const [openNoifcation] = useModal(<OrderNoifcation type="success" title={t('LongFarm')} from="farm"></OrderNoifcation>)
   const longStakingContract = useLongStakingContract()
   const [openWaringNoifcation] = useModal(
@@ -89,12 +86,10 @@ const LongOrderConfirm = ({
     const id = pid
     const Aamount = parseUnits(tokenAamount, commonState.assetBaseInfoObj[tokenA].decimals)
     const Bamount = parseUnits(tokenBamount, commonState.assetBaseInfoObj[tokenB].decimals)
-
     const swapAmountAMin = parseUnits(
       fixD(Aminimum, commonState.assetBaseInfoObj[tokenA].decimals).toString(), commonState.assetBaseInfoObj[tokenA].decimals)
     const swapAmountBMin = parseUnits(
       fixD(Bminimum, commonState.assetBaseInfoObj[tokenB].decimals).toString(), commonState.assetBaseInfoObj[tokenB].decimals)
-
     const newDate = new Date()
     const nowtime = newDate.getTime()
     const swapDeadline = Number(nowtime) + Number(farmState.deadline) * 60
@@ -204,8 +199,8 @@ const LongOrderConfirm = ({
       const contract = new ethers.Contract(swapPrice.result, ltokenAbi, library)
       const token0Name = commonState.assetsNameInfo[swapPrice.token0]
       const token1Name = commonState.assetsNameInfo[swapPrice.token1]
-      const reserves0 = Number(formatUnits(swapPrice.reserves[0], commonState.assetBaseInfoObj[token0Name].decimals))
-      const reserves1 = Number(formatUnits(swapPrice.reserves[1], commonState.assetBaseInfoObj[token1Name].decimals))
+      const reserves0 = Number(formatUnits(swapPrice.reserves[0], commonState.assetBaseInfoObj[token0Name]?.decimals))
+      const reserves1 = Number(formatUnits(swapPrice.reserves[1], commonState.assetBaseInfoObj[token1Name]?.decimals))
       const totalStaked = await contract.totalSupply()
       if (commonState.assetBaseInfoObj[token0Name].type == 'asset') {
         name = token0Name
@@ -222,7 +217,6 @@ const LongOrderConfirm = ({
         setLP(fixD(tokenALP.toString(), 12))
         share = (Number(tokenALP) / (LPtotal + Number(tokenALP))) * 100
       }
-      // console.log(tokenAamount, tokenBamount, tokenALP, tokenBLP, LP, LPtotal, share)
       setSharePool(fixD(share.toString(), 6))
     }
   }

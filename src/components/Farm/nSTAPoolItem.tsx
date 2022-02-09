@@ -11,7 +11,7 @@ import {
   useMasterChefTestContract,
   useLongStakingContract,
 } from 'constants/hooks/useContract'
-import { fixD, getpriceList } from 'utils'
+import { fixD } from 'utils'
 import { getCommonLongApr, getCommonShortApr } from 'utils/getAPR'
 import { formatUnits } from 'ethers/lib/utils'
 import { useActiveWeb3React } from 'hooks'
@@ -24,6 +24,7 @@ import { ethers } from 'ethers'
 import lTokenAbi from 'constants/abis/ltoken.json'
 import { LongStakingAddress, MasterChefTestAddress } from 'constants/index'
 import { useTranslation } from 'react-i18next'
+import { simpleRpcProvider } from 'utils/providers'
 const FarmPoolItem: React.FC<any> = props => {
   const { t, i18n } = useTranslation()
   const { name, source, iconUrl, id, decimals, longId, cAssetName } = props.farmPoolItem
@@ -42,9 +43,10 @@ const FarmPoolItem: React.FC<any> = props => {
   const longStakingContract = useLongStakingContract()
   const MasterChefTestContract = useMasterChefTestContract()
   const provider = window.ethereum
-  const library = getLibrary(provider)
+  const library = getLibrary(provider) ?? simpleRpcProvider
+  const { priceList } = props
   async function getPoolInfo() {
-    const price = await getpriceList()
+    const price = priceList
     const longAprResult = await getCommonLongApr(
       price,
       props.farmPoolItem,
@@ -97,6 +99,7 @@ const FarmPoolItem: React.FC<any> = props => {
   useEffect(() => {
     if (name) {
       setOraclePrice(commonState.assetBaseInfoObj[name].oraclePrice)
+      // setSwapPrice(commonState.assetBaseInfoObj[name].swapPrice)
     }
     if (Number(swapPrice) - Number(oraclePrice) > 0) {
       const result = ((Number(swapPrice) - Number(oraclePrice)) / Number(oraclePrice)) * 100
@@ -117,8 +120,8 @@ const FarmPoolItem: React.FC<any> = props => {
     if (swapPrice) {
       const token0Name = commonState.assetsNameInfo[swapPrice.token0]
       const token1Name = commonState.assetsNameInfo[swapPrice.token1]
-      const reserves0 = Number(formatUnits(swapPrice.reserves[0], commonState.assetBaseInfoObj[token0Name].decimals))
-      const reserves1 = Number(formatUnits(swapPrice.reserves[1], commonState.assetBaseInfoObj[token1Name].decimals))
+      const reserves0 = Number(formatUnits(swapPrice.reserves[0], commonState.assetBaseInfoObj[token0Name]?.decimals))
+      const reserves1 = Number(formatUnits(swapPrice.reserves[1], commonState.assetBaseInfoObj[token1Name]?.decimals))
       if (swapPrice.token0 == commonState.assetBaseInfoObj[name].address) {
         setSwapPrice((reserves1 / reserves0).toString())
       } else {
@@ -192,14 +195,14 @@ const FarmPoolItem: React.FC<any> = props => {
         <div className="text">{premium}%</div>
       </div>
       <div className="action-btn">
-        <NavLink to={`/farming/Long/${cAssetName}/${name}`}>
+        <NavLink to={`/farming/${t('Long')}/${cAssetName}/${name}`}>
           <Button
             className={name === 'NSDX' ? 'farmBtn longBtn' : 'farmBtn'}
             onClick={() => selectAssetname(`${name}`, `${cAssetName}`)}>
             {t('LongFarm')}
           </Button>
         </NavLink>
-        <NavLink to={`/farming/Short/${cAssetName}/${name}`}>
+        <NavLink to={`/farming/${t('Short')}/${cAssetName}/${name}`}>
           <Button className="farmBtn shortBtn" onClick={() => selectAssetname(`${name}`, `${cAssetName}`)}>
             {t('ShortFarm')}
           </Button>

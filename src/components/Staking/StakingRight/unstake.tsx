@@ -7,7 +7,7 @@ import CoinLogo from '../../../img/stake/coin@2x.png'
 import '../../../style/Staking/unstake.less'
 import useUnstakeFarms from 'hooks/autoStake/useUnstakeFarms'
 import useMasterUnstakeFarms from 'hooks/deaufltPool/useUnstakeFarms'
-
+import { useTranslation } from 'react-i18next'
 const defaultOnDismiss = () => null
 
 type StakeProps = {
@@ -16,9 +16,9 @@ type StakeProps = {
 }
 
 const Stake = ({ onDismiss = defaultOnDismiss, poolInfo = {} }: StakeProps) => {
+  const { t, i18n } = useTranslation()
   const [amount, setAmount] = useState('')
   const [requestedLoading, setRequestedLoading] = useState(false)
-
   const { onUnstake } = useUnstakeFarms(0)
   const { onMasterUnstake } = useMasterUnstakeFarms(poolInfo.pid)
 
@@ -34,7 +34,7 @@ const Stake = ({ onDismiss = defaultOnDismiss, poolInfo = {} }: StakeProps) => {
   }
 
   return (
-    <Modal title="Unstake" width={420} footer={null} visible={true} onOk={onDismiss} onCancel={onDismiss}>
+    <Modal title={t('Unstake')} width={420} footer={null} visible={true} onOk={onDismiss} onCancel={onDismiss}>
       <div className="unstake-container">
         <div className="liquidity-logo">
           <img src={CoinLogo} alt="" />
@@ -42,9 +42,9 @@ const Stake = ({ onDismiss = defaultOnDismiss, poolInfo = {} }: StakeProps) => {
         </div>
         <div className="amount">
           <div className="amount-header">
-            <div className="amount-header-text">Input</div>
+            <div className="amount-header-text">{t('Input')}</div>
             <div className="amount-header-available">
-              Available <span>{poolInfo.amount}</span>
+              {t('Available')} <span>{poolInfo.amount}</span>
             </div>
           </div>
           <div className="amount-input">
@@ -62,7 +62,7 @@ const Stake = ({ onDismiss = defaultOnDismiss, poolInfo = {} }: StakeProps) => {
               onClick={() => {
                 setAmount(poolInfo.amount)
               }}>
-              MAX
+              {t('MAX')}
             </Button>
           </div>
         </div>
@@ -71,7 +71,7 @@ const Stake = ({ onDismiss = defaultOnDismiss, poolInfo = {} }: StakeProps) => {
           disabled={Number(amount) > poolInfo.amount || !amount}
           loading={requestedLoading}
           onClick={() => handleUnstake(amount)}>
-          Unstake
+          {t('Unstake')}
         </Button>
       </div>
     </Modal>

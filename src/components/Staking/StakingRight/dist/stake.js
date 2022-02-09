@@ -146,7 +146,6 @@ var Stake = function (_a) {
   var _d = react_1.useState(''),
     amount = _d[0],
     setAmount = _d[1]
-  // 质押
   var onStake = useStakeFarms_1['default'](0).onStake
   var onMasterStake = useStakeFarms_2['default'](poolInfo.pid).onMasterStake
   var _e = react_1.useState(false),

@@ -40,7 +40,7 @@ const TradeSetting = ({ onDismiss = defaultOnDismiss, from }: TradeSettingProps)
           ? mintState.slippageTolerance
           : from == 'profile'
             ? commonState.profileSlippageTolerance
-            : '0.1',
+            : '1',
   )
   const [deadline, setDeadline] = useState(
     from == 'farm'
@@ -53,7 +53,10 @@ const TradeSetting = ({ onDismiss = defaultOnDismiss, from }: TradeSettingProps)
             ? commonState.profileMintDeadline
             : '20',
   )
-  useEffect(() => {
+  function clickCancle() {
+    onDismiss()
+  }
+  function clickConfirm() {
     if (from == 'trade') {
       dispatch(upDateTradeSlippageTolerance({ slippageTolerance: setting }))
       dispatch(upDateTradeDeadline({ deadline: deadline }))
@@ -70,7 +73,8 @@ const TradeSetting = ({ onDismiss = defaultOnDismiss, from }: TradeSettingProps)
       dispatch(upDateProfileSlippageTolerance({ profileSlippageTolerance: setting }))
       dispatch(upDateProfileMintDeadline({ profileMintDeadline: deadline }))
     }
-  }, [setting, deadline, from])
+    onDismiss()
+  }
   return (
     <Modal title={t('Setting')} width={376} footer={null} visible={true} onOk={onDismiss} onCancel={onDismiss}>
       <div className="farm-setting">
@@ -111,7 +115,6 @@ const TradeSetting = ({ onDismiss = defaultOnDismiss, from }: TradeSettingProps)
             </div>
           </div>
         )}
-        {/* <div className="farm-setting-alert">Slippage must be within 2 decimal points</div> */}
         <div className="deadline">
           <p className="tx">{t('TxDeadline')} ({t('mins')})</p>
           <Input
@@ -121,6 +124,10 @@ const TradeSetting = ({ onDismiss = defaultOnDismiss, from }: TradeSettingProps)
               setDeadline(e.target.value)
             }}
           />
+        </div>
+        <div className='btnBox'>
+          <button onClick={() => clickCancle()}>{t('Cancle')}</button>
+          <button onClick={() => clickConfirm()}>{t('Sure')}</button>
         </div>
       </div>
     </Modal>

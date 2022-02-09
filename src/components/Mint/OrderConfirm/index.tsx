@@ -25,6 +25,7 @@ const defaultSetMintConfirmBtn = () => null
 const defaultSetAmount = () => null
 const defaultSetSliderValue = () => null
 const defaultSetTradeCollateral = () => null
+
 type OrderConfirmModalProps = {
   onDismiss?: () => void
   openNotificationWithIcon?: (IconType: any) => void
@@ -50,6 +51,7 @@ const OrderConfirm = ({
   setSliderValue = defaultSetSliderValue,
   setTradeCollateral = defaultSetTradeCollateral,
   safe
+
 }: OrderConfirmModalProps) => {
   const { t, i18n } = useTranslation()
   const mintState = useMintState()
@@ -76,10 +78,8 @@ const OrderConfirm = ({
     const cAssetInfo = commonState.assetBaseInfoObj[mintState.mintCoinSelect]
     const assetToken = nAssetsInfo.address
     const cAssetToken = cAssetInfo.address
-
     const cAssetAmount = parseUnits(mintState.mintTradeCollateral, cAssetInfo.decimals)
     const cRatio = Number(mintState.mintCollateralRatio) * 10
-
     dispatch(upDateTxHash({ hash: '' }))
     try {
       openWaiting()
@@ -88,7 +88,6 @@ const OrderConfirm = ({
       setMintConfirmBtn(false)
       openNoifcation()
       const receipt = await tx.wait()
-      console.log(receipt, 'receipt##')
       if (receipt.status) {
         const assetNewInfo = await getOneAssetInfo(nAssetsInfo.name, assetToken, account, commonState.assetBaseInfoObj)
         const oneAssetInfo = { ...commonState.assetBaseInfoObj[nAssetsInfo.name], ...assetNewInfo }

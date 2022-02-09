@@ -16,14 +16,30 @@ import { formatUnits } from 'ethers/lib/utils'
 import Erc20Abi from 'constants/abis/erc20.json'
 import { upDateAssetBaseInfoObj } from 'state/common/actions'
 import { useDispatch } from 'react-redux'
+import { useTranslation } from 'react-i18next'
+import { simpleRpcProvider } from 'utils/providers'
 const { TabPane } = Tabs
+type props = {
+  poolType: any
+  assetName: any
+  cAssetName: any
+  setLongOrShort: any
+}
 
-const FarmRight: React.FC<any> = props => {
+const FarmRight = ({
+  poolType,
+  assetName,
+  cAssetName,
+  setLongOrShort
+}: props) => {
   const { account } = useActiveWeb3React()
+  const { t, i18n } = useTranslation()
   const commonState = useCommonState()
   const dispatch = useDispatch()
   const provider = window.ethereum
-  const library = getLibrary(provider)
+  const [pageName, setPageName] = useState(
+    poolType.toString() == `${t('Short')}` ? 1 : 0)
+  const library = getLibrary(provider) ?? simpleRpcProvider
   const assetBaseInfo: any = []
   const { assetBaseInfoObj } = commonState
   async function getMintAssetBalance() {
@@ -41,30 +57,30 @@ const FarmRight: React.FC<any> = props => {
     }
     dispatch(upDateAssetBaseInfoObj({ assetBaseInfoObj: assetBalanceInfo }))
   }
-  // useEffect(() => {
-  //   let timer: any
-  //   const getBaseData = () => {
-  //     getMintAssetBalance()
-  //     return getBaseData
-  //   }
-  //   if (account) {
-  //     timer = setInterval(getBaseData(), 5000)
-  //   }
-  //   return () => {
-  //     clearInterval(timer)
-  //   }
-  // }, [account])
   const tablieNav = [
     {
-      label: 'Long',
+      label: `${t('Long')}`,
     },
     {
-      label: props.poolType.toString() === 'long' ? '' : 'Short',
+      label: poolType.toString() == 'long' ? '' : `${t('Short')}`,
     },
   ]
   const [headerActive, setHeaderActive] = useState(
-    props.poolType.toString() === 'long' ? 'Long' : props.poolType.toString(),
+    poolType.toString() == 'long' ? `${t('Long')}` : poolType.toString(),
   )
+  useEffect(() => {
+    setHeaderActive(tablieNav[pageName].label)
+    setLongOrShort(tablieNav[pageName].label)
+  }, [i18n.language])
+
+  function HeaderActive(label: any, key: any) {
+    setHeaderActive(label)
+    setLongOrShort(label)
+    setPageName(key)
+  }
+  useEffect(() => {
+    setLongOrShort(headerActive)
+  }, [])
   const [openFarmSetting] = useModal(<FarmSetting from="farm"></FarmSetting>)
 
   function callback(key: string) {
@@ -72,10 +88,10 @@ const FarmRight: React.FC<any> = props => {
   }
   function showTable(type: string) {
     switch (type) {
-      case 'Long':
-        return <Long cAssetName={props.cAssetName} assetName={props.assetName}></Long>
-      case 'Short':
-        return <Short cAssetName={props.cAssetName} assetName={props.assetName}></Short>
+      case `${t('Long')}`:
+        return <Long cAssetName={cAssetName} assetName={assetName}></Long>
+      case `${t('Short')}`:
+        return <Short cAssetName={cAssetName} assetName={assetName}></Short>
       default:
         break
     }
@@ -87,7 +103,7 @@ const FarmRight: React.FC<any> = props => {
           <li
             className={['header-tab-item', ele.label === headerActive ? 'header-tab-item-active' : null].join(' ')}
             key={key}
-            onClick={() => setHeaderActive(ele.label)}>
+            onClick={() => HeaderActive(ele.label, key)}>
             {ele.label}
           </li>
         ))}

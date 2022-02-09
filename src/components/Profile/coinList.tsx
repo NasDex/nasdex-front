@@ -79,8 +79,7 @@ const CoinList: React.FC<any> = props => {
             <div className="coin-balance">
               <p className="balance-num">
                 {account
-                  ?
-                  ele.tokenBalance < 0.000001 && ele.tokenBalance > 0
+                  ? ele.tokenBalance < 0.000001 && ele.tokenBalance > 0
                     ? '<0.000001'
                     : fixD(ele.tokenBalance, 6)
                   : '0.0'}

@@ -197,7 +197,6 @@ function Staking() {
   // localStorage.clear()
   var dispatch = react_redux_1.useDispatch()
   var account = hooks_1.useActiveWeb3React().account
-  // 获取合约
   // const contract = useErc20Contract('0x519130DA1C46CF79F39A0339016c07c77f938fCB')
   function initData() {
     return __awaiter(this, void 0, void 0, function () {

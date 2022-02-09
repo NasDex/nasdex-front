@@ -30,10 +30,10 @@ const initialState: ApplicationState = {
   tradeTradeCollateral: '',
   tradeCollateralRatio: '',
   tradeNowPrice: 0,
-  tradeCoinSelect: 'USDC',
-  tradeCoinStock: 'nETH',
+  tradeCoinSelect: '',
+  tradeCoinStock: '',
   deadline: '20',
-  slippageTolerance: '0.1',
+  slippageTolerance: '1',
   isTab: false,
 }
 

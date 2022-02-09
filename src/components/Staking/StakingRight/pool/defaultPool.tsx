@@ -24,7 +24,7 @@ import nadxTokenAbi from '../../../../constants/abis/nadx.json'
 import { ethers } from 'ethers'
 import { useStakeState } from 'state/stake/hooks'
 import { Skeleton } from 'antd'
-
+import { useTranslation } from 'react-i18next'
 interface DefaultPoolItem {
   pid: string
   symbol: string
@@ -52,6 +52,7 @@ const DefaultPool: React.FC<DefaultPoolProps> = props => {
   )
 }
 const DefaultPoolItem: React.FC<any> = props => {
+  const { t, i18n } = useTranslation()
   const [amount, setAmount] = useState('')
   const [balance, setBalance] = useState('')
   const [isApproved, setIsApproved] = useState(false)
@@ -79,9 +80,7 @@ const DefaultPoolItem: React.FC<any> = props => {
     setPoolInfo(info)
     const totalNadx = formatUnits(await NSDXContract.balanceOf(MasterChefAddress), defaultPoolItem.decimals)
     setTotalLiquidity(totalNadx)
-
   }
-
   async function getUserInfo() {
     const balance = formatUnits(await NSDXContract.balanceOf(account), defaultPoolItem.decimals)
     setBalance(fixD(balance, 4))
@@ -93,7 +92,6 @@ const DefaultPoolItem: React.FC<any> = props => {
     setHarvestBalance(pendingNsdx)
     const totalNadx = formatUnits(await NSDXContract.balanceOf(MasterChefAddress), defaultPoolItem.decimals)
     setTotalLiquidity(totalNadx)
-
   }
 
   async function getAllowance() {
@@ -126,11 +124,12 @@ const DefaultPoolItem: React.FC<any> = props => {
       let aprP: any
       const tvlF = totalLiquidity
       const price = priceList.NSDX
-
-      const day = defaultPoolItem.nsdxPerBlock * 43200
-      if (Number(defaultPoolItem.nsdxPerBlock) > 0 && Number(tvlF)) {
+      const totalAllocPoint = await MasterChefContract.totalAllocPoint()
+      const nsdxPerBlock = await MasterChefContract.nsdxPerBlock()
+      const day = Number(formatUnits(nsdxPerBlock, 18)) * 43200
+      if (Number(formatUnits(nsdxPerBlock, 18)) > 0 && Number(tvlF)) {
         aprP =
-          ((day * (poolInfo.allocPoint / defaultPoolItem.totalAllocPoint) * price * 365) / (Number(tvlF) * price)) * 100
+          ((day * (poolInfo.allocPoint / Number(totalAllocPoint.toString())) * price * 365) / (Number(tvlF) * price)) * 100
       } else {
         aprP = ''
       }
@@ -195,48 +194,59 @@ const DefaultPoolItem: React.FC<any> = props => {
           <div className="liquidity-name">{defaultPoolItem.symbol}</div>
         </div>
 
+        {/* <div className="liquidity-source">
+    <a href="https://quickswap.exchange/#/pool" target="_blank">
+      From
+      <img src={SourceImg} alt="" />
+      Get NSDX-USDC LPT
+      <svg className="icon" aria-hidden="true">
+        <use xlinkHref="#icon-link"></use>
+      </svg>
+    </a>
+  </div> */}
       </div>
 
       <div className="liquidity-bottom">
         <div className="total-liquidity">
           <div className="title">{fixD(totalLiquidity, 4)} </div>
-          <div className="text">Total Staked (NSDX)</div>
+          <div className="text">{t('TotalStaked')}</div>
         </div>
         <div className="apr">
           <div className="title">
             {!apr ? <Skeleton active paragraph={{ rows: 0 }} /> : `${apr}%`}
 
+            {/* {apr}% */}
             <svg className="icon" aria-hidden="true" onClick={openCalculatorCard}>
               <use xlinkHref="#icon-calculator"></use>
             </svg>
           </div>
-          <div className="text">APR</div>
+          <div className="text">{t('APR')}</div>
         </div>
         {!account ? (
           <Button className="pc-stake-btn" onClick={() => onPresentConnectModal()}>
-            Connect
+            {t('Connect')}
           </Button>
         ) : !isApproved ? (
           <Button className="pc-stake-btn" onClick={openStakeCard}>
-            Stake
+            {t('Stake')}
           </Button>
         ) : (
           <Button className="pc-stake-btn" onClick={() => handleApprove()} loading={requestedApproval}>
-            Approve
+            {t('Approve')}
           </Button>
         )}
       </div>
       {!account ? (
         <Button className="h5-stake-btn" onClick={() => onPresentConnectModal()}>
-          Connect
+          {t('Connect')}
         </Button>
       ) : !isApproved ? (
         <Button className="h5-stake-btn" onClick={openStakeCard}>
-          Stake
+          {t('Stake')}
         </Button>
       ) : (
         <Button className="h5-stake-btn" onClick={() => handleApprove()} loading={requestedApproval}>
-          Approve
+          {t('Approve')}
         </Button>
       )}
       {Number(harvestBalance) > 0 ? (
@@ -250,37 +260,37 @@ const DefaultPoolItem: React.FC<any> = props => {
         {Number(harvestBalance) > 0 ? (
           <div className="claim">
             <div className="left">
-              <span>Rewards (NSDX)</span>
+              <span>{t('Rewards')} (NSDX)</span>
               <p>{fixD(harvestBalance, 4)}</p>
               <p>≈${fixD(Number(harvestBalance) * priceList.NSDX, 4)}</p>
             </div>
             {!account ? (
               <Button className="pc-stake-btn" onClick={() => onPresentConnectModal()}>
-                Connect
+                {t('Connect')}
               </Button>
             ) : (
-              <Button onClick={() => openClaimCard()}>Claim</Button>
+              <Button onClick={() => openClaimCard()}>{t('Claim')}</Button>
             )}
           </div>
         ) : null}
         {Number(amount) > 0 ? (
           <div className="claim">
             <div className="left">
-              <span>Staked</span>
+              <span>{t('Staked')}</span>
               <p>{fixD(amount, 4)}</p>
               <p>≈${fixD(Number(amount) * priceList.NSDX, 4)}</p>
             </div>
             {!account ? (
               <Button className="pc-stake-btn" onClick={() => onPresentConnectModal()}>
-                Connect
+                {t('Connect')}
               </Button>
             ) : !isApproved ? (
               <Button className="pc-stake-btn" onClick={openUntakeCard}>
-                Unstake
+                {t('Unstake')}
               </Button>
             ) : (
               <Button className="pc-stake-btn" onClick={() => handleApprove()} loading={requestedApproval}>
-                Approve
+                {t('Approve')}
               </Button>
             )}
           </div>

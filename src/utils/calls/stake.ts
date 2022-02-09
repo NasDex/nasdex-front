@@ -12,7 +12,6 @@ export const stakeFarm = async (masterChefContract: any, pid: any, amount: strin
   return receipt.status
 }
 export const unstakeFarms = async (masterChefContract: any, pid: any, amount: string) => {
-  // const value = new BigNumber(amount).times(DEFAULT_TOKEN_DECIMAL).toString()
   const value = parseUnits(amount, 18).toString()
   const tx = await masterChefContract.withdraw(value)
   const receipt = await tx.wait()

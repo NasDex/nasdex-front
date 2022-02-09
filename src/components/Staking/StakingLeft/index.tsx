@@ -13,8 +13,9 @@ import tip from '../../../img/common/tips@2x.png'
 import { useWalletModal } from 'components/WalletModal'
 import useAuth from 'hooks/useAuth'
 import { useStakeState } from 'state/stake/hooks'
-
+import { useTranslation } from 'react-i18next'
 const StakingLeft = () => {
+  const { t, i18n } = useTranslation()
   const NSDXVaultContract = useNSDXVault()
   const { account } = useActiveWeb3React()
   const [harvestBalance, setHarvestBalance] = useState('0.0')
@@ -59,13 +60,13 @@ const StakingLeft = () => {
     <div className="staking-left">
 
       <div className="nsdx-balance">
-        <div className="staking-left-title">NSDX Balance</div>
+        <div className="staking-left-title">{t('NSDXBalance')}</div>
         <div className="nsdx-usd">
           <div className="nsdx-num">{balance}</div>
           <div className="nsdx-num-usd">≈${fixD(Number(balance) * Number(priceList.NSDX), 4)}</div>
         </div>
         <div className="nsdx-price">
-          <div className="nsdx-text">NSDX Price</div>
+          <div className="nsdx-text">{t('NSDXPrice')}</div>
           <div>
             $ <span className="nsdx-usd">{fixD(priceList.NSDX, 2)}</span>
           </div>

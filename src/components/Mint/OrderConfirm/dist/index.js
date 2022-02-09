@@ -178,7 +178,6 @@ var OrderConfirm = function (_a) {
         '\n',
     }),
   )[0]
-  // 创建mint合约
   var MintContract = useContract_1.useMintContract()
   console.log(MintContract, 'MintContract##')
   function openPosition() {

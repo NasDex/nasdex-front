@@ -37,10 +37,10 @@ const initialState: ApplicationState = {
   manageTradeCollateral: '',
   manageCollateralRatio: '',
   manageNowPrice: 35,
-  manageCoinSelect: 'USDC',
-  manageCoinStock: 'nETH',
+  manageCoinSelect: '',
+  manageCoinStock: '',
   positionInfo: {
-    assetTokenName: 'nETH',
+    assetTokenName: 'nSE',
     assetToken: '',
     cAssetToken: '',
     cAssetTokenName: 'USDC',

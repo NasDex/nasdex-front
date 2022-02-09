@@ -187,13 +187,11 @@ var poolBaseInfo = [
 ]
 var StakingRight = function () {
   var account = hooks_1.useActiveWeb3React().account
-  // 获取质押代币余额
   var NSDXContract = useContract_1.useNSDX()
   // const NSDXVaultContract = useNSDXVault()
   var MasterChefContract = useContract_1.useMasterchef()
   // const provider = window.ethereum
   // const library = getLibrary(provider)
-  // 普通创建合约未链接钱包获取数据
   // const MasterChefContract = new ethers.Contract(MasterChefAddress, masterChefAbi, library)
   // const NSDXVaultContract = new ethers.Contract(NSDXVaultAddress, nadxVaultAbi, library)
   // const NSDXContract = new ethers.Contract(NSDXToken, nadxTokenAbi, library)
@@ -225,7 +223,6 @@ var StakingRight = function () {
     lpTotalPrice = _c[0],
     setLpTotalPrice = _c[1]
   // const NADXContract = useNSDX()
-  // 获取基础数据
   function initData() {
     return __awaiter(this, void 0, void 0, function () {
       var totalNadx, _a, i
@@ -237,7 +234,6 @@ var StakingRight = function () {
             return [4 /*yield*/, NSDXContract.balanceOf(index_1.MasterChefAddress)]
           case 1:
             totalNadx = _a.apply(void 0, [_b.sent(), 18])
-            // 复投池所有已质押代币
             // const autoTotalNadx = Number(formatUnits(await NSDXVaultContract.balanceOf(), 18))
             // setTotalLiquidity(Number(totalNadx) + Number(autoTotalNadx))
             setTotalLiquidity(Number(totalNadx))

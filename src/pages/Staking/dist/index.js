@@ -1,3 +1,4 @@
+"use strict";
 /** @format */
 
 'use strict'
@@ -35,4 +36,4 @@ function Staking() {
     ),
   )
 }
-exports['default'] = Staking
+exports["default"] = Staking;

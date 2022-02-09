@@ -27,12 +27,12 @@ export function getNetworkLibrary(): Web3Provider {
 }
 
 export const injected = new InjectedConnector({
-  // supportedChainIds: [137],
-  supportedChainIds: [80001],
+  supportedChainIds: [137],
+  // supportedChainIds: [80001],
 })
 // mainnet only
 export const walletconnect = new WalletConnectConnector({
-  rpc: {[NETWORK_CHAIN_ID]: NETWORK_URL, '137': 'https://rpc-mumbai.maticvigil.com/'},
+  rpc: {[NETWORK_CHAIN_ID]: NETWORK_URL, '137': 'https://polygon-rpc.com/'},
   bridge: 'https://bridge.walletconnect.org',
   qrcode: true,
   pollingInterval: 15000,

@@ -25,3 +25,4 @@ export const upDateProfileMintDeadline = createAction<{profileMintDeadline: stri
 export const upDateCommonFee = createAction<{feeRate: any}>('app/upDateCommonFee')
 export const updateDefaultCAsset = createAction<{defaultCAsset: string}>('app/updateDefaultCAsset')
 export const updateDefaultAsset = createAction<{defaultAsset: string}>('app/updateDefaultAsset')
+

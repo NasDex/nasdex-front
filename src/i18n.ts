@@ -19,6 +19,7 @@ i18next
     fallbackLng: 'en',
     debug: true,
     preload: ['en'],
+    whitelist: ['en', 'en-US', 'zh', 'zh-CN'],
     keySeparator: false,
     interpolation: {escapeValue: false},
   })

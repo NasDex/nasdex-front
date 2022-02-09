@@ -15,16 +15,13 @@ function _interopRequireDefault(obj) {
 
 /** @format */
 function _default(app) {
-  // proxy第一个参数为要代理的路由
   app.use(
     (0, _httpProxyMiddleware['default'])('/data', {
       target: 'http://localhost',
-      //配置你要请求的服务器地址，代理后的请求网址
       pathRewrite: {
         '^/data': '',
       },
-      //路径重写
-      changeOrigin: true, // 是否改变请求头
+      changeOrigin: true, 
     }),
   )
   app.use(

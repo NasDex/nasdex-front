@@ -205,7 +205,6 @@ var LpPoolItem = function (props) {
   var _h = WalletModal_1.useWalletModal(login, logout, account || undefined),
     onPresentConnectModal = _h.onPresentConnectModal,
     onPresentAccountModal = _h.onPresentAccountModal
-  // 获取池子信息
   var _j = react_1.useState({
       allocPoint: 0,
       lastRewardBlock: '',
@@ -235,7 +234,6 @@ var LpPoolItem = function (props) {
       })
     })
   }
-  // 获取用户信息
   function getUserInfo() {
     return __awaiter(this, void 0, void 0, function () {
       var balance, _a, stakedBalance, amountValue, pendingNsdxValue, pendingNsdx
@@ -263,7 +261,6 @@ var LpPoolItem = function (props) {
     })
   }
   var LPContract = useContract_1.useLpContract()
-  // 是否授权
   function getAllowance() {
     return __awaiter(this, void 0, void 0, function () {
       var result, allowance
@@ -284,7 +281,6 @@ var LpPoolItem = function (props) {
       })
     })
   }
-  // 授权
   var onApprove = useApproveFarm_1['default'](LPContract).onApprove
   var _k = react_1.useState(false),
     requestedApproval = _k[0],
@@ -315,7 +311,6 @@ var LpPoolItem = function (props) {
     },
     [onApprove, account],
   )
-  // 设置Apr
   var _l = react_1.useState(''),
     apr = _l[0],
     setApr = _l[1]

@@ -181,15 +181,6 @@ export async function getpriceList(): Promise<any> {
       }
     }
   }
-  // const response = await fetch('https://api.nasdex.xyz/api/v3/simple/price', {
-  //   method: 'get',
-  // })
-  // const json = await response.json()
-  // if (json) {
-  //   result.NSDX = fixD(json['nasdex-token'].usd, 4)
-  //   result.USDC = fixD(json['usd-coin'].usd, 4)
-  // }
-  // console.log(result,'result')
   return result
 }
 

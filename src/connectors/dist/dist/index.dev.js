@@ -57,7 +57,7 @@ exports.injected = new injected_connector_1.InjectedConnector({
 
 exports.walletconnect = new walletconnect_connector_1.WalletConnectConnector({
   rpc:
-    ((_b = {}), (_b[exports.NETWORK_CHAIN_ID] = NETWORK_URL), (_b['137'] = 'https://rpc-mumbai.maticvigil.com/'), _b),
+    ((_b = {}), (_b[exports.NETWORK_CHAIN_ID] = NETWORK_URL), (_b['137'] = 'https://polygon-rpc.com/'), _b),
   bridge: 'https://bridge.walletconnect.org',
   qrcode: true,
   pollingInterval: 15000,

@@ -189,7 +189,6 @@ var Buy = function (props) {
     var _w = react_1.useState(false), isChangeTokenA = _w[0], setIsChangeTokenA = _w[1]
     var _x = react_1.useState(false), isChangeTokenB = _x[0], setIsChangeTokenB = _x[1]
     var _y = react_1.useState(true), isTab = _y[0], setIsTab = _y[1]
-    // 获取swap代币余额
     var assetBaseInfoObj = commonState.assetBaseInfoObj
     react_1.useEffect(function () {
       if (commonState.assetBaseInfoObj[tokenA].balance) {
@@ -202,7 +201,6 @@ var Buy = function (props) {
     },
     [tokenA, commonState.assetBaseInfoObj],
   )
-  // 判断有没有授权
   var _z = react_1.useState(
       (_a = commonState.assetBaseInfoObj[tokenA]) === null || _a === void 0 ? void 0 : _a.address,
     ),
@@ -227,9 +225,7 @@ var Buy = function (props) {
     },
     [tokenAaddress, tokenBaddress, account, pair],
   )
-  // 创建工厂合约
   var swapFactoryContract = useContract_1.useSwapFactoryContract()
-  // 判断是否可以swap
   function getPair() {
     return __awaiter(this, void 0, void 0, function () {
       var result
@@ -258,7 +254,6 @@ var Buy = function (props) {
   var _4 = react_1.useState(0),
     reserves0 = _4[0],
     setReserves0 = _4[1]
-  // 获取汇率
   function getReserver(result) {
     return __awaiter(this, void 0, void 0, function () {
       var provider, library, contract, reserves, reserves0, reserves1, priceTo, priceForm
@@ -322,12 +317,6 @@ var Buy = function (props) {
       if (tokenBamount && isChangeTokenB) {
         getAmountsIn()
       }
-      // if (tokenAamount && isChangeTokenA && account) {
-      //   setAmountB(tokenAamount)
-      // }
-      // if (tokenBamount && isChangeTokenB && account) {
-      //   setAmountA(tokenBamount)
-      // }
     },
     [tokenAamount, tokenBamount],
   )
@@ -360,7 +349,6 @@ var Buy = function (props) {
             return [
               4 /*yield*/,
               swapRouterContract.getAmountsIn(parseAmount, [tokenAaddress, tokenBaddress]),
-              // console.log(amountsIn.toString(),'amountsIn##')
             ]
           case 1:
             amountsIn = _a.sent()
@@ -371,16 +359,6 @@ var Buy = function (props) {
       })
     })
   }
-  // function setAmountA(value: string) {
-  //   const price = isTab ? Number(value) * priceForm : Number(value) * priceTo
-  //   const amountA = price.toString()
-  //   setTokenAamount(fixD(amountA, fixDPreciseB))
-  // }
-  // function setAmountB(value: string) {
-  //   const price = isTab ? Number(value) * priceTo : Number(value) * priceForm
-  //   const amountB = price.toString()
-  //   setTokenBamount(fixD(amountB, fixDPreciseB))
-  // }
   var openConfirmOrder = useModal_1['default'](
     react_2['default'].createElement(index_1['default'], {
       openNotificationWithIcon: openNotificationWithIcon,
@@ -389,8 +367,6 @@ var Buy = function (props) {
         tokenB: tokenB,
         tokenAamount: tokenAamount,
         tokenBamount: tokenBamount,
-        // tokenFeeAamount: tokenFeeAamount,
-        // tokenFeeBamount: tokenFeeBamount,
         tokenAaddress: tokenAaddress,
         tokenBaddress: tokenBaddress,
         fixDPreciseA: fixDPreciseA,
@@ -424,8 +400,6 @@ var Buy = function (props) {
     },
     [tradeState.isTab],
   )
-  // 当前代币余额
-  // const [selectCoinBalance,setSelectCoinBalance] = useState()
   react_1.useEffect(
     function () {
       if (props.assetName) {

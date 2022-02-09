@@ -273,12 +273,10 @@ var PositionTable = function (props) {
   var pagination = {
     pageSize: 5,
   }
-  // 创建mint合约
   var MintContract = useContract_1.useMintContract()
   // const MintContract = {
   //   getPositions: (args1: any, args2: any, args3: any) => null,
   // }
-  /// @param ownerAddr 用户地址
   var account = hooks_1.useActiveWeb3React().account
   var _a = react_1.useState([]),
     dataSource = _a[0],

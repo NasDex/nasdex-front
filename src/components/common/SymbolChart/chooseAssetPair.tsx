@@ -35,16 +35,16 @@ const AssetPair = ({ onDismiss = defaultOnDismiss, from }: AssetPairProps) => {
   const [basePool, setBasePool] = useState(
     from == 'mint' && mintState.mintCoinSelect
       ? mintState.mintCoinSelect
-      : from == 'farm' && farmState.farmCoinSelect
+      : (from == 'farm' || from == 'longFarm') && farmState.farmCoinSelect
         ? farmState.farmCoinSelect
         : from == 'trade' && tradeState.tradeCoinSelect
           ? tradeState.tradeCoinSelect
-          : 'USDC',
+          : commonState.defaultCAsset,
   )
   const [assetPool, setAssetPool] = useState(
     from == 'mint' && mintState.mintCoinStock
       ? mintState.mintCoinStock
-      : from == 'farm' && farmState.farmCoinStock
+      : (from == 'farm' || from == 'longFarm') && farmState.farmCoinStock
         ? farmState.farmCoinStock
         : from == 'trade' && tradeState.tradeCoinStock
           ? tradeState.tradeCoinStock
@@ -53,7 +53,7 @@ const AssetPair = ({ onDismiss = defaultOnDismiss, from }: AssetPairProps) => {
   function coinSelect(basePool: any) {
     if (from == 'mint') {
       dispatch(upDateMintCoinSelect({ mintCoinSelect: basePool }))
-    } else if (from == 'farm') {
+    } else if (from == 'farm' || from == 'longFarm') {
       dispatch(upDateFarmCoinSelect({ farmCoinSelect: basePool }))
     } else if (from == 'trade') {
       dispatch(upDateTradeCoinSelect({ tradeCoinSelect: basePool }))
@@ -62,7 +62,7 @@ const AssetPair = ({ onDismiss = defaultOnDismiss, from }: AssetPairProps) => {
   function assetSelect(asset: any) {
     if (from == 'mint') {
       dispatch(upDateMintCoinStock({ mintCoinStock: asset }))
-    } else if (from == 'farm') {
+    } else if (from == 'farm' || from == 'longFarm') {
       dispatch(upDateFarmCoinStock({ farmCoinStock: asset }))
     } else if (from == 'trade') {
       dispatch(upDateTradeCoinStock({ tradeCoinStock: asset }))
@@ -72,7 +72,6 @@ const AssetPair = ({ onDismiss = defaultOnDismiss, from }: AssetPairProps) => {
     getAssetInfo()
   }, [commonState.assetBaseInfoObj])
   async function getAssetInfo() {
-    // const price = await getpriceList()
     const result: any = []
     let allAssetsListInfo: any = []
     const info: any = []
@@ -85,7 +84,6 @@ const AssetPair = ({ onDismiss = defaultOnDismiss, from }: AssetPairProps) => {
         let value: any
         let balance: any
         if (position.type == 'asset') {
-          // if (position.type == 'asset' || position.name == 'NSDX') {
           if (account) {
             if (position.type == 'asset') {
               value = (Number(position.swapPrice) * Number(position.balance)).toString()
@@ -97,9 +95,6 @@ const AssetPair = ({ onDismiss = defaultOnDismiss, from }: AssetPairProps) => {
             value = '0.0'
             balance = '0.0'
           }
-          // if (position.name == 'NSDX') {
-          // value = (Number(price.NSDX) * Number(position.balance)).toString()
-          // }
           result.push({
             key: position.id,
             balance: Number(balance),
@@ -107,7 +102,6 @@ const AssetPair = ({ onDismiss = defaultOnDismiss, from }: AssetPairProps) => {
             value: Number(value),
             desc: position.assetTit,
           })
-          // console.log(result, 'result')
         }
       })
     }

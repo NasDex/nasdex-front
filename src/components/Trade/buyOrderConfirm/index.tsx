@@ -104,7 +104,7 @@ const LongOrderConfirm = ({
       type="waitings"
       title={t('Swap')}
       from="trade"
-      message={`{t('Pay')} <span>${tokenAamount}</span> ${tokenA} ${t('toreceive')} <span>${fixD(
+      message={`${t('Pay')} <span>${tokenAamount}</span> ${tokenA} ${t('toreceive')} <span>${fixD(
         tokenBamount,
         assetBaseInfoObj[tokenB].swapPrecise,
       )}</span> ${tokenB}`}></OrderNoifcation>,

@@ -26,8 +26,8 @@ import masterChefAbi from '../../../../constants/abis/masterChef.json'
 
 import { ethers } from 'ethers'
 import { getLibrary } from 'utils/getLibrary'
-
-
+import { useTranslation } from 'react-i18next'
+import { simpleRpcProvider } from 'utils/providers'
 interface AutoPoolItem {
     pid: string,
     symbol: string,
@@ -56,6 +56,7 @@ const AutoPool: React.FC<AutoPoolProps> = props => {
     )
 }
 const AutoPoolItem: React.FC<any> = props => {
+    const { t, i18n } = useTranslation()
     const { login, logout } = useAuth()
     const [amount, setAmount] = useState('')
     const [balance, setBalance] = useState('')
@@ -69,7 +70,6 @@ const AutoPoolItem: React.FC<any> = props => {
     const NSDXVaultContract = useNSDXVault()
     const { account } = useActiveWeb3React()
     const { onPresentConnectModal, onPresentAccountModal } = useWalletModal(login, logout, account || undefined)
-
     const [poolInfo, setPoolInfo] = useState({
         allocPoint: 0,
         lastRewardBlock: '',
@@ -77,7 +77,7 @@ const AutoPoolItem: React.FC<any> = props => {
     async function getPoolInfo() {
         const info: any = {}
         const provider = window.ethereum
-        const library = getLibrary(provider)
+        const library = getLibrary(provider) ?? simpleRpcProvider
         const MasterChefContract = new ethers.Contract(MasterChefAddress, masterChefAbi, library)
         const poolInfoItem = await MasterChefContract.poolInfo(autoPoolItem.pid)
         info.lastRewardBlock = poolInfoItem.lastRewardBlock.toString()
@@ -87,6 +87,7 @@ const AutoPoolItem: React.FC<any> = props => {
         const totalNadx = Number(formatUnits(await NSDXVaultContract.balanceOf(), autoPoolItem.decimals))
         setTotalLiquidity(totalNadx)
     }
+
     async function getUserInfo() {
         const balance = formatUnits(await NADXContract.balanceOf(account), autoPoolItem.decimals)
         setBalance(fixD(balance, 4))
@@ -147,10 +148,10 @@ const AutoPoolItem: React.FC<any> = props => {
                 const str = Number(aprP) ? Number(aprP) / 365 / 100 : 0
                 d365 = ((1 + Number(str)) ** 365 - 1) * 100
                 if (Number(d365) > 100000000) {
-                    d365 = Infinity
+                    d365 = 'Infinity'
                 }
             } else {
-                aprP = Infinity
+                aprP = 'Infinity'
             }
             setApr(fixD(aprP, 2))
             if (d365) {
@@ -205,17 +206,16 @@ const AutoPoolItem: React.FC<any> = props => {
                     <div className="auto">
                         <img src={auto} alt="" />
                         <div className="auto-hover">
-                            Any funds you stake in this pool will be automagically harvested and restaked (compounded) for you.
+                            {t('autohover')}
                         </div>
                     </div>
                 </div>
-
             </div>
 
             <div className="liquidity-bottom liquidity-bottom-auto">
                 <div className="total-liquidity">
                     <div className="title">{fixD(totalLiquidity, 4)} </div>
-                    <div className="text">Total Staked (NSDX)</div>
+                    <div className="text">{t('TotalStaked')}</div>
                 </div>
                 <div className="apr">
                     <div className="title">
@@ -224,26 +224,26 @@ const AutoPoolItem: React.FC<any> = props => {
                             <use xlinkHref="#icon-calculator"></use>
                         </svg>
                     </div>
-                    <div className="text">APY</div>
+                    <div className="text">{t('APY')}</div>
                 </div>
                 {
                     !account ? <Button className="pc-stake-btn" onClick={() => onPresentConnectModal()}>
-                        Connect
+                        {t('Connect')}
                     </Button> : (!isApproved ? <Button className="pc-stake-btn" onClick={openStakeCard}>
-                        Stake
+                        {t('Stake')}
                     </Button> : <Button className="pc-stake-btn" onClick={() => handleApprove()} loading={requestedApproval}>
-                        Approve
+                        {t('Approve')}
                     </Button>)
                 }
 
             </div>
             {
                 !account ? <Button className="h5-stake-btn" onClick={() => onPresentConnectModal()}>
-                    Connect
+                    {t('Connect')}
                 </Button> : (!isApproved ? <Button className="h5-stake-btn" onClick={openStakeCard}>
-                    Stake
+                    {t('Stake')}
                 </Button> : <Button className="h5-stake-btn" onClick={() => handleApprove()} loading={requestedApproval}>
-                    Approve
+                    {t('Approve')}
                 </Button>)
             }
 
@@ -252,13 +252,13 @@ const AutoPoolItem: React.FC<any> = props => {
                 {
                     recentNsdxProfit ? <div className="claim">
                         <div className="left">
-                            <span>Recent NSDX Profit</span>
+                            <span>{t('RecentNSDXProfit')}</span>
                             <div className="tip">
                                 <img src={tip} alt="" className="tip-img" />
                                 <div className="tip-hover">
-                                    <p>0.1% unstaking fee if withdrawn</p>
-                                    <p>within 72h</p>
-                                    <p>Performance Fee 2%</p>
+                                    <p>{t('fee')}</p>
+                                    <p>{t('within')}</p>
+                                    <p>{t('Performance')}</p>
                                 </div>
                             </div>
                             <p>{fixD(recentNsdxProfit, 4)}</p>
@@ -268,17 +268,17 @@ const AutoPoolItem: React.FC<any> = props => {
                 {
                     Number(amount) > 0 ? <div className="claim">
                         <div className="left">
-                            <span>Staked</span>
+                            <span>{t('Staked')}</span>
                             <p>{amount}</p>
                         </div>
                         {
                             !account ? <Button className="pc-stake-btn" onClick={() => onPresentConnectModal()}>
-                                Connect
+                                {t('Connect')}
                             </Button> :
                                 (!isApproved ? <Button className="pc-stake-btn" onClick={openUntakeCard}>
-                                    Unstake
+                                    {t('Unstake')}
                                 </Button> : <Button className="pc-stake-btn" onClick={() => handleApprove()} loading={requestedApproval}>
-                                    Approve
+                                    {t('Approve')}
                                 </Button>)
                         }
                     </div> : null
