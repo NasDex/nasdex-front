@@ -130,6 +130,7 @@ const LongOrderConfirm = ({
       fixD(tokenBamount - tokenBamount * 0.01 * Number(tradeState.slippageTolerance), assetBaseInfoObj[tokenB].decimals).toString(),
       assetBaseInfoObj[tokenB].decimals)
     const deadline = tradeState?.deadline
+    const parsedDeadline = parseInt(deadline)
     openWaiting()
     try {
       const txHash = await swapRouterContract.swapExactTokensForTokens(
@@ -137,7 +138,7 @@ const LongOrderConfirm = ({
         amountOutMin,
         [tokenAaddress, tokenBaddress],
         account,
-        deadline,
+        parsedDeadline,
       )
       dispatch(upDateTxHash({ hash: txHash.hash }))
       setSwapConfirmBtn(false)
@@ -188,6 +189,7 @@ const LongOrderConfirm = ({
       fixD(Number(tokenAamount) + Number(tokenAamount) * 0.01 * Number(tradeState.slippageTolerance), assetBaseInfoObj[tokenA].decimals).toString(),
       assetBaseInfoObj[tokenA].decimals)
     const deadline = tradeState?.deadline
+    const parsedDeadline = parseInt(deadline)
     openWaiting()
     try {
       const txHash = await swapRouterContract.swapTokensForExactTokens(
@@ -195,7 +197,7 @@ const LongOrderConfirm = ({
         amountInMax,
         [tokenAaddress, tokenBaddress],
         account,
-        deadline,
+        parsedDeadline,
       )
       dispatch(upDateTxHash({ hash: txHash.hash }))
       setSwapConfirmBtn(false)
@@ -244,13 +246,14 @@ const LongOrderConfirm = ({
     const amountIn = parseUnits(tokenAamount, assetBaseInfoObj[tokenA].decimals)
     const amountOut = parseUnits(Math.floor(tokenBamount).toString(), assetBaseInfoObj[tokenB].decimals)
     const deadline = tradeState?.deadline
+    const parsedDeadline = parseInt(deadline)
     openWaiting()
     try {
       const txHash = await swapRouterContract.swapETHForExactTokens(
         amountOut,
         [tokenAaddress, tokenBaddress],
         account,
-        deadline,
+        parsedDeadline,
         {
           value: amountIn,
         },
@@ -285,13 +288,14 @@ const LongOrderConfirm = ({
     const amountIn = parseUnits('0', assetBaseInfoObj[tokenA].decimals)
     const amountOutMin = parseUnits(tokenBamount, assetBaseInfoObj[tokenB].decimals)
     const deadline = tradeState?.deadline
+    const parsedDeadline = parseInt(deadline)
     openWaiting()
     try {
       const txHash = await swapRouterContract.swapExactETHForTokens(
         amountIn,
         [tokenBaddress, tokenAaddress],
         account,
-        deadline,
+        parsedDeadline,
         {
           value: amountOutMin,
         },
