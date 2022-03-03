@@ -129,7 +129,7 @@ const LongOrderConfirm = ({
     const amountOutMin = parseUnits(
       fixD(tokenBamount - tokenBamount * 0.01 * Number(tradeState.slippageTolerance), assetBaseInfoObj[tokenB].decimals).toString(),
       assetBaseInfoObj[tokenB].decimals)
-    const timestamp = tradeState?.deadline
+    const deadline = tradeState?.deadline
     openWaiting()
     try {
       const txHash = await swapRouterContract.swapExactTokensForTokens(
@@ -137,7 +137,7 @@ const LongOrderConfirm = ({
         amountOutMin,
         [tokenAaddress, tokenBaddress],
         account,
-        timestamp,
+        deadline,
       )
       dispatch(upDateTxHash({ hash: txHash.hash }))
       setSwapConfirmBtn(false)
@@ -187,7 +187,7 @@ const LongOrderConfirm = ({
     const amountInMax = parseUnits(
       fixD(Number(tokenAamount) + Number(tokenAamount) * 0.01 * Number(tradeState.slippageTolerance), assetBaseInfoObj[tokenA].decimals).toString(),
       assetBaseInfoObj[tokenA].decimals)
-    const timestamp = tradeState?.deadline
+    const deadline = tradeState?.deadline
     openWaiting()
     try {
       const txHash = await swapRouterContract.swapTokensForExactTokens(
@@ -195,7 +195,7 @@ const LongOrderConfirm = ({
         amountInMax,
         [tokenAaddress, tokenBaddress],
         account,
-        timestamp,
+        deadline,
       )
       dispatch(upDateTxHash({ hash: txHash.hash }))
       setSwapConfirmBtn(false)
@@ -243,14 +243,14 @@ const LongOrderConfirm = ({
     setIsLoading(true)
     const amountIn = parseUnits(tokenAamount, assetBaseInfoObj[tokenA].decimals)
     const amountOut = parseUnits(Math.floor(tokenBamount).toString(), assetBaseInfoObj[tokenB].decimals)
-    const timestamp = tradeState?.deadline
+    const deadline = tradeState?.deadline
     openWaiting()
     try {
       const txHash = await swapRouterContract.swapETHForExactTokens(
         amountOut,
         [tokenAaddress, tokenBaddress],
         account,
-        timestamp,
+        deadline,
         {
           value: amountIn,
         },
@@ -284,14 +284,14 @@ const LongOrderConfirm = ({
     setIsLoading(true)
     const amountIn = parseUnits('0', assetBaseInfoObj[tokenA].decimals)
     const amountOutMin = parseUnits(tokenBamount, assetBaseInfoObj[tokenB].decimals)
-    const timestamp = tradeState?.deadline
+    const deadline = tradeState?.deadline
     openWaiting()
     try {
       const txHash = await swapRouterContract.swapExactETHForTokens(
         amountIn,
         [tokenBaddress, tokenAaddress],
         account,
-        timestamp,
+        deadline,
         {
           value: amountOutMin,
         },
