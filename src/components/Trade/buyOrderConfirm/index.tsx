@@ -129,7 +129,7 @@ const LongOrderConfirm = ({
     const amountOutMin = parseUnits(
       fixD(tokenBamount - tokenBamount * 0.01 * Number(tradeState.slippageTolerance), assetBaseInfoObj[tokenB].decimals).toString(),
       assetBaseInfoObj[tokenB].decimals)
-    const timestamp = Math.ceil(new Date().valueOf() / 1000) + 60
+    const timestamp = tradeState?.deadline
     openWaiting()
     try {
       const txHash = await swapRouterContract.swapExactTokensForTokens(
@@ -187,7 +187,7 @@ const LongOrderConfirm = ({
     const amountInMax = parseUnits(
       fixD(Number(tokenAamount) + Number(tokenAamount) * 0.01 * Number(tradeState.slippageTolerance), assetBaseInfoObj[tokenA].decimals).toString(),
       assetBaseInfoObj[tokenA].decimals)
-    const timestamp = Math.ceil(new Date().valueOf() / 1000) + 60
+    const timestamp = tradeState?.deadline
     openWaiting()
     try {
       const txHash = await swapRouterContract.swapTokensForExactTokens(
@@ -243,7 +243,7 @@ const LongOrderConfirm = ({
     setIsLoading(true)
     const amountIn = parseUnits(tokenAamount, assetBaseInfoObj[tokenA].decimals)
     const amountOut = parseUnits(Math.floor(tokenBamount).toString(), assetBaseInfoObj[tokenB].decimals)
-    const timestamp = Math.ceil(new Date().valueOf() / 1000) + 60
+    const timestamp = tradeState?.deadline
     openWaiting()
     try {
       const txHash = await swapRouterContract.swapETHForExactTokens(
@@ -284,7 +284,7 @@ const LongOrderConfirm = ({
     setIsLoading(true)
     const amountIn = parseUnits('0', assetBaseInfoObj[tokenA].decimals)
     const amountOutMin = parseUnits(tokenBamount, assetBaseInfoObj[tokenB].decimals)
-    const timestamp = Math.ceil(new Date().valueOf() / 1000) + 60
+    const timestamp = tradeState?.deadline
     openWaiting()
     try {
       const txHash = await swapRouterContract.swapExactETHForTokens(
