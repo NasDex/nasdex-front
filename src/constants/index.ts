@@ -1,6 +1,7 @@
 /** @format */
 export enum ChainId {
   MAINNET = 137,
+  MUMBAI_TESTNET = 80001
 }
 
 export const NSDXPrice = 0.25

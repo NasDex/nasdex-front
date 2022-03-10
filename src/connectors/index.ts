@@ -7,10 +7,11 @@ import {WalletConnectConnector} from '@web3-react/walletconnect-connector'
 import {WalletLinkConnector} from '@web3-react/walletlink-connector'
 import {NetworkConnector} from './NetworkConnector'
 import getNodeUrl from 'utils/getRpcUrl'
+import { ChainId } from './../constants/index'
 
 const NETWORK_URL = process.env.REACT_APP_NETWORK_URL
 
-export const NETWORK_CHAIN_ID: number = parseInt(process.env.REACT_APP_CHAIN_ID ?? '1')
+export const NETWORK_CHAIN_ID: number = parseInt(process.env.REACT_APP_CHAIN_ID ?? String(ChainId.MAINNET))
 
 if (typeof NETWORK_URL === 'undefined') {
   throw new Error(`REACT_APP_NETWORK_URL must be a defined environment variable`)
@@ -27,8 +28,7 @@ export function getNetworkLibrary(): Web3Provider {
 }
 
 export const injected = new InjectedConnector({
-  supportedChainIds: [137],
-  // supportedChainIds: [80001],
+  supportedChainIds: [ChainId.MAINNET , ChainId.MUMBAI_TESTNET],
 })
 // mainnet only
 export const walletconnect = new WalletConnectConnector({
