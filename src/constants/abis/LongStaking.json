@@ -115,16 +115,6 @@
         "type": "uint256"
       },
       {
-        "internalType": "contract IStakingToken",
-        "name": "_longToken",
-        "type": "address"
-      },
-      {
-        "internalType": "contract IUniswapPair",
-        "name": "_lpToken",
-        "type": "address"
-      },
-      {
         "internalType": "bool",
         "name": "_withUpdate",
         "type": "bool"
@@ -285,9 +275,9 @@
     "name": "poolInfo",
     "outputs": [
       {
-        "internalType": "contract IStakingToken",
-        "name": "shortToken",
-        "type": "address"
+        "internalType": "uint256",
+        "name": "totalDeposit",
+        "type": "uint256"
       },
       {
         "internalType": "contract IUniswapPair",
@@ -424,9 +414,9 @@
       {
         "components": [
           {
-            "internalType": "contract IStakingToken",
-            "name": "shortToken",
-            "type": "address"
+            "internalType": "uint256",
+            "name": "totalDeposit",
+            "type": "uint256"
           },
           {
             "internalType": "contract IUniswapPair",

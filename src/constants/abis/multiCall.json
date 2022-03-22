@@ -129,7 +129,7 @@
                                 "type": "address"
                             },
                             {
-                                "internalType": "contract AggregatorV3Interface",
+                                "internalType": "contract IChainlinkAggregator",
                                 "name": "oracle",
                                 "type": "address"
                             },
@@ -213,7 +213,7 @@
                                 "type": "address"
                             },
                             {
-                                "internalType": "contract AggregatorV3Interface",
+                                "internalType": "contract IChainlinkAggregator",
                                 "name": "oracle",
                                 "type": "address"
                             },

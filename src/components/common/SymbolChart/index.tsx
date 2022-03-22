@@ -446,6 +446,8 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
     }
     const nowDate = Math.round(new Date().getTime() / 1000).toString()
     const beforeDate = Number(nowDate) - timestamp
+
+    console.log(`https://api.nasdex.xyz/v1/price?symbol=${symbol}&type=${type}&start=${beforeDate}&end=${nowDate}`)
     axios({
       method: 'GET',
       baseURL: 'https://api.nasdex.xyz',

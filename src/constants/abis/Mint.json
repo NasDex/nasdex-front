@@ -40,6 +40,11 @@
         "internalType": "address",
         "name": "weth_",
         "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "feeTo_",
+        "type": "address"
       }
     ],
     "stateMutability": "nonpayable",
@@ -160,6 +165,30 @@
     "type": "event"
   },
   {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "positionId",
+        "type": "uint256"
+      }
+    ],
+    "name": "amountInAuction",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "asset",
     "outputs": [
@@ -211,6 +240,24 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "cAssetToken",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "claimFee",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint256",
         "name": "positionId",
         "type": "uint256"
@@ -234,6 +281,19 @@
         "internalType": "uint16",
         "name": "",
         "type": "uint16"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "feeTo",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -367,6 +427,19 @@
   },
   {
     "inputs": [],
+    "name": "oracleMaxDelay",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "owner",
     "outputs": [
       {
@@ -431,6 +504,19 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "swapToToken",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -483,6 +569,11 @@
       {
         "internalType": "address",
         "name": "swapRouter_",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "feeTo_",
         "type": "address"
       }
     ],
