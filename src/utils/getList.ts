@@ -103,6 +103,7 @@ export async function getCommonAssetInfo(account?: string) {
         
         const reserves0 = Number(formatUnits(swapPriceResult.reserves[0], assetBaseInfoObj[token0Name].decimals))
         const reserves1 = Number(formatUnits(swapPriceResult.reserves[1], assetBaseInfoObj[token1Name].decimals))
+
         if (swapPriceResult.token0 == assetBaseInfoObj[asset].address) {
           assetBaseInfoObj[asset].swapPrice = reserves1 / reserves0
         } else {
@@ -121,6 +122,7 @@ export async function getCommonAssetInfo(account?: string) {
     }
     allAssetsListInfo.push(assetBaseInfoObj[asset])
   }
+
   const MintContract = new ethers.Contract(mintAddress, MintAbi, library)
   const feerate = (await MintContract.feeRate()) / 1000
   const SEOracleContract = new ethers.Contract(SEOracleAddress, STAOracle, library)
@@ -135,7 +137,7 @@ export async function getCommonAssetInfo(account?: string) {
 }
 
 export async function getAssetList(): Promise<any> {
-  const response = await fetch('https://api.nasdex.xyz/v1/config', {
+  const response = await fetch('https://test-api.nasdex.xyz/config.json', {
     method: 'get',
   })
   const json = await response.json()

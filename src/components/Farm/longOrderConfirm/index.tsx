@@ -92,13 +92,14 @@ const LongOrderConfirm = ({
       fixD(Bminimum, commonState.assetBaseInfoObj[tokenB].decimals).toString(), commonState.assetBaseInfoObj[tokenB].decimals)
     const newDate = new Date()
     const nowtime = newDate.getTime()
-    const swapDeadline = Number(nowtime) + Number(farmState.deadline) * 60
+    const swapDeadline = Math.ceil(nowtime / 1000) + Number(farmState.deadline) * 60
     dispatch(upDateTxHash({ hash: '' }))
     try {
       setLongConfirmBtn(true)
       setLongConfirm(true)
       let tx
       openWaiting()
+      console.log(Number(id), Aamount, Bamount, swapAmountAMin, swapAmountBMin, swapDeadline)
       if (token0Address == commonState.assetBaseInfoObj[tokenA].address) {
         tx = await longStakingContract.deposit(
           Number(id),

@@ -32,6 +32,7 @@ import {
   LongStakingAddress,
   ETHOracleAddress,
   SEOracleAddress,
+  aUSTOracleAddress,
 } from '../../../constants/index'
 import { formatUnits } from 'ethers/lib/utils'
 import ltokenAbi from 'constants/abis/ltoken.json'
@@ -99,6 +100,7 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
     let asset
     let cAsset
     let oraclePrice
+    let cOraclePrice
     if (commonState.assetBaseInfoObj[assetName]?.type == 'asset') {
       asset = assetName
       cAsset = cAssetName
@@ -111,6 +113,13 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
       const SEOraclePrice = await SEOracleContract.latestRoundData()
       oraclePrice = fixD(formatUnits(SEOraclePrice.answer, 8), 4)
     }
+
+    if (cAsset == 'aUST') {
+      const AUSTOracleContract = new ethers.Contract(aUSTOracleAddress, STAOracle, library)
+      const AUSTOraclePrice = await AUSTOracleContract.latestRoundData()
+      cOraclePrice = fixD(formatUnits(AUSTOraclePrice.answer, 8), 4)
+    }
+
     if (account) {
       const assetNewInfo = await getOneAssetInfo(
         asset,
@@ -126,7 +135,7 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
         account,
         commonState.assetBaseInfoObj,
       )
-      const onecAssetInfo = { ...commonState.assetBaseInfoObj[cAsset], ...cassetNewInfo }
+      const onecAssetInfo = { ...commonState.assetBaseInfoObj[cAsset], ...cassetNewInfo, oraclePrice: cOraclePrice }
       dispatch(upDateOneAssetBaseInfo({ oneAssetBaseInfo: onecAssetInfo }))
     }
   }
@@ -249,19 +258,22 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
     let casset
     let valueChange: any
     if (commonState.assetBaseInfoObj[assetName]?.type == 'asset') {
-      if (assetName == 'nSE') {
-        symbol = `SE/USD`
-        valueChange = 200
-      } else {
-        const assetArr = assetName.split('')
-        const newassetArr = assetArr.slice(1)
-        asset = newassetArr.join('')
-        const cassetArr = cAssetName.split('')
-        const newcassetArr = cassetArr.slice(0, -1)
-        casset = newcassetArr.join('')
-        symbol = `${asset}/${casset}`
-        valueChange = 150
-      }
+      // if (assetName == 'nSE') {
+      //   symbol = `SE/USD`
+      //   valueChange = 200
+      // } else {
+      //   const assetArr = assetName.split('')
+      //   const newassetArr = assetArr.slice(1)
+      //   asset = newassetArr.join('')
+      //   const cassetArr = cAssetName.split('')
+      //   const newcassetArr = cassetArr.slice(0, -1)
+      //   casset = newcassetArr.join('')
+      //   symbol = `${asset}/${casset}`
+      //   valueChange = 150
+      // }
+      console.log(commonState.assetBaseInfoObj)
+      symbol = `${commonState.assetBaseInfoObj[assetName]?.key}/${commonState.assetBaseInfoObj[cAssetName]?.key}`
+      valueChange = 200
     } else {
       if (cAssetName == 'nSE') {
         symbol = `SE/USD`
@@ -280,13 +292,13 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
     if (timeStatus || assetName) {
       switch (timeStatus) {
         case `${t('Day')}`:
-          getKlineData(symbol, '15m', 86400, 9, 'day', valueChange)
+          getKlineData(symbol, '1d', 86400, 9, 'day', valueChange)
           break
         case `${t('Week')}`:
-          getKlineData(symbol, '1h', 604800, 24, 'week', valueChange)
+          getKlineData(symbol, '7d', 604800, 24, 'week', valueChange)
           break
         case `${t('Month')}`:
-          getKlineData(symbol, '1d', 2592000, 2, 'month', valueChange)
+          getKlineData(symbol, '1m', 2592000, 2, 'month', valueChange)
           break
         default:
           break
@@ -447,11 +459,14 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
     const nowDate = Math.round(new Date().getTime() / 1000).toString()
     const beforeDate = Number(nowDate) - timestamp
 
-    console.log(`https://api.nasdex.xyz/v1/price?symbol=${symbol}&type=${type}&start=${beforeDate}&end=${nowDate}`)
+    let lpUrl = ''
+    if (from == 'trade' || from == 'longFarm') {
+      lpUrl = '/lp'
+    }
     axios({
       method: 'GET',
-      baseURL: 'https://api.nasdex.xyz',
-      url: `/v1/price?symbol=${symbol}&type=${type}&start=${beforeDate}&end=${nowDate}`,
+      baseURL: 'https://test-api.nasdex.xyz',
+      url: `/v1/price${lpUrl}?symbol=${symbol}&type=${type}&start=${beforeDate}&end=${nowDate}`,
     }).then(res => {
       if (res && res.data && res.data.code === 0) {
         const data = res.data.data.data

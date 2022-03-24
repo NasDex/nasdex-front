@@ -129,7 +129,8 @@ const LongOrderConfirm = ({
     const amountOutMin = parseUnits(
       fixD(tokenBamount - tokenBamount * 0.01 * Number(tradeState.slippageTolerance), assetBaseInfoObj[tokenB].decimals).toString(),
       assetBaseInfoObj[tokenB].decimals)
-    const timestamp = Math.ceil(new Date().valueOf() / 1000) + 60
+    const deadline = tradeState.deadline
+    const timestamp = Math.ceil(new Date().valueOf() / 1000) + Number(deadline) * 60
     openWaiting()
     try {
       const txHash = await swapRouterContract.swapExactTokensForTokens(
@@ -187,7 +188,8 @@ const LongOrderConfirm = ({
     const amountInMax = parseUnits(
       fixD(Number(tokenAamount) + Number(tokenAamount) * 0.01 * Number(tradeState.slippageTolerance), assetBaseInfoObj[tokenA].decimals).toString(),
       assetBaseInfoObj[tokenA].decimals)
-    const timestamp = Math.ceil(new Date().valueOf() / 1000) + 60
+    const deadline = tradeState.deadline
+    const timestamp = Math.ceil(new Date().valueOf() / 1000) + Number(deadline) * 60
     openWaiting()
     try {
       const txHash = await swapRouterContract.swapTokensForExactTokens(
