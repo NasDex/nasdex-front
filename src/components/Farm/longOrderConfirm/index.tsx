@@ -99,7 +99,6 @@ const LongOrderConfirm = ({
       setLongConfirm(true)
       let tx
       openWaiting()
-      console.log(Number(id), Aamount, Bamount, swapAmountAMin, swapAmountBMin, swapDeadline)
       if (token0Address == commonState.assetBaseInfoObj[tokenA].address) {
         tx = await longStakingContract.deposit(
           Number(id),

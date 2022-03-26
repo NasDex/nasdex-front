@@ -1,7 +1,7 @@
 /** @format */
 /* eslint-disable @typescript-eslint/no-var-requires */
 /** @format */
-import react, { useRef, useState } from 'react'
+import {useRef, useState} from 'react'
 import '../../../style/Mint/symbolChart.less'
 import TipsImg from '../../../img/common/tips@2x.png'
 import useModal from '../../../hooks/useModal'
@@ -9,37 +9,26 @@ import TikerInfo from './tikerInfo'
 import * as echarts from 'echarts'
 import AssetPair from './chooseAssetPair'
 import axios from 'axios'
-import { useEffect } from 'react'
-import { fixD, numberConversion } from 'utils'
-import { useDispatch } from 'react-redux'
-import { useMintState } from 'state/mint/hooks'
-import { useManageState } from 'state/manage/hooks'
-import { useFarmState } from 'state/farm/hooks'
-import { useTradeState } from 'state/trade/hooks'
-import { useCommonState } from 'state/common/hooks'
-import { getSwapPrice, getOneAssetInfo } from 'utils/getList'
-import { upDateOneAssetBaseInfo } from 'state/common/actions'
-import { useActiveWeb3React } from 'hooks'
-import { upDateIsTab } from 'state/trade/actions'
-import { getLibrary } from 'utils/getLibrary'
-import { ethers } from 'ethers'
-import lpContractAbi from '../../../constants/abis/lpContract.json'
-import SwapFactoryAbi from '../../../constants/abis/swapFactory.json'
-import LongStakingAbi from '../../../constants/abis/LongStaking.json'
+import {useEffect} from 'react'
+import {fixD} from 'utils'
+import {useDispatch} from 'react-redux'
+import {useMintState} from 'state/mint/hooks'
+import {useManageState} from 'state/manage/hooks'
+import {useFarmState} from 'state/farm/hooks'
+import {useTradeState} from 'state/trade/hooks'
+import {useCommonState} from 'state/common/hooks'
+import {getSwapPrice, getOneAssetInfo} from 'utils/getList'
+import {upDateOneAssetBaseInfo} from 'state/common/actions'
+import {useActiveWeb3React} from 'hooks'
+import {getLibrary} from 'utils/getLibrary'
+import {ethers} from 'ethers'
 import {
-  SwapFactoryAddress,
-  MasterChefTestAddress,
-  LongStakingAddress,
-  ETHOracleAddress,
-  SEOracleAddress,
-  aUSTOracleAddress,
+  oracleList,
 } from '../../../constants/index'
-import { formatUnits } from 'ethers/lib/utils'
-import ltokenAbi from 'constants/abis/ltoken.json'
-import ETHOracle from '../../../constants/abis/ETHOracle.json'
+import {formatUnits} from 'ethers/lib/utils'
 import STAOracle from '../../../constants/abis/STAOracle.json'
-import { useTranslation } from 'react-i18next'
-import { simpleRpcProvider } from 'utils/providers'
+import {useTranslation} from 'react-i18next'
+import {simpleRpcProvider} from 'utils/providers'
 
 interface SymoblChartProps {
   SymoblChart: SymoblChart
@@ -71,7 +60,7 @@ interface AutoPoolItem {
 }
 
 const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
-  const { t, i18n } = useTranslation()
+  const {t, i18n} = useTranslation()
   const timeStatusList = [`${t('Day')}`, `${t('Week')}`, `${t('Month')}`]
   const mintState = useMintState()
   const manageState = useManageState()
@@ -84,7 +73,7 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
   const [maxPrice, setMaxPrice] = useState(0)
   const [Liquidity, setLiquidity] = useState('')
   const [symbol, setSymbol] = useState('')
-  const { volume, liquidity, premium, from } = props.SymoblChart
+  const {volume, liquidity, premium, from} = props.SymoblChart
   const [openAssetPair] = useModal(<AssetPair from={from}></AssetPair>)
   const [timeStatus, setTimeStatus] = useState(`${t('Day')}`)
   const [assetName, setAssetName] = useState(props.assetName || commonState.defaultAsset)
@@ -92,15 +81,17 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
   const [openTikerInfo] = useModal(<TikerInfo nowPrice={nowPrice} from={from} cAssetName={cAssetName}></TikerInfo>)
   const [premiumValue, setPremiumValue] = useState('')
   const chartRef = useRef(null)
-  const { account } = useActiveWeb3React()
+  const {account} = useActiveWeb3React()
   const [isTab, setIsTab] = useState(false)
   const provider = window.ethereum
   const library = getLibrary(provider) ?? simpleRpcProvider
+
   async function getOraclePrice(assetName: any, cAssetName: any) {
-    let asset
-    let cAsset
+    let asset = ''
+    let cAsset = ''
     let oraclePrice
     let cOraclePrice
+
     if (commonState.assetBaseInfoObj[assetName]?.type == 'asset') {
       asset = assetName
       cAsset = cAssetName
@@ -108,17 +99,44 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
       asset = cAssetName
       cAsset = assetName
     }
-    if (asset == 'nSE') {
-      const SEOracleContract = new ethers.Contract(SEOracleAddress, STAOracle, library)
-      const SEOraclePrice = await SEOracleContract.latestRoundData()
-      oraclePrice = fixD(formatUnits(SEOraclePrice.answer, 8), 4)
-    }
+    // if (asset == 'nSE') {
+    //   const SEOracleContract = new ethers.Contract(SEOracleAddress, STAOracle, library)
+    //   const SEOraclePrice = await SEOracleContract.latestRoundData()
+    //   const SEOracleDecimal = await SEOracleContract.decimals()
+    //   oraclePrice = fixD(formatUnits(SEOraclePrice.answer, SEOracleDecimal), 4)
+    // }
 
-    if (cAsset == 'aUST') {
-      const AUSTOracleContract = new ethers.Contract(aUSTOracleAddress, STAOracle, library)
-      const AUSTOraclePrice = await AUSTOracleContract.latestRoundData()
-      cOraclePrice = fixD(formatUnits(AUSTOraclePrice.answer, 8), 4)
-    }
+    (
+      await Promise.all(
+        oracleList.map(async ol => {
+          if (asset == ol.assetKey || cAsset == ol.assetKey) {
+            const contract = new ethers.Contract(ol.address, STAOracle, library)
+            const price = await contract.latestRoundData()
+            const decimals = await contract.decimals()
+            oraclePrice = fixD(formatUnits(price.answer, decimals), 4)
+            return {
+              ...ol,
+              oraclePrice,
+            }
+          } else {
+            return ol
+          }
+        }),
+      )
+    ).forEach(ol => {
+      if (asset == ol.assetKey) {
+        oraclePrice = Number(ol.oraclePrice)
+      } else if (cAsset == ol.assetKey) {
+        cOraclePrice = Number(ol.oraclePrice)
+      }
+    })
+
+    // if (cAsset == 'aUST') {
+    //   const AUSTOracleContract = new ethers.Contract(aUSTOracleAddress, STAOracle, library)
+    //   const AUSTOraclePrice = await AUSTOracleContract.latestRoundData()
+    //   const AUSTOracleDecimal = await AUSTOracleContract.decimals()
+    //   cOraclePrice = fixD(formatUnits(AUSTOraclePrice.answer, AUSTOracleDecimal), 4)
+    // }
 
     if (account) {
       const assetNewInfo = await getOneAssetInfo(
@@ -127,16 +145,16 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
         account,
         commonState.assetBaseInfoObj,
       )
-      const oneAssetInfo = { ...commonState.assetBaseInfoObj[asset], ...assetNewInfo, oraclePrice }
-      dispatch(upDateOneAssetBaseInfo({ oneAssetBaseInfo: oneAssetInfo }))
+      const oneAssetInfo = {...commonState.assetBaseInfoObj[asset], ...assetNewInfo, oraclePrice}
+      dispatch(upDateOneAssetBaseInfo({oneAssetBaseInfo: oneAssetInfo}))
       const cassetNewInfo = await getOneAssetInfo(
         cAsset,
         commonState.assetBaseInfoObj[cAsset]?.address,
         account,
         commonState.assetBaseInfoObj,
       )
-      const onecAssetInfo = { ...commonState.assetBaseInfoObj[cAsset], ...cassetNewInfo, oraclePrice: cOraclePrice }
-      dispatch(upDateOneAssetBaseInfo({ oneAssetBaseInfo: onecAssetInfo }))
+      const onecAssetInfo = {...commonState.assetBaseInfoObj[cAsset], ...cassetNewInfo, oraclePrice: cOraclePrice}
+      dispatch(upDateOneAssetBaseInfo({oneAssetBaseInfo: onecAssetInfo}))
     }
   }
   useEffect(() => {
@@ -179,8 +197,12 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
     if (swapPriceResult) {
       const token0Name = commonState.assetsNameInfo[swapPriceResult.token0]
       const token1Name = commonState.assetsNameInfo[swapPriceResult.token1]
-      const reserves0 = Number(formatUnits(swapPriceResult.reserves[0], commonState.assetBaseInfoObj[token0Name]?.decimals))
-      const reserves1 = Number(formatUnits(swapPriceResult.reserves[1], commonState.assetBaseInfoObj[token1Name]?.decimals))
+      const reserves0 = Number(
+        formatUnits(swapPriceResult.reserves[0], commonState.assetBaseInfoObj[token0Name]?.decimals),
+      )
+      const reserves1 = Number(
+        formatUnits(swapPriceResult.reserves[1], commonState.assetBaseInfoObj[token1Name]?.decimals),
+      )
       if (swapPriceResult.token0 == commonState.assetBaseInfoObj[assetName]?.address) {
         price = (reserves1 / reserves0).toString()
       } else {
@@ -361,10 +383,10 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
     },
     yAxis: {
       min: (value: any) => {
-        return value.min - (value.min * 0.005)
+        return value.min - value.min * 0.005
       },
       max: (value: any) => {
-        return value.max + (value.max * 0.005)
+        return value.max + value.max * 0.005
       },
       position: 'right',
       splitLine: {
@@ -465,7 +487,7 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
     }
     axios({
       method: 'GET',
-      baseURL: 'https://test-api.nasdex.xyz',
+      baseURL: 'http://localhost:8080',
       url: `/v1/price${lpUrl}?symbol=${symbol}&type=${type}&start=${beforeDate}&end=${nowDate}`,
     }).then(res => {
       if (res && res.data && res.data.code === 0) {
@@ -509,10 +531,10 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
     if (from == 'trade' || from == 'longFarm') {
       return {
         __html: `<span>${t('swapPrice')}</span>
-      <p>${t('swapPriceTips')}</p>`
+      <p>${t('swapPriceTips')}</p>`,
       }
     } else {
-      return { __html: `${t('OraclePrice')}` }
+      return {__html: `${t('OraclePrice')}`}
     }
   }
 
@@ -558,11 +580,15 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
       </div>
       <div className="chart-info">
         <div className="symbol-price">
-          {from == 'trade' || (from == 'farm' || from == 'longFarm') ? (
+          {from == 'trade' || from == 'farm' || from == 'longFarm' ? (
             <div className="price">
               {commonState.assetBaseInfoObj[cAssetName].type == 'asset'
-                ? from == 'trade' || from == 'longFarm' ? (fixD(commonState.assetBaseInfoObj[cAssetName]?.swapPrice, 4)) : (commonState.assetBaseInfoObj[cAssetName]?.oraclePrice)
-                : from == 'trade' || from == 'longFarm' ? (fixD(commonState.assetBaseInfoObj[assetName]?.swapPrice, 4)) : (commonState.assetBaseInfoObj[assetName]?.oraclePrice)}
+                ? from == 'trade' || from == 'longFarm'
+                  ?  fixD(commonState.assetBaseInfoObj[cAssetName]?.swapPrice, 4)
+                  : commonState.assetBaseInfoObj[cAssetName]?.isNoNStableCoin == 1 ? commonState.assetBaseInfoObj[assetName]?.oraclePrice / commonState.assetBaseInfoObj[cAssetName]?.oraclePrice : commonState.assetBaseInfoObj[cAssetName]?.oraclePrice
+                : from == 'trade' || from == 'longFarm'
+                ? fixD(commonState.assetBaseInfoObj[assetName]?.swapPrice, 4)
+                : commonState.assetBaseInfoObj[cAssetName]?.isNoNStableCoin == 1 ? commonState.assetBaseInfoObj[assetName]?.oraclePrice / commonState.assetBaseInfoObj[cAssetName]?.oraclePrice : commonState.assetBaseInfoObj[assetName]?.oraclePrice }
               &nbsp;
               {commonState.assetBaseInfoObj[cAssetName]?.type == 'asset' ? assetName : cAssetName}
               <img src={TipsImg} alt="" />
@@ -571,7 +597,9 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
           ) : (
             <div className="price">
               {assetName
-                ? commonState.assetBaseInfoObj[assetName]?.oraclePrice
+                ? commonState.assetBaseInfoObj[cAssetName]?.isNoNStableCoin == 1 
+                  ? fixD(commonState.assetBaseInfoObj[assetName]?.oraclePrice / commonState.assetBaseInfoObj[cAssetName]?.oraclePrice, 4)
+                  : commonState.assetBaseInfoObj[assetName]?.oraclePrice
                 : commonState.assetBaseInfoObj[commonState.defaultAsset]?.oraclePrice}
               &nbsp;
               {cAssetName ? cAssetName : commonState.defaultCAsset}
@@ -588,9 +616,9 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
               style={
                 item === timeStatus
                   ? {
-                    color: '#333333',
-                    background: '#F2F4FC',
-                  }
+                      color: '#333333',
+                      background: '#F2F4FC',
+                    }
                   : {}
               }>
               {item}
@@ -598,7 +626,7 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
           ))}
         </div>
       </div>
-      <div className="chart-view" style={{ width: '580', height: '359px' }} ref={chartRef} />
+      <div className="chart-view" style={{width: '580', height: '359px'}} ref={chartRef} />
     </div>
   )
 }

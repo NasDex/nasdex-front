@@ -9,7 +9,7 @@ export const NetworkContextName = 'NETWORK'
 export const NSDXVaultAddress = '0xF7a2B32B92bfAC72fE1e2C8a3c5D3079e88B7816' 
 export const MasterChefAddress = '0xFe12AddfCDa0047aE304ADe81cEA6eBEe304a35d' 
 export const NSDXToken = '0x620c07ab0d26Fc22E346aadC895bc1eD84C6CF78' 
-export const LPAddress = '0xF914dae3144E6f19DdD9143bd0f8ff8Fb016534a' 
+export const LPAddress = '0x9d74037228Aa739904086D4EC3b9FcBF2DaD28e1' 
 
 export const mintAddress = '0x3f4b4c27F22F768F6756f0Ab5AC7D8570A94253b' 
 export const USDTaddress = '0x519130DA1C46CF79F39A0339016c07c77f938fCB'
@@ -48,3 +48,21 @@ interface Person {
   age?: number
   [propName: string]: any
 }
+
+export const oracleList = [
+  {
+    assetKey: 'nSE',
+    address: SEOracleAddress,
+    oraclePrice: null,
+  },
+  {
+    assetKey: 'aUST',
+    address: aUSTOracleAddress,
+    oraclePrice: null,
+  },
+  {
+    assetKey: 'nTSLA',
+    address: nTSLAOracleAddress,
+    oraclePrice: null,
+  },
+]

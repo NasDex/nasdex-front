@@ -45,6 +45,7 @@ const FarmPoolItem: React.FC<any> = props => {
   const provider = window.ethereum
   const library = getLibrary(provider) ?? simpleRpcProvider
   const { priceList } = props
+
   async function getPoolInfo() {
     const price = priceList
     const longAprResult = await getCommonLongApr(

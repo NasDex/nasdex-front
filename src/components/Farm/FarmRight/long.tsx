@@ -314,7 +314,7 @@ const Long: React.FC<any> = props => {
                 </svg>
               }>
               {commonState.allAssetsListInfo.map((ele: any, index: any) =>
-                ele.name !== 'NSDX' ? (
+                ele.name !== 'NSDX' && ele.isNoNStableCoin != 1 ? (
                   <Option
                     value={ele.name}
                     disabled={
@@ -407,7 +407,7 @@ const Long: React.FC<any> = props => {
                 </svg>
               }>
               {commonState.allAssetsListInfo.map((ele: any, index: any) =>
-                ele.name !== 'NSDX' ? (
+                ele.name !== 'NSDX' && ele.isNoNStableCoin != 1 ? (
                   <Option
                     value={ele.name}
                     disabled={

@@ -137,7 +137,7 @@ export async function getCommonAssetInfo(account?: string) {
 }
 
 export async function getAssetList(): Promise<any> {
-  const response = await fetch('https://test-api.nasdex.xyz/config.json', {
+  const response = await fetch('http://localhost:8080/config.json', {
     method: 'get',
   })
   const json = await response.json()

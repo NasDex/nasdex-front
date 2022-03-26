@@ -179,6 +179,7 @@ const PositionTable: React.FC<any> = props => {
       ),
     },
   ]
+
   return (
     <div>
       <div className={account ? 'pc-table-wallet' : 'h5-table-wallet'}>

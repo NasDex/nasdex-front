@@ -363,7 +363,7 @@ const Buy: React.FC<any> = props => {
                 </svg>
               }>
               {commonState.allAssetsListInfo.map((ele: any, index: any) => (
-                ele.name !== 'NSDX' ? <Option
+                ele.name !== 'NSDX' && ele.isNoNStableCoin != 1 ? <Option
                   value={ele.name}
                   disabled={ele.name == tokenB || commonState.assetBaseInfoObj[ele.name].type == commonState.assetBaseInfoObj[tokenB].type}
                   className="customize-option-label-item"
@@ -440,7 +440,7 @@ const Buy: React.FC<any> = props => {
                 </svg>
               }>
               {commonState.allAssetsListInfo.map((ele: any, index: any) => (
-                ele.name !== 'NSDX' ? <Option
+                ele.name !== 'NSDX' && ele.isNoNStableCoin != 1 ? <Option
                   value={ele.name}
                   disabled={ele.name == tokenA || commonState.assetBaseInfoObj[ele.name].type == commonState.assetBaseInfoObj[tokenA].type}
                   className="customize-option-label-item"

@@ -1,25 +1,25 @@
 /** @format */
 
-import react, { useState, useEffect } from 'react'
+import react, {useState, useEffect} from 'react'
 import '../../style/Profile/profileList.less'
-import { upDateFarmingPositionInfo } from 'state/common/actions'
+import {upDateFarmingPositionInfo} from 'state/common/actions'
 import ProfileTable from '../Profile/positionTable'
 import FarmingTable from '../Profile/farmingTable'
 import StakingTable from '../Profile/stakingTable'
 import HistoryTable from '../Profile/historyTable'
 import Holding from '../Profile/holding'
-import { Tabs } from 'antd'
-import { usePositionsContract } from 'constants/hooks/useContract'
-import { formatUnits } from 'ethers/lib/utils'
-import { useCommonState } from 'state/common/hooks'
-import { useDispatch } from 'react-redux'
+import {Tabs} from 'antd'
+import {usePositionsContract} from 'constants/hooks/useContract'
+import {formatUnits} from 'ethers/lib/utils'
+import {useCommonState} from 'state/common/hooks'
+import {useDispatch} from 'react-redux'
 import CalculateRate from '../../utils/calculateCollateral'
-import { useWeb3React } from '@web3-react/core'
-import { fixD } from 'utils'
-import { useTranslation } from 'react-i18next'
-const { TabPane } = Tabs
+import {useWeb3React} from '@web3-react/core'
+import {fixD} from 'utils'
+import {useTranslation} from 'react-i18next'
+const {TabPane} = Tabs
 const ProfileList: React.FC<any> = props => {
-  const { t, i18n } = useTranslation()
+  const {t, i18n} = useTranslation()
   const tablieNav = [
     {
       label: t('Positions'),
@@ -56,10 +56,10 @@ const ProfileList: React.FC<any> = props => {
         break
     }
   }
-  const { account } = useWeb3React()
+  const {account} = useWeb3React()
   const dispatch = useDispatch()
   const commonState = useCommonState()
-  const { assetsNameInfo, assetBaseInfoObj } = commonState
+  const {assetsNameInfo, assetBaseInfoObj} = commonState
   const PositionsContract = usePositionsContract()
   const [dataSource, setDataSource] = useState([])
   const [load, setLoad] = useState(true)
@@ -86,11 +86,15 @@ const ProfileList: React.FC<any> = props => {
           ),
         )
         const cAssetAmountValue =
-          Number(formatUnits(position.cAssetAmount, assetBaseInfoObj[cAssetsTokenName].decimals)) *
-          commonState.assetBaseInfoObj[cAssetsTokenName].unitPrice
+          commonState.assetBaseInfoObj[cAssetsTokenName].isNoNStableCoin == 0
+            ? Number(formatUnits(position.cAssetAmount, assetBaseInfoObj[cAssetsTokenName].decimals)) *
+              commonState.assetBaseInfoObj[cAssetsTokenName].unitPrice
+            : Number(formatUnits(position.cAssetAmount, assetBaseInfoObj[cAssetsTokenName].decimals)) *
+              commonState.assetBaseInfoObj[cAssetsTokenName].oraclePrice
         const value =
           Number(formatUnits(position.assetAmount, assetBaseInfoObj[assetsTokenName].decimals)) *
           commonState.assetBaseInfoObj[assetsTokenName].swapPrice
+
         result.push({
           key: position.id.toString(),
           assetAmount: formatUnits(position.assetAmount, assetBaseInfoObj[assetsTokenName].decimals),
@@ -101,7 +105,14 @@ const ProfileList: React.FC<any> = props => {
           cAssetAmountSub: cAssetAmountSub,
           cAssetToken: position.cAssetToken,
           owner: position.owner,
-          oraclePrice: commonState.assetBaseInfoObj[assetsTokenName].oraclePrice,
+          oraclePrice:
+            commonState.assetBaseInfoObj[cAssetsTokenName].isNoNStableCoin == 0
+              ? commonState.assetBaseInfoObj[assetsTokenName].oraclePrice
+              : fixD(
+                  Number(commonState.assetBaseInfoObj[assetsTokenName].oraclePrice) /
+                    Number(commonState.assetBaseInfoObj[cAssetsTokenName].oraclePrice),
+                  2,
+                ),
           minCollateral: commonState.assetBaseInfoObj[assetsTokenName].minCollateral,
           minCollateralWarning: Number(commonState.assetBaseInfoObj[assetsTokenName].minCollateral) + 5,
           assetValue: value,
@@ -131,13 +142,13 @@ const ProfileList: React.FC<any> = props => {
         }
       })
       if (JSON.stringify(farmingPositionInfo) !== JSON.stringify(commonState.farmingPositionInfo)) {
-        dispatch(upDateFarmingPositionInfo({ farmingPositionInfo: farmingPositionInfo }))
+        dispatch(upDateFarmingPositionInfo({farmingPositionInfo: farmingPositionInfo}))
       }
       setLoad(false)
       setDataSource(result)
     } else {
       setDataSource([])
-      dispatch(upDateFarmingPositionInfo({ farmingPositionInfo: [] }))
+      dispatch(upDateFarmingPositionInfo({farmingPositionInfo: []}))
       setLoad(false)
     }
   }

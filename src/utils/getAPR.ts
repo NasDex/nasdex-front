@@ -128,6 +128,7 @@ export async function getCommonLongApr(
   if (longPoolInfoItemDetails) {
     info.longAllocPoint = longPoolInfoItemDetails.allocPoint.toString()
   }
+  console.log('long', info)
   const longContract = new ethers.Contract(info.longToken, lTokenAbi, library)
   let longAprP: any
   const token0 = await longContract.token0()
@@ -192,12 +193,14 @@ export async function getCommonShortApr(
   let shortAprP: any
   const shortTvlF = totalStakedNum * oraclePrice
   const day = Number(formatUnits(nsdxPerBlock, 18)) * 43200
+  console.log(farmPoolItem.shortId, shortTvlF)
   if (Number(formatUnits(nsdxPerBlock, 18)) > 0 && shortTvlF > 0) {
     shortAprP =
       ((((day * Number(info.shortAllocPoint)) / Number(Number(totalAllocPoint.toString()))) * 365 * price.NSDX) / shortTvlF) * 100
   } else {
     shortAprP = ''
   }
+  console.log(farmPoolItem.shortId, shortAprP)
   return {shortAprP,shortTvlF}
 }
 

@@ -11,7 +11,7 @@ import { useWeb3React } from '@web3-react/core'
 import { fixD, getpriceList } from 'utils'
 import { useCommonState } from 'state/common/hooks'
 import { getSwapPrice } from 'utils/getList'
-import { USDCaddress } from '../../constants/index'
+import { oracleList, USDCaddress } from '../../constants/index'
 import { useDispatch } from 'react-redux'
 import Erc20Abi from '../../constants/abis/erc20.json'
 import { getLibrary } from 'utils/getLibrary'
@@ -68,7 +68,10 @@ const Profile: React.FC<any> = props => {
       if (commonState.assetBaseInfoObj[asset] && account) {
         balance = formatUnits(await contract.balanceOf(account), commonState.assetBaseInfoObj[asset].decimals)
       }
-      if (commonState.assetBaseInfoObj[asset].type == 'asset') {
+      if (
+        commonState.assetBaseInfoObj[asset].type == 'asset' ||
+        commonState.assetBaseInfoObj[asset].isNoNStableCoin == 1
+      ) {
         const swapPriceObj = await getSwapPrice(USDCaddress, commonState.assetBaseInfoObj[asset].address)
         if (swapPriceObj) {
           const token0Name = commonState.assetsNameInfo[swapPriceObj.token0]
@@ -85,11 +88,20 @@ const Profile: React.FC<any> = props => {
             swapPrice = reserves0 / reserves1
           }
         }
-        if (asset == 'nSE') {
-          const SEOracleContract = new ethers.Contract(SEOracleAddress, STAOracle, library)
-          const SEOraclePrice = await SEOracleContract.latestRoundData()
-          oraclePrice = fixD(formatUnits(SEOraclePrice.answer, 8), 4)
+
+        const oracle = oracleList.find(ol => ol.assetKey == asset)
+        if (oracle) {
+          const contract = new ethers.Contract(oracle.address, STAOracle, library) 
+          const price = await contract.latestRoundData()
+          const decimals = await contract.decimals()
+          oraclePrice = fixD(formatUnits(price.answer, decimals), 4)
         }
+
+        // if (asset == 'nSE') {
+        //   const SEOracleContract = new ethers.Contract(SEOracleAddress, STAOracle, library)
+        //   const SEOraclePrice = await SEOracleContract.latestRoundData()
+        //   oraclePrice = fixD(formatUnits(SEOraclePrice.answer, 8), 4)
+        // }
       } else {
         if (asset == 'NSDX') {
           swapPrice = priceList.NSDX
