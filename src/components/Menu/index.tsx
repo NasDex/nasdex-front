@@ -177,6 +177,13 @@ const Menu: React.FC = props => {
                 </svg>
                 <span>{t('Stake')}</span>
               </NavLink>
+
+              <NavLink to={{pathname: 'https://portalbridge.com/#/transfer'}} target='_blank'>
+                <svg className="icon" aria-hidden="true">
+                  <use xlinkHref="#Icon-Trade-Active"></use>
+                </svg>
+                <span>{t('Bridge')}</span>
+              </NavLink>
             </div>
             <div className="menu-bottom">
               <div className="tip">

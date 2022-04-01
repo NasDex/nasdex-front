@@ -591,8 +591,8 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
                 : commonState.assetBaseInfoObj[cAssetName]?.isNoNStableCoin == 1 ? commonState.assetBaseInfoObj[assetName]?.oraclePrice / commonState.assetBaseInfoObj[cAssetName]?.oraclePrice : commonState.assetBaseInfoObj[assetName]?.oraclePrice }
               &nbsp;
               {commonState.assetBaseInfoObj[cAssetName]?.type == 'asset' ? assetName : cAssetName}
-              <img src={TipsImg} alt="" />
-              <div className="tips-text" dangerouslySetInnerHTML={createMarkup()}></div>
+              {(from == 'trade' || from == 'longFarm') ? null : <img src={TipsImg} alt="" />}
+              {(from == 'trade' || from == 'longFarm') ? null : <div className="tips-text" dangerouslySetInnerHTML={createMarkup()}></div>}
             </div>
           ) : (
             <div className="price">
