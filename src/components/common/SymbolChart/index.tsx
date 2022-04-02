@@ -487,7 +487,7 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
     }
     axios({
       method: 'GET',
-      baseURL: 'https://test-api.nasdex.xyz',
+      baseURL: 'https://beta-api.nasdex.xyz',
       url: `/v1/price${lpUrl}?symbol=${symbol}&type=${type}&start=${beforeDate}&end=${nowDate}`,
     }).then(res => {
       if (res && res.data && res.data.code === 0) {
