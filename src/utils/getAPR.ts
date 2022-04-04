@@ -146,24 +146,28 @@ export async function getCommonLongApr(
     if (token0 == assetBaseInfoObj[farmPoolItem.cAssetName].address) {
       asset = Number(reserves1)
       cAsset = Number(reserves0)
-      swapPrice= Number(reserves0)/Number(reserves1)
+      swapPrice = Number(reserves0) / Number(reserves1)
     } else {
       asset = Number(reserves0)
       cAsset = Number(reserves1)
-      swapPrice= Number(reserves1)/Number(reserves0)
+      swapPrice = Number(reserves1) / Number(reserves0)
     }
   }
-  
-  const longTvlF =
-    asset * swapPrice + cAsset * assetBaseInfoObj[farmPoolItem.cAssetName].unitPrice
+
+  const longTvlF = asset * swapPrice + cAsset * assetBaseInfoObj[farmPoolItem.cAssetName].unitPrice
   const day = Number(formatUnits(nsdxPerBlock, 18)) * 43200
   if (Number(formatUnits(nsdxPerBlock, 18)) > 0 && longTvlF > 0) {
     longAprP =
-      ((((day * Number(info.longAllocPoint)) / Number(totalAllocPoint.toString())) * 365 * Number(price.NSDX)) / longTvlF) * 100
+      ((((day * Number(info.longAllocPoint)) / Number(totalAllocPoint.toString())) * 365 * Number(price.NSDX)) /
+        longTvlF) *
+      100
+  } else if (longTvlF == 0) {
+    longAprP = '0'
   } else {
     longAprP = ''
   }
-  return {longAprP,swapPrice,longTvlF}
+
+  return {longAprP, swapPrice, longTvlF: longTvlF == 0 ? '0' : longTvlF}
 }
 
 export async function getCommonShortApr(
@@ -198,15 +202,20 @@ export async function getCommonShortApr(
   const totalStaked = await shortContract.totalSupply()
   const totalStakedNum = Number(formatUnits(totalStaked, decimals.toString()))
   let shortAprP: any
-  const shortTvlF = totalStakedNum * oraclePrice
+  const shortTvlF = totalStakedNum * Number(oraclePrice)
   const day = Number(formatUnits(nsdxPerBlock, 18)) * 43200
   if (Number(formatUnits(nsdxPerBlock, 18)) > 0 && shortTvlF > 0) {
     shortAprP =
-      ((((day * Number(info.shortAllocPoint)) / Number(Number(totalAllocPoint.toString()))) * 365 * price.NSDX) / shortTvlF) * 100
+      ((((day * Number(info.shortAllocPoint)) / Number(Number(totalAllocPoint.toString()))) * 365 * price.NSDX) /
+        shortTvlF) *
+      100
+  } else if (shortTvlF == 0) {
+    shortAprP = '0'
   } else {
     shortAprP = ''
   }
-  return {shortAprP,shortTvlF}
+
+  return {shortAprP, shortTvlF: shortTvlF == 0 ? '0' : shortTvlF}
 }
 
 export async function getRecevied(

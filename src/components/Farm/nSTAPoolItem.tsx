@@ -130,8 +130,6 @@ const FarmPoolItem: React.FC<any> = props => {
       const reserves0 = Number(formatUnits(swapPrice.reserves[0], commonState.assetBaseInfoObj[token0Name]?.decimals))
       const reserves1 = Number(formatUnits(swapPrice.reserves[1], commonState.assetBaseInfoObj[token1Name]?.decimals))
 
-      console.log(reserves0, reserves1)
-
       if (reserves0 == 0 && reserves1 == 0) {
         setSwapPrice('0')
       } else {
@@ -178,22 +176,22 @@ const FarmPoolItem: React.FC<any> = props => {
       <div className='farmPoolBox'>
         <div className="apr-info">
           <div className="long-apr">
-            <div className="long-apr-title">{!longApr ? <Skeleton active paragraph={{ rows: 0 }} /> : `${longApr}%`}</div>
+            <div className="long-apr-title">{longApr == '' ? <Skeleton active paragraph={{ rows: 0 }} /> : `${longApr}%`}</div>
             <div className="long-apr-text">{t('LongAPR')}</div>
           </div>
           <div className="short-apr">
-            <div className="long-apr-title">{!aprShort ? <Skeleton active paragraph={{ rows: 0 }} /> : `${aprShort}%`}</div>
+            <div className="long-apr-title">{aprShort == '' ? <Skeleton active paragraph={{ rows: 0 }} /> : `${aprShort}%`}</div>
             <div className="long-apr-text">{t('ShortAPR')}</div>
           </div>
         </div>
         <div className="apr-info">
           <div className="long-TVL">
-            <div className="long-TVL-title">{!longTVL ? <Skeleton active paragraph={{ rows: 0 }} /> : `$${thousands(longTVL)}`}</div>
+            <div className="long-TVL-title">{longTVL == '' ? <Skeleton active paragraph={{ rows: 0 }} /> : `$${thousands(longTVL)}`}</div>
             <div className="long-apr-text">{t('LongTVL')}</div>
             <div className="hover">${thousands(longTVL)}</div>
           </div>
           <div className="short-TVL">
-            <div className="long-TVL-title">{!shortTVL ? <Skeleton active paragraph={{ rows: 0 }} /> : `$${thousands(shortTVL)}`}</div>
+            <div className="long-TVL-title">{shortTVL == '' ? <Skeleton active paragraph={{ rows: 0 }} /> : `$${thousands(shortTVL)}`}</div>
             <div className="long-apr-text">{t('ShortTVL')}</div>
             <div className="hover">${thousands(shortTVL)}</div>
           </div>
