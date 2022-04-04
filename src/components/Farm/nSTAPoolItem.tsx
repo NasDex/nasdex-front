@@ -44,13 +44,13 @@ const FarmPoolItem: React.FC<any> = props => {
   const MasterChefTestContract = useMasterChefTestContract()
   const provider = window.ethereum
   const library = getLibrary(provider) ?? simpleRpcProvider
-  const { priceList } = props
+  const { priceList, farmPoolItem } = props
 
   async function getPoolInfo() {
     const price = priceList
     const longAprResult = await getCommonLongApr(
       price,
-      props.farmPoolItem,
+      farmPoolItem,
       MasterChefTestContract,
       longStakingContract,
       account,
@@ -61,6 +61,7 @@ const FarmPoolItem: React.FC<any> = props => {
       library,
       commonState,
     )
+
     if (longAprResult.longTvlF) {
       setLongTVL(fixD(longAprResult.longTvlF, 2))
     }
@@ -93,10 +94,12 @@ const FarmPoolItem: React.FC<any> = props => {
       setApr('Infinity')
     }
   }
+
   function selectAssetname(name: any, cAssetName: any) {
     dispatch(upDateCoinStock({ farmCoinStock: name }))
     dispatch(upDateFarmCoinSelect({ farmCoinSelect: cAssetName }))
   }
+
   useEffect(() => {
     if (name) {
       setOraclePrice(commonState.assetBaseInfoObj[name].oraclePrice)
@@ -110,44 +113,59 @@ const FarmPoolItem: React.FC<any> = props => {
       setPremium('-' + fixD(result.toString(), 2))
     }
   }, [name, swapPrice, oraclePrice, commonState.assetBaseInfoObj])
+
   useEffect(() => {
     getPrice()
   }, [account])
+
   async function getPrice() {
     const swapPrice = await getSwapPrice(
       commonState.assetBaseInfoObj[cAssetName].address,
       commonState.assetBaseInfoObj[name].address,
     )
+
     if (swapPrice) {
       const token0Name = commonState.assetsNameInfo[swapPrice.token0]
       const token1Name = commonState.assetsNameInfo[swapPrice.token1]
       const reserves0 = Number(formatUnits(swapPrice.reserves[0], commonState.assetBaseInfoObj[token0Name]?.decimals))
       const reserves1 = Number(formatUnits(swapPrice.reserves[1], commonState.assetBaseInfoObj[token1Name]?.decimals))
-      if (swapPrice.token0 == commonState.assetBaseInfoObj[name].address) {
-        setSwapPrice((reserves1 / reserves0).toString())
+
+      console.log(reserves0, reserves1)
+
+      if (reserves0 == 0 && reserves1 == 0) {
+        setSwapPrice('0')
       } else {
-        setSwapPrice((reserves0 / reserves1).toString())
+        if (swapPrice.token0 == commonState.assetBaseInfoObj[name].address) {
+          setSwapPrice((reserves1 / reserves0).toString())
+        } else {
+          setSwapPrice((reserves0 / reserves1).toString())
+        }
       }
     }
   }
+
   useEffect(() => {
     let timer: any
-    const getBaseData = () => {
-      getPoolInfo()
+    const getBaseData = async () => {
+      await getPoolInfo()
       return getBaseData
     }
-    if (ShortStakingContract && MasterChefTestContract) {
-      timer = setInterval(getBaseData(), 30000)
-    }
-    return () => {
-      clearInterval(timer)
-    }
+
+    getBaseData().then(() => {
+      if (ShortStakingContract && MasterChefTestContract) {
+        timer = setInterval(async () => await getBaseData(), 30000)
+      }
+      return () => {
+        clearInterval(timer)
+      }
+    })
   }, [account, ShortStakingContract, ShortStockAContract, MasterChefTestContract])
   function thousands(num: any) {
     const str = num.toString()
     const reg = str.indexOf(".") > -1 ? /(\d)(?=(\d{3})+\.)/g : /(\d)(?=(?:\d{3})+$)/g
     return str.replace(reg, "$1,")
   }
+
   return (
     <div className="farm-pool-item">
       <div className="pool-header">

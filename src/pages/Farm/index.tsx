@@ -76,10 +76,15 @@ const Farm = () => {
           const reserves1 = Number(
             formatUnits(swapPriceObj.reserves[1], commonState.assetBaseInfoObj[token1Name]?.decimals),
           )
-          if (swapPriceObj.token0 == commonState.assetBaseInfoObj[asset].address) {
-            swapPrice = reserves1 / reserves0
+
+          if (reserves0 == 0 && reserves1 == 0) {
+            swapPrice = 0
           } else {
-            swapPrice = reserves0 / reserves1
+            if (swapPriceObj.token0 == commonState.assetBaseInfoObj[asset].address) {
+              swapPrice = reserves1 / reserves0
+            } else {
+              swapPrice = reserves0 / reserves1
+            }
           }
         }
         if (asset == 'nSE') {

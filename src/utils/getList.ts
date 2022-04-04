@@ -104,10 +104,14 @@ export async function getCommonAssetInfo(account?: string) {
         const reserves0 = Number(formatUnits(swapPriceResult.reserves[0], assetBaseInfoObj[token0Name].decimals))
         const reserves1 = Number(formatUnits(swapPriceResult.reserves[1], assetBaseInfoObj[token1Name].decimals))
 
-        if (swapPriceResult.token0 == assetBaseInfoObj[asset].address) {
-          assetBaseInfoObj[asset].swapPrice = reserves1 / reserves0
+        if (reserves0 == 0 && reserves1 == 0) {
+          assetBaseInfoObj[asset].swapPrice = 0
         } else {
-          assetBaseInfoObj[asset].swapPrice = reserves0 / reserves1
+          if (swapPriceResult.token0 == assetBaseInfoObj[asset].address) {
+            assetBaseInfoObj[asset].swapPrice = reserves1 / reserves0
+          } else {
+            assetBaseInfoObj[asset].swapPrice = reserves0 / reserves1
+          }
         }
       }
     }

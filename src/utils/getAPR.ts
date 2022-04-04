@@ -128,7 +128,6 @@ export async function getCommonLongApr(
   if (longPoolInfoItemDetails) {
     info.longAllocPoint = longPoolInfoItemDetails.allocPoint.toString()
   }
-  console.log('long', info)
   const longContract = new ethers.Contract(info.longToken, lTokenAbi, library)
   let longAprP: any
   const token0 = await longContract.token0()
@@ -138,15 +137,23 @@ export async function getCommonLongApr(
   const token1Name = assetsNameInfo[token1]
   const reserves0 = Number(formatUnits(reserves[0], assetBaseInfoObj[token0Name]?.decimals))
   const reserves1 = Number(formatUnits(reserves[1], assetBaseInfoObj[token1Name]?.decimals))
-  if (token0 == assetBaseInfoObj[farmPoolItem.cAssetName].address) {
-    asset = Number(reserves1)
-    cAsset = Number(reserves0)
-    swapPrice= Number(reserves0)/Number(reserves1)
+
+  if (reserves0 == 0 && reserves1 == 0) {
+    asset = 0
+    cAsset = 0
+    swapPrice = 0
   } else {
-    asset = Number(reserves0)
-    cAsset = Number(reserves1)
-    swapPrice= Number(reserves1)/Number(reserves0)
+    if (token0 == assetBaseInfoObj[farmPoolItem.cAssetName].address) {
+      asset = Number(reserves1)
+      cAsset = Number(reserves0)
+      swapPrice= Number(reserves0)/Number(reserves1)
+    } else {
+      asset = Number(reserves0)
+      cAsset = Number(reserves1)
+      swapPrice= Number(reserves1)/Number(reserves0)
+    }
   }
+  
   const longTvlF =
     asset * swapPrice + cAsset * assetBaseInfoObj[farmPoolItem.cAssetName].unitPrice
   const day = Number(formatUnits(nsdxPerBlock, 18)) * 43200
@@ -193,14 +200,12 @@ export async function getCommonShortApr(
   let shortAprP: any
   const shortTvlF = totalStakedNum * oraclePrice
   const day = Number(formatUnits(nsdxPerBlock, 18)) * 43200
-  console.log(farmPoolItem.shortId, shortTvlF)
   if (Number(formatUnits(nsdxPerBlock, 18)) > 0 && shortTvlF > 0) {
     shortAprP =
       ((((day * Number(info.shortAllocPoint)) / Number(Number(totalAllocPoint.toString()))) * 365 * price.NSDX) / shortTvlF) * 100
   } else {
     shortAprP = ''
   }
-  console.log(farmPoolItem.shortId, shortAprP)
   return {shortAprP,shortTvlF}
 }
 
