@@ -1,7 +1,7 @@
 /** @format */
 /* eslint-disable @typescript-eslint/no-var-requires */
 /** @format */
-import react, { useState, useEffect, useCallback } from 'react'
+import react, { useState, useEffect, useCallback, useLayoutEffect } from 'react'
 import '../../../style/Mint/symbolTrade.less'
 import { Input, Select, Button, Slider, Skeleton } from 'antd'
 import ConfirmOrder from '../OrderConfirm/index'
@@ -62,8 +62,8 @@ const SymbolTrade: React.FC<any> = props => {
   const [sliderInputFocus, setSliderInputFocus] = useState(false)
   const [amountActive, setAmountActive] = useState(false)
   const [collateralActive, setCollateralActive] = useState(false)
-  const [selectCoin, setSelectCoin] = useState(commonState.defaultCAsset)
-  const [selectStock, setSelectStock] = useState(commonState.defaultAsset)
+  const [selectCoin, setSelectCoin] = useState(props.cAssetName === undefined ? commonState.defaultCAsset : 'USDC')
+  const [selectStock, setSelectStock] = useState(props.assetName === undefined ? commonState.defaultAsset : 'nSE')
   const [data, setData] = useState('')
   const [minCollateral, setMinCollateral] = useState('150')
   const [red, setRed] = useState('165')
@@ -201,28 +201,29 @@ const SymbolTrade: React.FC<any> = props => {
   ])
 
   useEffect(() => {
-    if (!props.assetName) {
-      dispatch(upDateCoinStock({ mintCoinStock: commonState.defaultAsset }))
-    }
-    if (!props.cAssetName) {
-      dispatch(upDateCoinSelect({ mintCoinSelect: commonState.defaultCAsset }))
-    }
-    if (props.assetName && commonState.assetBaseInfoObj[props.assetName].type == 'asset') {
-      setSelectStock(props.assetName)
-      dispatch(upDateCoinStock({ mintCoinStock: props.assetName }))
-      if (props.cAssetName) {
-        setSelectCoin(props.cAssetName)
-        dispatch(upDateCoinSelect({ mintCoinSelect: props.cAssetName }))
-      }
-    } else {
-      if (props.assetName) {
+    function setAttribute(assetType: string, assetName: string) {
+      if(assetType === 'asset') {
+        setSelectStock(assetName)
+        dispatch(upDateCoinStock({ mintCoinStock: assetName }))
+      } else {
         setSelectCoin(props.assetName)
-        dispatch(upDateCoinSelect({ mintCoinSelect: props.assetName }))
-        if (props.cAssetName) {
-          setSelectStock(props.cAssetName)
-          dispatch(upDateCoinStock({ mintCoinStock: props.cAssetName }))
-        }
+        dispatch(upDateCoinSelect({ mintCoinSelect: assetName }))
       }
+    }
+
+    console.log(`Props ${props.assetName}, ${props.cAssetName}`)
+    if (props.assetName  === undefined) {
+      dispatch(upDateCoinStock({ mintCoinStock: commonState.defaultAsset }))
+    } else {
+      const assetType = commonState.assetBaseInfoObj[props.assetName].type
+      setAttribute(assetType, props.assetName)
+    }
+
+    if (props.cAssetName === undefined) {
+      dispatch(upDateCoinSelect({ mintCoinSelect: commonState.defaultCAsset }))
+    } else {
+      const assetType = commonState.assetBaseInfoObj[props.cAssetName].type
+      setAttribute(assetType, props.cAssetName)
     }
   }, [])
 
@@ -237,6 +238,7 @@ const SymbolTrade: React.FC<any> = props => {
       setSelectStock(mintState.mintCoinStock)
     }
   }, [mintState.mintCoinStock, mintState.mintCoinSelect, commonState.assetBaseInfoObj[selectCoin].balance])
+
   useEffect(() => {
     if (selectStock) {
       const minCollateral = Number(commonState.assetBaseInfoObj[selectStock]?.minCollateral)
