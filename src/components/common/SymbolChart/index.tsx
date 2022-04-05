@@ -1,7 +1,7 @@
 /** @format */
 /* eslint-disable @typescript-eslint/no-var-requires */
 /** @format */
-import {useRef, useState} from 'react'
+import { useRef, useState } from 'react'
 import '../../../style/Mint/symbolChart.less'
 import TipsImg from '../../../img/common/tips@2x.png'
 import useModal from '../../../hooks/useModal'
@@ -9,26 +9,26 @@ import TikerInfo from './tikerInfo'
 import * as echarts from 'echarts'
 import AssetPair from './chooseAssetPair'
 import axios from 'axios'
-import {useEffect} from 'react'
-import {fixD} from 'utils'
-import {useDispatch} from 'react-redux'
-import {useMintState} from 'state/mint/hooks'
-import {useManageState} from 'state/manage/hooks'
-import {useFarmState} from 'state/farm/hooks'
-import {useTradeState} from 'state/trade/hooks'
-import {useCommonState} from 'state/common/hooks'
-import {getSwapPrice, getOneAssetInfo} from 'utils/getList'
-import {upDateOneAssetBaseInfo} from 'state/common/actions'
-import {useActiveWeb3React} from 'hooks'
-import {getLibrary} from 'utils/getLibrary'
-import {ethers} from 'ethers'
+import { useEffect } from 'react'
+import { fixD } from 'utils'
+import { useDispatch } from 'react-redux'
+import { useMintState } from 'state/mint/hooks'
+import { useManageState } from 'state/manage/hooks'
+import { useFarmState } from 'state/farm/hooks'
+import { useTradeState } from 'state/trade/hooks'
+import { useCommonState } from 'state/common/hooks'
+import { getSwapPrice, getOneAssetInfo } from 'utils/getList'
+import { upDateOneAssetBaseInfo } from 'state/common/actions'
+import { useActiveWeb3React } from 'hooks'
+import { getLibrary } from 'utils/getLibrary'
+import { ethers } from 'ethers'
 import {
   oracleList,
 } from '../../../constants/index'
-import {formatUnits} from 'ethers/lib/utils'
+import { formatUnits } from 'ethers/lib/utils'
 import STAOracle from '../../../constants/abis/STAOracle.json'
-import {useTranslation} from 'react-i18next'
-import {simpleRpcProvider} from 'utils/providers'
+import { useTranslation } from 'react-i18next'
+import { simpleRpcProvider } from 'utils/providers'
 
 interface SymoblChartProps {
   SymoblChart: SymoblChart
@@ -60,7 +60,7 @@ interface AutoPoolItem {
 }
 
 const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
-  const {t, i18n} = useTranslation()
+  const { t, i18n } = useTranslation()
   const timeStatusList = [`${t('Day')}`, `${t('Week')}`, `${t('Month')}`]
   const mintState = useMintState()
   const manageState = useManageState()
@@ -73,7 +73,7 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
   const [maxPrice, setMaxPrice] = useState(0)
   const [Liquidity, setLiquidity] = useState('')
   const [symbol, setSymbol] = useState('')
-  const {volume, liquidity, premium, from} = props.SymoblChart
+  const { volume, liquidity, premium, from } = props.SymoblChart
   const [openAssetPair] = useModal(<AssetPair from={from}></AssetPair>)
   const [timeStatus, setTimeStatus] = useState(`${t('Day')}`)
   const [assetName, setAssetName] = useState(props.assetName || commonState.defaultAsset)
@@ -81,7 +81,7 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
   const [openTikerInfo] = useModal(<TikerInfo nowPrice={nowPrice} from={from} cAssetName={cAssetName}></TikerInfo>)
   const [premiumValue, setPremiumValue] = useState('')
   const chartRef = useRef(null)
-  const {account} = useActiveWeb3React()
+  const { account } = useActiveWeb3React()
   const [isTab, setIsTab] = useState(false)
   const provider = window.ethereum
   const library = getLibrary(provider) ?? simpleRpcProvider
@@ -145,16 +145,16 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
         account,
         commonState.assetBaseInfoObj,
       )
-      const oneAssetInfo = {...commonState.assetBaseInfoObj[asset], ...assetNewInfo, oraclePrice}
-      dispatch(upDateOneAssetBaseInfo({oneAssetBaseInfo: oneAssetInfo}))
+      const oneAssetInfo = { ...commonState.assetBaseInfoObj[asset], ...assetNewInfo, oraclePrice }
+      dispatch(upDateOneAssetBaseInfo({ oneAssetBaseInfo: oneAssetInfo }))
       const cassetNewInfo = await getOneAssetInfo(
         cAsset,
         commonState.assetBaseInfoObj[cAsset]?.address,
         account,
         commonState.assetBaseInfoObj,
       )
-      const onecAssetInfo = {...commonState.assetBaseInfoObj[cAsset], ...cassetNewInfo, oraclePrice: cOraclePrice}
-      dispatch(upDateOneAssetBaseInfo({oneAssetBaseInfo: onecAssetInfo}))
+      const onecAssetInfo = { ...commonState.assetBaseInfoObj[cAsset], ...cassetNewInfo, oraclePrice: cOraclePrice }
+      dispatch(upDateOneAssetBaseInfo({ oneAssetBaseInfo: onecAssetInfo }))
     }
   }
   useEffect(() => {
@@ -500,17 +500,17 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
       if (res && res.data && res.data.code === 0) {
         let data = res.data.data.data
         // console.log(`Graph data returned`, data)
-        if(data === undefined) {
+        if (data === undefined) {
           console.log(`Graph data is undefined`)
           return
         }
-        if(data.length <= 0) {
+        if (data.length <= 0) {
           console.log(`Graph data is empty`)
           return
         }
 
         // Sort graph data in case graph data from API is not in sorted manne
-        data = data.sort((a: { time: number },b: { time: number }) => (a.time > b.time) ? 1 : (a.time < b.time) ? -1 : 0)
+        data = data.sort((a: { time: number }, b: { time: number }) => (a.time > b.time) ? 1 : (a.time < b.time) ? -1 : 0)
         // console.log(`Sorted Data: `, data)
 
         const dateList = data.map(function (item: any) {
@@ -556,10 +556,50 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
       <p>${t('swapPriceTips')}</p>`,
       }
     } else {
-      return {__html: `${t('OraclePrice')}`}
+      return { __html: `${t('OraclePrice')}` }
     }
   }
 
+  const getSymbolPrice = () => {
+    const pages = ['trade', 'farm', 'longFarm']
+
+    if (pages.includes(from)) {
+      const cAsset = commonState.assetBaseInfoObj[cAssetName]
+      const asset = commonState.assetBaseInfoObj[assetName]
+
+      if (['trade', 'longFarm'].includes(from)) {
+        return cAsset.type === 'asset'
+          ? fixD(cAsset?.swapPrice, 4)
+          : fixD(asset?.swapPrice, 4)
+      } else {
+        // Farm page comes here
+        const isCAssetNonStablecoin = cAsset.isNoNStableCoin === 1
+
+        if (isCAssetNonStablecoin) {
+          return asset.oraclePrice / cAsset.oraclePrice
+        }
+
+        return cAsset.type === 'asset'
+          ? cAsset.oraclePrice
+          : asset.oraclePrice
+      }
+    } else {
+      // Swap page comes here
+      if (!assetName) {
+        return commonState.assetBaseInfoObj[commonState.defaultAsset]?.oraclePrice
+      }
+    }
+
+    const cAsset = commonState.assetBaseInfoObj[cAssetName]
+    const asset = commonState.assetBaseInfoObj[assetName]
+
+    const isCAssetNonStablecoin = cAsset.isNoNStableCoin === 1
+
+    return isCAssetNonStablecoin
+      ? fixD(asset.oraclePrice / cAsset.oraclePrice, 4)
+      : asset.oraclePrice
+  }
+  
   return (
     <div className="symbol-chart">
       <div className="title">
@@ -602,36 +642,19 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
       </div>
       <div className="chart-info">
         <div className="symbol-price">
-          {from == 'trade' || from == 'farm' || from == 'longFarm' ? (
-            <div className="price">
-              {commonState.assetBaseInfoObj[cAssetName].type == 'asset'
-                ? from == 'trade' || from == 'longFarm'
-                  ?  fixD(commonState.assetBaseInfoObj[cAssetName]?.swapPrice, 4)
-                  : commonState.assetBaseInfoObj[cAssetName]?.isNoNStableCoin == 1 ? commonState.assetBaseInfoObj[assetName]?.oraclePrice / commonState.assetBaseInfoObj[cAssetName]?.oraclePrice : commonState.assetBaseInfoObj[cAssetName]?.oraclePrice
-                : from == 'trade' || from == 'longFarm'
-                ? fixD(commonState.assetBaseInfoObj[assetName]?.swapPrice, 4)
-                : commonState.assetBaseInfoObj[cAssetName]?.isNoNStableCoin == 1 ? commonState.assetBaseInfoObj[assetName]?.oraclePrice / commonState.assetBaseInfoObj[cAssetName]?.oraclePrice : commonState.assetBaseInfoObj[assetName]?.oraclePrice }
-              &nbsp;
-              {commonState.assetBaseInfoObj[cAssetName]?.type == 'asset' ? assetName : cAssetName}
-              {(from == 'trade' || from == 'longFarm') ? null : <img src={TipsImg} alt="" />}
-              {(from == 'trade' || from == 'longFarm') ? null : <div className="tips-text" dangerouslySetInnerHTML={createMarkup()}></div>}
-            </div>
-          ) : (
-            // Swap page comes here
-            <div className="price">
-              {assetName
-                // cAsset is stablecoin or non-stablecoin, e.g. AUST = non stablecoin
-                ? commonState.assetBaseInfoObj[cAssetName]?.isNoNStableCoin == 1 
-                  ? `${fixD(commonState.assetBaseInfoObj[assetName]?.oraclePrice / commonState.assetBaseInfoObj[cAssetName]?.oraclePrice, 4)}`
-                  : commonState.assetBaseInfoObj[assetName]?.oraclePrice
-                // Display this if assetName is not defined
-                : commonState.assetBaseInfoObj[commonState.defaultAsset]?.oraclePrice} 
-              &nbsp;
-              {cAssetName ? cAssetName : commonState.defaultCAsset}
-              <img src={TipsImg} alt="" />
-              <div className="tips-text">{t('OraclePrice')}</div>
-            </div>
-          )}
+          <div className="price">
+            {getSymbolPrice()}
+            {(['trade', 'longFarm', 'farm']).includes(from)
+              ? commonState.assetBaseInfoObj[cAssetName]?.type == 'asset'
+                ? assetName
+                : cAssetName
+              : cAssetName
+                ? cAssetName
+                : commonState.defaultCAsset
+            }
+            {(from == 'trade' || from == 'longFarm') ? null : <img src={TipsImg} alt="" />}
+            {(from == 'trade' || from == 'longFarm') ? null : <div className="tips-text" dangerouslySetInnerHTML={createMarkup()}></div>}
+          </div>
         </div>
         <div className="time-type">
           {timeStatusList.map((item, key) => (
@@ -641,9 +664,9 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
               style={
                 item === timeStatus
                   ? {
-                      color: '#333333',
-                      background: '#F2F4FC',
-                    }
+                    color: '#333333',
+                    background: '#F2F4FC',
+                  }
                   : {}
               }>
               {item}
@@ -651,7 +674,7 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
           ))}
         </div>
       </div>
-      <div className="chart-view" style={{width: '580', height: '359px'}} ref={chartRef} />
+      <div className="chart-view" style={{ width: '580', height: '359px' }} ref={chartRef} />
     </div>
   )
 }
