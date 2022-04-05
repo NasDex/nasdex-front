@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /** @format */
 
-import {SEOracleAddress, ETHOracleAddress, mintAddress, USDCaddress, SwapFactoryAddress, SwapRouterAddress, LongStakingAddress} from 'constants/index'
+import {SEOracleAddress, ETHOracleAddress, mintAddress, USDCaddress, SwapFactoryAddress, SwapRouterAddress, LongStakingAddress, oracleList} from 'constants/index'
 import {ethers} from 'ethers'
 import {formatUnits} from 'ethers/lib/utils'
 import {fixD} from 'utils'
@@ -30,6 +30,7 @@ import { upDateCoinSelect as upDateMintCoinSelect, upDateCoinStock as upDateMint
 import { upDateFarmCoinSelect, upDateCoinStock as upDateFarmCoinStock } from 'state/farm/actions'
 import { upDateTradeCoinSelect, upDateCoinStock as upDateTradeCoinStock } from 'state/trade/actions'
 import { upDatePositionInfo} from 'state/manage/actions'
+
 export async function getCommonAssetInfo(account?: string) {
   const dispatch = store.dispatch
   dispatch(upDatePositionInfo({ positionInfo: {
@@ -57,6 +58,7 @@ export async function getCommonAssetInfo(account?: string) {
   dispatch(updateDefaultCAsset({defaultCAsset: config.default.cAsset}))
   dispatch(updateDefaultAsset({ defaultAsset: config.default.asset }))
   const assetBaseInfoObj: any = config.assetPre
+
   Object.keys(assetBaseInfoObj).forEach(function (assetName) {
     assetBaseInfo.push(assetBaseInfoObj[assetName])
   })
@@ -65,14 +67,19 @@ export async function getCommonAssetInfo(account?: string) {
   const assetsListInfo: any = []
   const allAssetsListInfo: any = []
   const cAssetsListInfo: any = []
+
+  // Checking for asset balance and allowance
   for (let i = 0; i < assetBaseInfoArr.length; i++) {
     const asset = assetBaseInfoArr[i].name
     if (account) {
+      // Checking user balance
       const contract = new ethers.Contract(assetBaseInfoObj[asset].address, Erc20Abi, library)
       const balance = formatUnits(await contract.balanceOf(account), assetBaseInfoObj[asset].decimals)
       if (assetBaseInfoObj[asset] && account) {
         assetBaseInfoObj[asset].balance = balance
       }
+
+      // Allowance on Mint Contract
       const result = await contract.allowance(account, mintAddress)
       const allowance = Number(formatUnits(result.toString(), assetBaseInfoObj[asset].decimals))
       if (allowance <= 0 && assetBaseInfoObj[asset]) {
@@ -80,6 +87,8 @@ export async function getCommonAssetInfo(account?: string) {
       } else {
         assetBaseInfoObj[asset].mintContractAllowance = true
       }
+
+      // Allowance on Swap Contract
       const swapResult = await contract.allowance(account, SwapRouterAddress)
       const swapContractAllowance = Number(formatUnits(swapResult.toString(), assetBaseInfoObj[asset].decimals))
       if (swapContractAllowance <= 0 && assetBaseInfoObj[asset]) {
@@ -87,6 +96,8 @@ export async function getCommonAssetInfo(account?: string) {
       } else {
         assetBaseInfoObj[asset].swapContractAllowance = true
       }
+
+      // Allowance on Long Farm Contract
       const longFarmResult = await contract.allowance(account, LongStakingAddress)
       const longFarmAllowance = Number(formatUnits(longFarmResult.toString(), assetBaseInfoObj[asset].decimals))
       if (longFarmAllowance <= 0 && assetBaseInfoObj[asset]) {
@@ -94,9 +105,24 @@ export async function getCommonAssetInfo(account?: string) {
       } else {
         assetBaseInfoObj[asset].longFarmAllowance = true
       }
+
+      // Price oracle
+      if(assetBaseInfoObj[asset].type === 'asset') {
+        const assetName = assetBaseInfoObj[asset].name
+        const oracleInfo = oracleList.find(i => i.assetKey === assetName)
+
+        if(oracleInfo !== undefined) {
+          const priceOracleContract = new ethers.Contract(oracleInfo.address, STAOracle, library)
+          const price = await priceOracleContract.latestRoundData()
+          assetBaseInfoObj[asset].oraclePrice = fixD(formatUnits(price.answer, 8), 4)
+        }
+      }
     }
+
+    // Get Swap Price reserves 0 and reserves 1 
     if (assetBaseInfoObj[asset].type == 'asset') {
       const swapPriceResult = await getSwapPrice(USDCaddress, assetBaseInfoObj[asset].address)
+
       if (swapPriceResult) {
         const token0Name = assetsName[swapPriceResult.token0]
         const token1Name = assetsName[swapPriceResult.token1]
@@ -112,9 +138,19 @@ export async function getCommonAssetInfo(account?: string) {
           } else {
             assetBaseInfoObj[asset].swapPrice = reserves0 / reserves1
           }
+        if(reserves0 > 0 && reserves1 > 0) {
+          if (swapPriceResult.token0 == assetBaseInfoObj[asset].address) {
+            assetBaseInfoObj[asset].swapPrice = reserves1 / reserves0
+          } else {
+            assetBaseInfoObj[asset].swapPrice = reserves0 / reserves1
+          }
+        } else {
+          // Return 0 if either one of reserves is 0
+          assetBaseInfoObj[asset].swapPrice = 0
         }
       }
     }
+
     if (assetBaseInfoObj[asset].type == 'asset') {
       assetsListInfo.push(assetBaseInfoObj[asset])
     } else {
@@ -124,14 +160,15 @@ export async function getCommonAssetInfo(account?: string) {
         }
       }
     }
+
     allAssetsListInfo.push(assetBaseInfoObj[asset])
   }
 
   const MintContract = new ethers.Contract(mintAddress, MintAbi, library)
   const feerate = (await MintContract.feeRate()) / 1000
-  const SEOracleContract = new ethers.Contract(SEOracleAddress, STAOracle, library)
-  const SEOraclePrice = await SEOracleContract.latestRoundData()
-  assetBaseInfoObj['nSE'].oraclePrice = fixD(formatUnits(SEOraclePrice.answer, 8), 4)
+  // const SEOracleContract = new ethers.Contract(SEOracleAddress, STAOracle, library)
+  // const SEOraclePrice = await SEOracleContract.latestRoundData()
+  // assetBaseInfoObj['nSE'].oraclePrice = fixD(formatUnits(SEOraclePrice.answer, 8), 4)
   dispatch(upDateAssetsNameInfo({assetsNameInfo: assetsName}))
   dispatch(upDateAssetBaseInfoObj({assetBaseInfoObj: assetBaseInfoObj}))
   dispatch(upDateAssetsListInfo({assetsListInfo: assetsListInfo}))
@@ -175,4 +212,3 @@ export async function getOneAssetInfo(asset: string, address: string, account: a
   const balance = formatUnits(await contract.balanceOf(account), assetBaseInfoObj[asset].decimals)
   return {balance}
 }
-
