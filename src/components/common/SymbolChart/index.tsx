@@ -167,6 +167,7 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
     if (!cAssetName) {
       setAssetName(commonState.defaultCAsset)
     }
+    console.log(`Getting price oracle price`)
     getOraclePrice(assetName, cAssetName)
     let timer: any
     const getBaseData = () => {
@@ -220,9 +221,11 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
   }
   useEffect(() => {
     if (from == 'mint' && mintState.mintCoinStock) {
+      console.log(`Changed from state nAsset ${mintState.mintCoinStock}`)
       setAssetName(mintState.mintCoinStock)
     }
     if (from == 'mint' && mintState.mintCoinSelect) {
+      console.log(`Changed from state asset ${mintState.mintCoinSelect}`)
       setcAssetName(mintState.mintCoinSelect)
     }
     if ((from == 'farm' || from == 'longFarm') && farmState.farmCoinStock) {
@@ -458,6 +461,8 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
     timeType: string,
     valueChange: number,
   ) {
+    setValueList([])
+    setDateList([])
     function formtDate(date: number) {
       const d = new Date(date * 1000)
       const year = d.getFullYear()
@@ -485,13 +490,29 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
     if (from == 'trade' || from == 'longFarm') {
       lpUrl = '/lp'
     }
+    console.log(`Fire graph data`)
+    // console.log(` url : https://beta-api.nasdex.xyz/v1/price${lpUrl}?symbol=${symbol}&type=${type}&start=${beforeDate}&end=${nowDate}`)
     axios({
       method: 'GET',
       baseURL: 'https://beta-api.nasdex.xyz',
       url: `/v1/price${lpUrl}?symbol=${symbol}&type=${type}&start=${beforeDate}&end=${nowDate}`,
     }).then(res => {
       if (res && res.data && res.data.code === 0) {
-        const data = res.data.data.data
+        let data = res.data.data.data
+        // console.log(`Graph data returned`, data)
+        if(data === undefined) {
+          console.log(`Graph data is undefined`)
+          return
+        }
+        if(data.length <= 0) {
+          console.log(`Graph data is empty`)
+          return
+        }
+
+        // Sort graph data in case graph data from API is not in sorted manne
+        data = data.sort((a: { time: number },b: { time: number }) => (a.time > b.time) ? 1 : (a.time < b.time) ? -1 : 0)
+        // console.log(`Sorted Data: `, data)
+
         const dateList = data.map(function (item: any) {
           return formtDate(item.time)
         })
@@ -527,6 +548,7 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
       myChart.setOption(options)
     }
   }, [valueList, dateList, timerInterval, minPrice, usdPrice])
+
   function createMarkup() {
     if (from == 'trade' || from == 'longFarm') {
       return {
@@ -595,12 +617,15 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
               {(from == 'trade' || from == 'longFarm') ? null : <div className="tips-text" dangerouslySetInnerHTML={createMarkup()}></div>}
             </div>
           ) : (
+            // Swap page comes here
             <div className="price">
               {assetName
+                // cAsset is stablecoin or non-stablecoin, e.g. AUST = non stablecoin
                 ? commonState.assetBaseInfoObj[cAssetName]?.isNoNStableCoin == 1 
-                  ? fixD(commonState.assetBaseInfoObj[assetName]?.oraclePrice / commonState.assetBaseInfoObj[cAssetName]?.oraclePrice, 4)
+                  ? `${fixD(commonState.assetBaseInfoObj[assetName]?.oraclePrice / commonState.assetBaseInfoObj[cAssetName]?.oraclePrice, 4)}`
                   : commonState.assetBaseInfoObj[assetName]?.oraclePrice
-                : commonState.assetBaseInfoObj[commonState.defaultAsset]?.oraclePrice}
+                // Display this if assetName is not defined
+                : commonState.assetBaseInfoObj[commonState.defaultAsset]?.oraclePrice} 
               &nbsp;
               {cAssetName ? cAssetName : commonState.defaultCAsset}
               <img src={TipsImg} alt="" />
