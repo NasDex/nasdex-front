@@ -6,15 +6,15 @@ export enum ChainId {
 
 export const NSDXPrice = 0.25
 export const NetworkContextName = 'NETWORK'
-export const NSDXVaultAddress = '0xF7a2B32B92bfAC72fE1e2C8a3c5D3079e88B7816' 
+export const NSDXVaultAddress = '0xF7a2B32B92bfAC72fE1e2C8a3c5D3079e88B7816' // here ***
 export const MasterChefAddress = '0x35cA0e02C4c16c94c4cC8B67D13d660b78414f95' 
 export const NSDXToken = '0xE8d17b127BA8b9899a160D9a07b69bCa8E08bfc6' 
-export const LPAddress = '0x56B8936a96cD5EE5C5837F385a19B4c2999fD74a' 
+export const LPAddress = '0x56B8936a96cD5EE5C5837F385a19B4c2999fD74a' // NSDX / USDC
 
 export const mintAddress = '0xDf6ea9670E3f89555Eec716aADFD3fbf0F8a14FD' 
-export const USDTaddress = '0x519130DA1C46CF79F39A0339016c07c77f938fCB'
+export const USDTaddress = '0x519130DA1C46CF79F39A0339016c07c77f938fCB' // Testnet address
 export const USDCaddress = '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174'
-export const nAssetAddress = '0xc7D14a939eE0265BEAB7456394E50Ccc6C665298' 
+export const nAssetAddress = '0xc7D14a939eE0265BEAB7456394E50Ccc6C665298' // nSE
 export const nETHAssetAddress = '0xAE53Ad289fEf1Ff08d07c06808Fb3888150608b9' 
 export const nMATICAssetAddress = '0x0C70ac0337088C96C55667974103957166DB63b6' 
 export const ShortTokenAddress = '0xef4c2e11E136e2824d4Ec9bc4b147d8C38d931f5' 
@@ -43,6 +43,11 @@ export const AdminAddress = '0xC01bd61922702D06fA0EA91D2672AEba4Cd7E6d3'
 
 export const SwapFactoryAddress = '0xa07dD2e9fa20C14C45A28978041b4c64e45f7f97' 
 export const SwapRouterAddress = '0x270Ec6bE0C9D67370C2B247D5AF1CC0B7dED0d4a' 
+
+// nTSLA 
+export const nTSLATokenAddress = "0xe532dcE6BEFe42Ca8767DFa2abFCE2b99087168B"
+export const nTSLALpTokenAddress = "0x8dEf846Af4c574835D6406ceB442eEE57eE1C424"
+
 interface Person {
   name: string
   age?: number
@@ -66,3 +71,26 @@ export const oracleList = [
     oraclePrice: null,
   },
 ]
+
+export const lpPairDetails = [
+  {
+    // SE / USD
+    tokenA: USDCaddress,
+    tokenB: nAssetAddress,
+    lp: LongTokenAddress, 
+    tokenADecimal: 6,
+    tokenBDecimal: 18
+  }, 
+  {
+    tokenA: USDCaddress,
+    tokenB: nTSLATokenAddress,
+    lp: nTSLALpTokenAddress, 
+    tokenADecimal: 6,
+    tokenBDecimal: 18
+  }
+]
+
+export const getLpPairDetail = (tokenA: string, tokenB: string) => {
+  const lpDetail = lpPairDetails.find(l => l.tokenA.toLowerCase() === tokenA.toLowerCase() && l.tokenB.toLowerCase() === tokenB.toLowerCase())
+  return lpDetail
+}
