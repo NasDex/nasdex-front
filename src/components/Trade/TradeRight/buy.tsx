@@ -226,7 +226,7 @@ const Buy: React.FC<any> = props => {
         if (tokenAamount && isChangeTokenA && !swapConfirmBtn) {
           getAmountsOut()
         }
-      }, 3000)
+      }, 10000)
     } else {
       clearInterval(interval)
     }
