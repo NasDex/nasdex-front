@@ -29,9 +29,7 @@ export default function App() {
 
   useEffect(() => {
     dispatch(upDateOpenWeb({ openWeb: true }))
-    if (account) {
-      getCommonAssetInfo(account)
-    } else { getCommonAssetInfo() }
+    getCommonAssetInfo(account)
   }, [account, commonState.openWeb])
   return (
     <Suspense fallback={null}>

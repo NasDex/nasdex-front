@@ -22,7 +22,7 @@ import {
 } from 'state/common/actions'
 
 // Please refer note.txt for v1 code
-export async function getCommonAssetInfo(account?: string) {
+export async function getCommonAssetInfo(account?: string | undefined | null) {
   const dispatch = store.dispatch
 
   const provider = window.ethereum
@@ -52,7 +52,7 @@ export async function getCommonAssetInfo(account?: string) {
     const assetName = asset.name
     const assetAddress = asset.address
 
-    if(account) {
+    if(account !== undefined && account !== null) {
       const balance = await getBalance(assetContract, account, assetDecimal)
 
       const _promises = []
