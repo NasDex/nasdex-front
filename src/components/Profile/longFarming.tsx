@@ -210,7 +210,7 @@ const LongFarming: React.FC<any> = props => {
       return getBaseData
     }
     if (account && farmListArray.length > 0) {
-      timer = setInterval(getBaseData(), 5000)
+      timer = setInterval(getBaseData(), 10000)
     }
     return () => {
       clearInterval(timer)

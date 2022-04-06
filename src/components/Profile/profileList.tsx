@@ -159,7 +159,7 @@ const ProfileList: React.FC<any> = props => {
       return getBaseData
     }
     if (account) {
-      timer = setInterval(getBaseData(), 5000)
+      timer = setInterval(getBaseData(), 10000)
     }
     return () => {
       clearInterval(timer)

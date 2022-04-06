@@ -175,7 +175,7 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
       return getBaseData
     }
     if (assetName && cAssetName) {
-      timer = setInterval(getBaseData(), 5000)
+      timer = setInterval(getBaseData(), 15000)
     }
     return () => {
       clearInterval(timer)

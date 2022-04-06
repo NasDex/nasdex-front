@@ -121,7 +121,7 @@ const Profile: React.FC<any> = props => {
     }
     initPrice()
     if (account) {
-      timer = setInterval(getBaseData(), 5000)
+      timer = setInterval(getBaseData(), 10000)
     }
     return () => {
       clearInterval(timer)
