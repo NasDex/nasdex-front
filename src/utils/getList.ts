@@ -18,7 +18,8 @@ import {
   upDateAssetsListInfo,
   upDateAllAssetsListInfo,
   updateDefaultCAsset,
-  updateDefaultAsset
+  updateDefaultAsset,
+  upDateAssetBaseInfoObj
 } from 'state/common/actions'
 
 // Please refer note.txt for v1 code
@@ -37,9 +38,11 @@ export async function getCommonAssetInfo(account?: string | undefined | null) {
   const assetsName: any = config.assetsNameInfoPre
   dispatch(updateDefaultCAsset({ defaultCAsset: config.default.cAsset }))
   dispatch(updateDefaultAsset({ defaultAsset: config.default.asset }))
+  dispatch(upDateAssetBaseInfoObj({ assetBaseInfoObj: config.assetPre }))
 
   assetBaseInfoArr = Object.values(assetBaseInfoObj)
   const updatedList: any[] = []
+  const updateAsset:any = {}
 
   // Checking for asset balance and allowance
   for (let i = 0; i < assetBaseInfoArr.length; i++) {
@@ -66,14 +69,17 @@ export async function getCommonAssetInfo(account?: string | undefined | null) {
       asset.swapContractAllowance = swap.isAllowanceGranted
       asset.longFarmAllowance = longFarm.isAllowanceGranted
 
-      if (assetType === "asset") {
+      // Collateral asset which is not a stablecoin type
+      const nonStablecoinCAsset = ['aUST']
+
+      if (assetType === "asset" || nonStablecoinCAsset.includes(assetName)) {
         // Price oracle
         const oracleInfo = oracleList.find(i => i.assetKey === assetName)
 
         if (oracleInfo !== undefined) {
           const priceOracleContract = new ethers.Contract(oracleInfo.address, STAOracle, library)
           const price = await priceOracleContract.latestRoundData()
-          asset.oraclePrice = fixD(formatUnits(price.answer, 8), 4)
+          asset.oraclePrice = fixD(formatUnits(price.answer, oracleInfo.decimal), 4)
         }
       }
     }
@@ -86,6 +92,7 @@ export async function getCommonAssetInfo(account?: string | undefined | null) {
     } 
 
     updatedList.push(asset)
+    updateAsset[assetName] = asset
   }
 
   const nonCAsset = ['WMATIC', 'NSDX']
@@ -96,6 +103,7 @@ export async function getCommonAssetInfo(account?: string | undefined | null) {
   dispatch(upDateAssetsListInfo({ assetsListInfo: assetsListInfo }))
   dispatch(upDateCAssetsListInfo({ cAssetsListInfo: cAssetsListInfo }))
   dispatch(upDateAllAssetsListInfo({ allAssetsListInfo: updatedList }))
+  dispatch(upDateAssetBaseInfoObj({ assetBaseInfoObj: updateAsset }))
 }
 
 async function getBalance(contract: any, account: string, decimal: string){
