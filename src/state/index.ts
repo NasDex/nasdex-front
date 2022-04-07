@@ -1,6 +1,7 @@
 /** @format */
 
 import {configureStore, getDefaultMiddleware, Middleware} from '@reduxjs/toolkit'
+import logger from 'redux-logger'
 import {save, load} from 'redux-localstorage-simple'
 import updateVersion from './global/actions'
 import mint from './mint/reducer'
@@ -21,7 +22,7 @@ const store = configureStore({
     farm,
     common,
   },
-  middleware: [...getDefaultMiddleware({thunk: true}), save({states: PERSISTED_KEYS})],
+  middleware: [...getDefaultMiddleware({thunk: true}), save({states: PERSISTED_KEYS}), logger],
   preloadedState: load({states: PERSISTED_KEYS}),
 })
 
