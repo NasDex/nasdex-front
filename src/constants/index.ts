@@ -97,3 +97,9 @@ export const getLpPairDetail = (tokenA: string, tokenB: string) => {
   const lpDetail = lpPairDetails.find(l => l.tokenA.toLowerCase() === tokenA.toLowerCase() && l.tokenB.toLowerCase() === tokenB.toLowerCase())
   return lpDetail
 }
+
+export const getLpDetailByAddress = async(lpAddress: string) => {
+  const lpPairDetailVals = Object.values(lpPairDetails)
+  const lpDetail = lpPairDetailVals.filter(l => l.lp.toLowerCase() === lpAddress.toLowerCase())
+  return lpDetail[0]
+}

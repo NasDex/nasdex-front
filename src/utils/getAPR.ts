@@ -1,5 +1,7 @@
 /** @format */
 
+import { getLpDetailByAddress } from "../constants/index"
+
 export async function getApr(
   price: any,
   ele: any,
@@ -128,15 +130,23 @@ export async function getCommonLongApr(
   if (longPoolInfoItemDetails) {
     info.longAllocPoint = longPoolInfoItemDetails.allocPoint.toString()
   }
-  const longContract = new ethers.Contract(info.longToken, lTokenAbi, library)
+  const longContract = new ethers.Contract(info.longToken, lTokenAbi, library) // lp contract
   let longAprP: any
-  const token0 = await longContract.token0()
-  const token1 = await longContract.token1()
+  const tokenPairInfo = await getLpDetailByAddress(info.longToken)
+  const token0 = tokenPairInfo.tokenA
+  const token1 = tokenPairInfo.tokenB
+  // const token0 = await longContract.token0()
+  // const token1 = await longContract.token1()
   const reserves = await longContract.getReserves()
   const token0Name = assetsNameInfo[token0]
   const token1Name = assetsNameInfo[token1]
   const reserves0 = Number(formatUnits(reserves[0], assetBaseInfoObj[token0Name]?.decimals))
   const reserves1 = Number(formatUnits(reserves[1], assetBaseInfoObj[token1Name]?.decimals))
+
+  // debugger
+  // if(farmPoolItem.name === 'nTSLA') {
+  //   console.log(`Address ${info.longToken} , Reserves0 ${reserves0.toString()}, reserves1 ${reserves1.toString()}`)
+  // }
 
   if (reserves0 == 0 && reserves1 == 0) {
     asset = 0
