@@ -59,16 +59,19 @@ export const oracleList = [
     assetKey: 'nSE',
     address: SEOracleAddress,
     oraclePrice: null,
+    decimal: 8
   },
   {
     assetKey: 'aUST',
     address: aUSTOracleAddress,
     oraclePrice: null,
+    decimal: 18
   },
   {
     assetKey: 'nTSLA',
     address: nTSLAOracleAddress,
     oraclePrice: null,
+    decimal: 8
   },
 ]
 
