@@ -21,15 +21,15 @@ import { useFarmState } from 'state/farm/hooks'
 import { useCommonState } from 'state/common/hooks'
 import { upDateOneAssetBaseInfo } from 'state/common/actions'
 import { useDispatch } from 'react-redux'
-import { LongStakingAddress } from '../../../constants/index'
+import { getLpPairDetail, LongStakingAddress } from '../../../constants/index'
 import { getLibrary } from 'utils/getLibrary'
 import { ethers } from 'ethers'
 import Erc20Abi from 'constants/abis/erc20.json'
-import { useSwapFactoryContract } from 'constants/hooks/useContract'
 import lpContractAbi from '../../../constants/abis/lpContract.json'
-import { getAssetList } from 'utils/getList'
+import { getAllowance, getAssetList } from 'utils/getList'
 import { useTranslation } from 'react-i18next'
 import { simpleRpcProvider } from 'utils/providers'
+import { useSwapFactoryContract } from 'constants/hooks/useContract'
 const { Option } = Select
 
 const Long: React.FC<any> = props => {
@@ -84,6 +84,45 @@ const Long: React.FC<any> = props => {
       setTokenB(farmState.farmCoinSelect)
     }
   }, [farmState.farmCoinSelect, farmState.farmCoinStock])
+
+  const [allowanceA, setAllowanceA] = useState("")
+  const [allowanceB, setAllowanceB] = useState("")
+  const getTokenAllowance = useCallback(async(tokenAddress: any, decimal: string, isTokenA: boolean) => {
+    if(account !== undefined && account !== null) {
+      const provider = window.ethereum
+      const library = getLibrary(provider) ?? simpleRpcProvider
+      const contract = new ethers.Contract(tokenAddress, lpContractAbi, library)
+
+      const allowance = await getAllowance(contract, account, LongStakingAddress, decimal )
+      console.log(`Allowance for ${isTokenA ? "tokenA": "tokenB"} on long staking is ${allowance.allowance}`)
+      isTokenA ? setAllowanceA(allowance.allowance) : setAllowanceB(allowance.allowance)
+    }
+  }, [account])
+  useEffect(() => {
+    if(tokenA !== undefined && tokenA !== null) {
+      console.log(`Token A is changing ${tokenA}. Get allowance`)
+      const tokenADecimal = commonState.assetBaseInfoObj[tokenA].decimals
+      const tokenAAddress = commonState.assetBaseInfoObj[tokenA].address
+      getTokenAllowance(tokenAAddress, tokenADecimal, true)
+    }
+  }, [tokenA, account])
+  useEffect(() => {
+    if(tokenB !== undefined && tokenB !== null) {
+      console.log(`Token B is changing ${tokenB}. Get allowance`)
+      const tokenBDecimal = commonState.assetBaseInfoObj[tokenB].decimals
+      const tokenBAddress = commonState.assetBaseInfoObj[tokenB].address
+      getTokenAllowance(tokenBAddress, tokenBDecimal, false)
+    }
+  }, [tokenB, account])
+  useEffect(()=> {
+      const tokenADecimal = commonState.assetBaseInfoObj[tokenA].decimals
+      const tokenAAddress = commonState.assetBaseInfoObj[tokenA].address
+      getTokenAllowance(tokenAAddress, tokenADecimal, true)
+
+      const tokenBDecimal = commonState.assetBaseInfoObj[tokenB].decimals
+      const tokenBAddress = commonState.assetBaseInfoObj[tokenB].address
+      getTokenAllowance(tokenBAddress, tokenBDecimal, false)
+  }, [])
 
   const [requestedApproval, setRequestedApproval] = useState(false)
   const provider = window.ethereum
@@ -196,14 +235,22 @@ const Long: React.FC<any> = props => {
   const swapFactoryContract = useSwapFactoryContract()
 
   async function getPair() {
-    const result = await swapFactoryContract.getPair(
-      commonState.assetBaseInfoObj[tokenA].address,
-      commonState.assetBaseInfoObj[tokenB].address,
-    )
-    if (Number(formatUnits(result, 18)) > 0) {
-      setPair(result)
-    } else {
-      setPair('')
+    // const result = await swapFactoryContract.getPair(
+    //   commonState.assetBaseInfoObj[tokenA].address,
+    //   commonState.assetBaseInfoObj[tokenB].address,
+    // )
+    // if (Number(formatUnits(result, 18)) > 0) {
+    //   setPair(result)
+    // } else {
+    //   setPair('')
+    // }
+    const tokenAAddress = commonState.assetBaseInfoObj[tokenA].address
+    const tokenBAddress = commonState.assetBaseInfoObj[tokenB].address
+
+    const result = getLpPairDetail(tokenAAddress, tokenBAddress)
+    console.log(`Get pair result in long tsx`, result)
+    if(result !== undefined) {
+      setPair(result.lp)
     }
   }
 
@@ -460,11 +507,11 @@ const Long: React.FC<any> = props => {
         <Button className="long-farm" disabled>
           {t('InsufficientLiquidity')}
         </Button>
-      ) : !commonState.assetBaseInfoObj[tokenA]?.longFarmAllowance ? (
+      ) : parseFloat(allowanceA) <= 0 ? (
         <Button className="long-farm" loading={requestedApproval} onClick={() => handleApprove(`${tokenA}`)}>
           <span>{t('Approve')} {tokenA}</span>
         </Button>
-      ) : !commonState.assetBaseInfoObj[tokenB]?.longFarmAllowance ? (
+      ) : parseFloat(allowanceB) <= 0 ? (
         <Button className="long-farm" loading={requestedApproval} onClick={() => handleApprove(`${tokenB}`)}>
           <span>{t('Approve')} {tokenB}</span>
         </Button>
