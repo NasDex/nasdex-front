@@ -1,6 +1,6 @@
 /** @format */
 
-import { getLpDetailByAddress } from "../constants/index"
+import { getLpDetailByAddress, nAssetShort } from "../constants/index"
 
 export async function getApr(
   price: any,
@@ -208,7 +208,7 @@ export async function getCommonShortApr(
     info.shortAllocPoint = shortPoolInfoItemDetails.allocPoint.toString()
   }
   const shortContract = new ethers.Contract(info.shortToken, lTokenAbi, library)
-  const decimals = await shortContract.decimals()
+  const decimals = nAssetShort.find(s => s.address.toLowerCase() === info.shortToken.toLowerCase())?.decimal || 18
   const totalStaked = await shortContract.totalSupply()
   const totalStakedNum = Number(formatUnits(totalStaked, decimals.toString()))
   let shortAprP: any
