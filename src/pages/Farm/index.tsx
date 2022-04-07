@@ -16,6 +16,7 @@ import ETHOracle from '../../constants/abis/ETHOracle.json'
 import STAOracle from '../../constants/abis/STAOracle.json'
 import { getSwapPrice } from 'utils/getList'
 import {
+  oracleList,
   SEOracleAddress,
   USDCaddress
 } from '../../constants/index'
@@ -66,6 +67,7 @@ const Farm = () => {
         balance = formatUnits(await contract.balanceOf(account), commonState.assetBaseInfoObj[asset].decimals)
       }
       if (commonState.assetBaseInfoObj[asset].type == 'asset') {
+        // Getting swap price
         const swapPriceObj = await getSwapPrice(USDCaddress, commonState.assetBaseInfoObj[asset].address)
         if (swapPriceObj) {
           const token0Name = commonState.assetsNameInfo[swapPriceObj.token0]
@@ -87,11 +89,15 @@ const Farm = () => {
             }
           }
         }
-        if (asset == 'nSE') {
-          const STAOracleContract = new ethers.Contract(SEOracleAddress, STAOracle, library)
-          const STAOraclePrice = await STAOracleContract.latestRoundData()
-          oraclePrice = fixD(formatUnits(STAOraclePrice.answer, 8), 4)
+      
+        // Getting oracle price
+        const oracleInfo = oracleList.find(i => i.assetKey === asset)
+        if (oracleInfo !== undefined) {
+          const priceOracleContract = new ethers.Contract(oracleInfo.address, STAOracle, library)
+          const price = await priceOracleContract.latestRoundData()
+          oraclePrice = fixD(formatUnits(price.answer, oracleInfo.decimal), 4)
         }
+
       } else {
         if (asset == 'NSDX') {
           swapPrice = priceList.NSDX
