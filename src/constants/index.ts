@@ -93,7 +93,26 @@ export const lpPairDetails = [
   }
 ]
 
+export const nAssetShort = [
+  {
+    name: "sSE",
+    decimal: 18,
+    address: "0xef4c2e11E136e2824d4Ec9bc4b147d8C38d931f5"
+  }, 
+  {
+    name: "sTSLA",
+    decimal: 18,
+    address: "0x12C590aD53CD55677D15B9E2f7D5866B6E1931bB"
+  }
+]
+
 export const getLpPairDetail = (tokenA: string, tokenB: string) => {
   const lpDetail = lpPairDetails.find(l => l.tokenA.toLowerCase() === tokenA.toLowerCase() && l.tokenB.toLowerCase() === tokenB.toLowerCase())
   return lpDetail
+}
+
+export const getLpDetailByAddress = async(lpAddress: string) => {
+  const lpPairDetailVals = Object.values(lpPairDetails)
+  const lpDetail = lpPairDetailVals.filter(l => l.lp.toLowerCase() === lpAddress.toLowerCase())
+  return lpDetail[0]
 }

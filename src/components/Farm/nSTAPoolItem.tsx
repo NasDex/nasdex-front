@@ -48,19 +48,47 @@ const FarmPoolItem: React.FC<any> = props => {
 
   async function getPoolInfo() {
     const price = priceList
-    const longAprResult = await getCommonLongApr(
-      price,
-      farmPoolItem,
-      MasterChefTestContract,
-      longStakingContract,
-      account,
-      LongStakingAddress,
-      formatUnits,
-      lTokenAbi,
-      ethers,
-      library,
-      commonState,
+
+    // long apr
+    const _promises = []
+    _promises.push(
+      getCommonLongApr(
+        price,
+        farmPoolItem,
+        MasterChefTestContract,
+        longStakingContract,
+        account,
+        LongStakingAddress,
+        formatUnits,
+        lTokenAbi,
+        ethers,
+        library,
+        commonState,
+      )
     )
+
+    // Short apr
+    _promises.push(
+      getCommonShortApr(
+        commonState.assetBaseInfoObj[name].oraclePrice,
+        price,
+        props.farmPoolItem,
+        MasterChefTestContract,
+        ShortStakingContract,
+        account,
+        MasterChefTestAddress,
+        formatUnits,
+        lTokenAbi,
+        ethers,
+        library,
+        commonState,
+      )
+    )
+
+    const result  = await Promise.all(_promises)
+   
+    const longAprResult :{ longAprP: any; swapPrice: any; longTvlF: string | number; } = result[0] as { longAprP: any; swapPrice: any; longTvlF: string | number }
+    const shortAprResult:{shortAprP: any;shortTvlF: string | number} = result[1] as {shortAprP: any;shortTvlF: string | number}
 
     if (longAprResult.longTvlF) {
       setLongTVL(fixD(longAprResult.longTvlF, 2))
@@ -71,20 +99,6 @@ const FarmPoolItem: React.FC<any> = props => {
     } else {
       setLongApr('Infinity')
     }
-    const shortAprResult = await getCommonShortApr(
-      commonState.assetBaseInfoObj[name].oraclePrice,
-      price,
-      props.farmPoolItem,
-      MasterChefTestContract,
-      ShortStakingContract,
-      account,
-      MasterChefTestAddress,
-      formatUnits,
-      lTokenAbi,
-      ethers,
-      library,
-      commonState,
-    )
     if (shortAprResult.shortTvlF) {
       setShortTVL(fixD(shortAprResult.shortTvlF, 2))
     }

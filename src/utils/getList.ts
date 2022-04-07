@@ -61,13 +61,13 @@ export async function getCommonAssetInfo(account?: string | undefined | null) {
       const _promises = []
       _promises.push(getAllowance(assetContract, account, mintAddress, assetDecimal))
       _promises.push(getAllowance(assetContract, account, SwapRouterAddress, assetDecimal))
-      _promises.push(getAllowance(assetContract, account, LongStakingAddress, assetDecimal))
-      const [mint, swap, longFarm ] = await Promise.all(_promises)
+      // _promises.push(getAllowance(assetContract, account, LongStakingAddress, assetDecimal))
+      const [mint, swap ] = await Promise.all(_promises)
 
       asset.balance = balance
       asset.mintContractAllowance = mint.isAllowanceGranted 
       asset.swapContractAllowance = swap.isAllowanceGranted
-      asset.longFarmAllowance = longFarm.isAllowanceGranted
+      // asset.longFarmAllowance = longFarm.isAllowanceGranted
 
       // Collateral asset which is not a stablecoin type
       const nonStablecoinCAsset = ['aUST']
@@ -112,7 +112,7 @@ async function getBalance(contract: any, account: string, decimal: string){
   return { balance, balanceRaw: balanceRaw.toString() }
 }
 
-async function getAllowance(contract:any, account:string, spender:string, decimal: string) {
+export async function getAllowance(contract:any, account:string, spender:string, decimal: string) {
   const allowanceRaw = await contract.allowance(account, spender)
   const allowance = formatUnits(allowanceRaw, decimal)
   const isAllowanceGranted = parseFloat(allowance) > 0
