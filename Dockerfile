@@ -19,7 +19,7 @@ RUN --mount=type=secret,id=REACT_APP_NETWORK_URL \
     export REACT_APP_NODE_3=$(cat /run/secrets/REACT_APP_NODE_3) && \ 
     npm run build
 
-# CMD ["npm", "start"]
+CMD ["npm", "start"]
 
 # FROM nginx:alpine
 
@@ -28,7 +28,7 @@ RUN --mount=type=secret,id=REACT_APP_NETWORK_URL \
 # # RUN rm /etc/nginx/conf.d/default.conf
 # # COPY nginx/default.conf /etc/nginx/conf.d
 
-# EXPOSE 80
+EXPOSE 8080
 
 # CMD ["nginx", "-g", "daemon off;"]
 FROM nginx
