@@ -81,10 +81,10 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
   const [openTikerInfo] = useModal(<TikerInfo nowPrice={nowPrice} from={from} cAssetName={cAssetName}></TikerInfo>)
   const [premiumValue, setPremiumValue] = useState('')
   const chartRef = useRef(null)
-  const { account } = useActiveWeb3React()
+  const { account, library } = useActiveWeb3React()
   const [isTab, setIsTab] = useState(false)
-  const provider = window.ethereum
-  const library = getLibrary(provider) ?? simpleRpcProvider
+  // const provider = window.ethereum
+  // const library = getLibrary(provider) ?? simpleRpcProvider
 
   async function getOraclePrice(assetName: any, cAssetName: any) {
     let asset = ''
@@ -161,24 +161,26 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
     setIsTab(!isTab)
   }, [tradeState.isTab])
   useEffect(() => {
-    if (!assetName) {
-      setAssetName(commonState.defaultAsset)
-    }
-    if (!cAssetName) {
-      setAssetName(commonState.defaultCAsset)
-    }
-    console.log(`Getting price oracle price`)
-    getOraclePrice(assetName, cAssetName)
-    let timer: any
-    const getBaseData = () => {
-      getPrice(assetName, cAssetName)
-      return getBaseData
-    }
-    if (assetName && cAssetName) {
-      timer = setInterval(getBaseData(), 5000)
-    }
-    return () => {
-      clearInterval(timer)
+    // Run the code when account is not undefined
+    if(account !== undefined) {
+      if (!assetName) {
+        setAssetName(commonState.defaultAsset)
+      }
+      if (!cAssetName) {
+        setAssetName(commonState.defaultCAsset)
+      }
+      getOraclePrice(assetName, cAssetName)
+      let timer: any
+      const getBaseData = () => {
+        getPrice(assetName, cAssetName)
+        return getBaseData
+      }
+      if (assetName && cAssetName) {
+        timer = setInterval(getBaseData(), 15000) // Refresh every 15s
+      }
+      return () => {
+        clearInterval(timer)
+      }
     }
   }, [account, assetName, cAssetName])
   async function getPrice(assetName: any, cAssetName: any) {
@@ -194,6 +196,9 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
     const swapPriceResult = await getSwapPrice(
       commonState.assetBaseInfoObj[cAssetName]?.address,
       commonState.assetBaseInfoObj[assetName]?.address,
+      commonState.assetBaseInfoObj[cAssetName]?.decimals,
+      commonState.assetBaseInfoObj[assetName]?.decimals,
+      library
     )
     if (swapPriceResult) {
       const token0Name = commonState.assetsNameInfo[swapPriceResult.token0]

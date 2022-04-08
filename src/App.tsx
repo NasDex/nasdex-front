@@ -22,15 +22,17 @@ import './style/antdesign.less'
 
 export default function App() {
   const dispatch = useDispatch()
-  const { account } = useActiveWeb3React()
+  const { account, library, active } = useActiveWeb3React()
   const commonState = useCommonState()
   const { assetBaseInfoObj } = commonState
   useEagerConnect()
 
   useEffect(() => {
     dispatch(upDateOpenWeb({ openWeb: true }))
-    getCommonAssetInfo(account)
-  }, [account, commonState.openWeb])
+    if(active) {
+      getCommonAssetInfo(library, account)
+    }
+  }, [library, account, commonState.openWeb])
   return (
     <Suspense fallback={null}>
       <BrowserRouter>

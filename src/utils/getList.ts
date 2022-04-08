@@ -23,11 +23,11 @@ import {
 } from 'state/common/actions'
 
 // Please refer note.txt for v1 code
-export async function getCommonAssetInfo(account?: string | undefined | null) {
+export async function getCommonAssetInfo(library: any ,account?: string | undefined | null) {
   const dispatch = store.dispatch
 
-  const provider = window.ethereum
-  const library = getLibrary(provider) || simpleRpcProvider
+  // const provider = window.ethereum
+  // const library = getLibrary(provider) || simpleRpcProvider
   // const assetBaseInfo: any = []
   let assetBaseInfoArr: any = []
 
@@ -86,7 +86,7 @@ export async function getCommonAssetInfo(account?: string | undefined | null) {
 
     // Find swap price
     if(assetType === 'asset') {
-      const swapPriceResult = await getSwapPrice(USDCaddress, assetAddress)
+      const swapPriceResult = await getSwapPrice(USDCaddress, assetAddress, "6", assetDecimal.toString(), library)
       const nAssetTokenPrice = swapPriceResult?.tokenPrice1 // nAssetIndex is 1 in the lp
       asset.swapPrice = nAssetTokenPrice
     } 
@@ -119,17 +119,17 @@ export async function getAllowance(contract:any, account:string, spender:string,
   return { allowance, allowanceRaw: allowanceRaw.toString(), isAllowanceGranted}
 }
 
-export async function getSwapPrice(tokenAaddress: any, tokenBaddress: any, tokenADecimal = "18" , tokenBDecimal = "18") {
+export async function getSwapPrice(tokenAaddress: any, tokenBaddress: any, tokenADecimal = "18" , tokenBDecimal = "18", library: any) {
   try {
     if (tokenAaddress === undefined || tokenBaddress === undefined) {
       throw new Error(`Token A / Token B address is undefined`)
     }
-    const provider = window.ethereum
-    const library = getLibrary(provider) ?? simpleRpcProvider
-
+    // const provider = window.ethereum
+    // const library = getLibrary(provider) ?? simpleRpcProvider
     const lpInfo = getLpPairDetail(tokenAaddress, tokenBaddress)
     if (lpInfo === undefined) {
-      throw new Error(`LP info is undefined`)
+      console.log(`LP info is undefined for ${tokenAaddress} and  ${tokenBaddress}, quit getSwapPrice()`)
+      return
     }
 
     const lpAddress = lpInfo.lp
@@ -150,6 +150,8 @@ export async function getSwapPrice(tokenAaddress: any, tokenBaddress: any, token
       tokenPrice1 = parseFloat(reserves0) / parseFloat(reserves1)
     }
 
+    console.log(`Refresh swap price for ${lpAddress} at ${new Date().toString()}`)
+
     const result = {
       token0: lpInfo.tokenA,
       token1: lpInfo.tokenB,
@@ -161,12 +163,10 @@ export async function getSwapPrice(tokenAaddress: any, tokenBaddress: any, token
       tokenPrice1
     }
 
-    console.log(`Get swap price at ${new Date().toString()}`, result)
-
     return result
 
   } catch (err: any) {
-    console.error(`Error in getSwapPrice(): `, err)
+    console.error(`Error in getSwapPrice() : `, err)
   }
 }
 
