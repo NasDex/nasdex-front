@@ -171,7 +171,7 @@ export async function getSwapPrice(tokenAaddress: any, tokenBaddress: any, token
 }
 
 export async function getAssetList(): Promise<any> {
-  const response = await fetch('https://beta-api.nasdex.xyz/config.json', {
+  const response = await fetch('https://api.nasdex.xyz/config.json', {
     method: 'get',
   })
   const json = await response.json()
