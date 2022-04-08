@@ -19,7 +19,7 @@ RUN --mount=type=secret,id=REACT_APP_NETWORK_URL \
     export REACT_APP_NODE_3=$(cat /run/secrets/REACT_APP_NODE_3) && \ 
     npm run build
 
-CMD ["npm", "start"]
+# CMD ["npm", "start"]
 
 # FROM nginx:alpine
 
