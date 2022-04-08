@@ -5,7 +5,8 @@ services:
     restart: always
     image: daoventures/nasdex-frontend:latest
     ports: 
-      - 8090:8080
+      - 80:80
+      - 443:433
     volumes: 
       - ./nginx:/etc/nginx/conf.d
       - ./certbot/conf:/etc/letsencrypt
