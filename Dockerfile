@@ -21,19 +21,13 @@ RUN --mount=type=secret,id=REACT_APP_NETWORK_URL \
 
 CMD ["npm", "start"]
 
-# FROM nginx:alpine
+FROM nginx:alpine
 
-# COPY --from=build /frontend/build /usr/share/nginx/html
+COPY --from=build /frontend/build /usr/share/nginx/html
 
-# # RUN rm /etc/nginx/conf.d/default.conf
-# # COPY nginx/default.conf /etc/nginx/conf.d
+# RUN rm /etc/nginx/conf.d/default.conf
+# COPY nginx/default.conf /etc/nginx/conf.d
 
 EXPOSE 8080
 
-# CMD ["nginx", "-g", "daemon off;"]
-FROM nginx
-COPY nginx/nginx.conf /etc/nginx
-COPY nginx/start.sh /bin/start.sh
-COPY --from=build /frontend/build /data/www
-ENV SERVICENAME="cdz-swap"
-ENTRYPOINT ["sh", "/bin/start.sh"]
+CMD ["nginx", "-g", "daemon off;"]
