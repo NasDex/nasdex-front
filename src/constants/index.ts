@@ -93,16 +93,40 @@ export const lpPairDetails = [
   }
 ]
 
-export const nAssetShort = [
+// Move this to backend
+export const shortStakes = [
   {
+    shortId: 1, // sSE
+    rootId: 5,
+    shortToken: "0xef4c2e11E136e2824d4Ec9bc4b147d8C38d931f5",
+    shortTokenDecimal: 18,
     name: "sSE",
-    decimal: 18,
-    address: "0xef4c2e11E136e2824d4Ec9bc4b147d8C38d931f5"
-  }, 
+
+  },
   {
+    shortId: 2, // sTSLA
+    rootId: 7,
+    shortToken: "0x12C590aD53CD55677D15B9E2f7D5866B6E1931bB",
+    shortTokenDecimal: 18,
     name: "sTSLA",
-    decimal: 18,
-    address: "0x12C590aD53CD55677D15B9E2f7D5866B6E1931bB"
+  }
+]
+
+export const longStakes = [
+  {
+    longId: 1, // nSE
+    rootId: 4,
+    lpToken: "0x5f1BD282C552446887919E810901b55Bc6dA2ac4",
+    lpTokenDecimal: 18,
+    name: "nSE",
+
+  },
+  {
+    longId: 2, // nTSLA
+    rootId: 6,
+    lpToken: "0x8dEf846Af4c574835D6406ceB442eEE57eE1C424",
+    lpTokenDecimal: 18,
+    name: "nTSLA",
   }
 ]
 
@@ -111,7 +135,8 @@ export const getLpPairDetail = (tokenA: string, tokenB: string) => {
   return lpDetail
 }
 
-export const getLpDetailByAddress = async(lpAddress: string) => {
+export const getLpDetailByAddress = async(lpAddress: string | undefined) => {
+  if(lpAddress === undefined) { return null}
   const lpPairDetailVals = Object.values(lpPairDetails)
   const lpDetail = lpPairDetailVals.filter(l => l.lp.toLowerCase() === lpAddress.toLowerCase())
   return lpDetail[0]
