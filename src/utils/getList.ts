@@ -50,6 +50,7 @@ export async function getCommonAssetInfo(library: any ,account?: string | undefi
     const asset:any = assetBaseInfoArr[i]
    
     const assetContract = new ethers.Contract(asset.address, Erc20Abi, library)
+
     const assetDecimal =  asset.decimals
     const assetType = asset.type
     const assetName = asset.name
@@ -57,16 +58,16 @@ export async function getCommonAssetInfo(library: any ,account?: string | undefi
 
     if(account !== undefined && account !== null) {
       const balance = await getBalance(assetContract, account, assetDecimal)
-
-      const _promises = []
-      _promises.push(getAllowance(assetContract, account, mintAddress, assetDecimal))
-      _promises.push(getAllowance(assetContract, account, SwapRouterAddress, assetDecimal))
-      // _promises.push(getAllowance(assetContract, account, LongStakingAddress, assetDecimal))
-      const [mint, swap ] = await Promise.all(_promises)
-
       asset.balance = balance
-      asset.mintContractAllowance = mint.isAllowanceGranted 
-      asset.swapContractAllowance = swap.isAllowanceGranted
+
+      // const _promises = []
+      // _promises.push(getAllowance(assetContract, account, mintAddress, assetDecimal))
+      // _promises.push(getAllowance(assetContract, account, SwapRouterAddress, assetDecimal))
+      // _promises.push(getAllowance(assetContract, account, LongStakingAddress, assetDecimal))
+      // const [mint, swap ] = await Promise.all(_promises)
+
+      // asset.mintContractAllowance = mint.isAllowanceGranted 
+      // asset.swapContractAllowance = swap.isAllowanceGranted
       // asset.longFarmAllowance = longFarm.isAllowanceGranted
 
       // Collateral asset which is not a stablecoin type
@@ -133,6 +134,7 @@ export async function getSwapPrice(tokenAaddress: any, tokenBaddress: any, token
     }
 
     const lpAddress = lpInfo.lp
+    console.log(`Provider at ${new Date().toString()} `, library)
     const contract = new ethers.Contract(lpAddress, lpContractAbi, library)
     const reserves = await contract.getReserves()
 
@@ -150,7 +152,7 @@ export async function getSwapPrice(tokenAaddress: any, tokenBaddress: any, token
       tokenPrice1 = parseFloat(reserves0) / parseFloat(reserves1)
     }
 
-    console.log(`Refresh swap price for ${lpAddress} at ${new Date().toString()}`)
+    console.log(`Refresh swap price for ${lpAddress} at ${new Date().toString()} , token0 ${tokenPrice0}, token1 ${tokenPrice1}`)
 
     const result = {
       token0: lpInfo.tokenA,

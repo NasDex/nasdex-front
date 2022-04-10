@@ -12,7 +12,7 @@ import LongShort from './pages/Farm/longShortIndex'
 import Profile from './pages/Profile'
 import Manage from './pages/Manage'
 import Trade from './pages/Trade'
-import { useCommonState } from 'state/common/hooks'
+import { useCommonState, useProvider } from 'state/common/hooks'
 import { getCommonAssetInfo } from 'utils/getList'
 import { upDateOpenWeb } from 'state/common/actions'
 import { useDispatch } from 'react-redux'
@@ -22,17 +22,19 @@ import './style/antdesign.less'
 
 export default function App() {
   const dispatch = useDispatch()
-  const { account, library, active } = useActiveWeb3React()
+  const { account,  active } = useActiveWeb3React()
+  const common = useCommonState()
   const commonState = useCommonState()
   const { assetBaseInfoObj } = commonState
   useEagerConnect()
 
   useEffect(() => {
     dispatch(upDateOpenWeb({ openWeb: true }))
-    if(active) {
-      getCommonAssetInfo(library, account)
+    const provider = common.provider
+    if(active && provider !== undefined) {
+      getCommonAssetInfo(provider, account)
     }
-  }, [library, account, commonState.openWeb])
+  }, [common.provider, account, commonState.openWeb])
   return (
     <Suspense fallback={null}>
       <BrowserRouter>

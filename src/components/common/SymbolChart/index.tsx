@@ -16,7 +16,7 @@ import { useMintState } from 'state/mint/hooks'
 import { useManageState } from 'state/manage/hooks'
 import { useFarmState } from 'state/farm/hooks'
 import { useTradeState } from 'state/trade/hooks'
-import { useCommonState } from 'state/common/hooks'
+import { useCommonState, useProvider } from 'state/common/hooks'
 import { getSwapPrice, getOneAssetInfo } from 'utils/getList'
 import { upDateOneAssetBaseInfo } from 'state/common/actions'
 import { useActiveWeb3React } from 'hooks'
@@ -81,10 +81,12 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
   const [openTikerInfo] = useModal(<TikerInfo nowPrice={nowPrice} from={from} cAssetName={cAssetName}></TikerInfo>)
   const [premiumValue, setPremiumValue] = useState('')
   const chartRef = useRef(null)
-  const { account, library } = useActiveWeb3React()
+  const { account } = useActiveWeb3React()
   const [isTab, setIsTab] = useState(false)
   // const provider = window.ethereum
   // const library = getLibrary(provider) ?? simpleRpcProvider
+
+  const library = useProvider()
 
   async function getOraclePrice(assetName: any, cAssetName: any) {
     let asset = ''
@@ -162,7 +164,7 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
   }, [tradeState.isTab])
   useEffect(() => {
     // Run the code when account is not undefined
-    if(account !== undefined) {
+    if(account !== undefined && library !== undefined) {
       if (!assetName) {
         setAssetName(commonState.defaultAsset)
       }
@@ -182,7 +184,8 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
         clearInterval(timer)
       }
     }
-  }, [account, assetName, cAssetName])
+  }, [library,account, assetName, cAssetName])
+
   async function getPrice(assetName: any, cAssetName: any) {
     if (commonState.assetBaseInfoObj[assetName] && commonState.assetBaseInfoObj[assetName]?.type == 'asset') {
       assetName = assetName
@@ -224,13 +227,13 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
       }
     }
   }
+  
   useEffect(() => {
     if (from == 'mint' && mintState.mintCoinStock) {
       console.log(`Changed from state nAsset ${mintState.mintCoinStock}`)
       setAssetName(mintState.mintCoinStock)
     }
     if (from == 'mint' && mintState.mintCoinSelect) {
-      console.log(`Changed from state asset ${mintState.mintCoinSelect}`)
       setcAssetName(mintState.mintCoinSelect)
     }
     if ((from == 'farm' || from == 'longFarm') && farmState.farmCoinStock) {
