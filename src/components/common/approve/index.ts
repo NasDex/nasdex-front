@@ -1,21 +1,19 @@
 /** @format */
 
 import {useCallback} from 'react'
-import {ethers, Contract} from 'ethers'
-import {useCommonState} from 'state/common/hooks'
+import {ethers} from 'ethers'
+import {useCommonState, useProvider} from 'state/common/hooks'
 import {upDateOneAssetBaseInfo} from '../../../state/common/actions'
 import {useActiveWeb3React} from 'hooks'
 import {useDispatch} from 'react-redux'
 import Erc20Abi from 'constants/abis/erc20.json'
-import { getLibrary } from 'utils/getLibrary'
-import { mintAddress, USDCaddress, SwapFactoryAddress, SwapRouterAddress, LongStakingAddress } from 'constants/index'
+import { mintAddress, SwapRouterAddress, LongStakingAddress } from 'constants/index'
 import {formatUnits} from 'ethers/lib/utils'
 const useApproveFarm = (asset: string, address: string, type: string) => {
   const {account} = useActiveWeb3React()
   const commonState = useCommonState()
   const dispatch = useDispatch()
-  const provider = window.ethereum
-  const library = getLibrary(provider)
+  const library = useProvider()
   const contract = new ethers.Contract(commonState.assetBaseInfoObj[asset].address, Erc20Abi, library?.getSigner())
   const handleApprove = useCallback(async () => {
     try {
