@@ -1,44 +1,34 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
-import react, { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import '../../../style/Trade/buy.less'
+import lpContractAbi from '../../../constants/abis/lpContract.json'
 import { Input, Select, Button, Skeleton } from 'antd'
-import { fixD, numToWei } from 'utils'
-import useModal from '../../../hooks/useModal'
+import { fixD } from 'utils'
 import ConfirmOrder from '../buyOrderConfirm/index'
 import Notification from '../../../utils/notification'
 type IconType = 'success' | 'info' | 'error' | 'warning'
 import { useActiveWeb3React } from 'hooks'
 import { useWalletModal } from 'components/WalletModal'
 import useAuth from 'hooks/useAuth'
-import { useCommonState } from 'state/common/hooks'
+import { useCommonState, useProvider } from 'state/common/hooks'
 import { useTradeState } from 'state/trade/hooks'
 import useApproveFarm from 'components/common/approve/index'
 import { SwapRouterAddress } from 'constants/index'
 import {
-  useErc20Contract,
-  useLpContract,
-  useLpContractCommon,
   useSwapFactoryContract,
   useSwapRouterContract,
 } from 'constants/hooks/useContract'
 import { formatUnits, parseUnits } from 'ethers/lib/utils'
 import iconSwapActive from '../../../img/swap/icon-swap-normal-light.png'
-import iconSwapDis from '../../../img/swap/icon-swap-disabled-light.png'
-import iconSwap from '../../../img/swap/icon-swap-hover-light.png'
-import active from '../../../img/swap/active.png'
-import { getLibrary } from 'utils/getLibrary'
-import lpContractAbi from '../../../constants/abis/lpContract.json'
 import precision from 'utils/precision'
 import warning from 'img/mint/warning.png'
-import { ethers } from 'ethers'
-import { useHistory, useLocation, useParams } from 'react-router'
 import { upDateCoinStock, upDateTradeCoinSelect } from '../../../state/trade/actions'
 import { useDispatch } from 'react-redux'
-import { useMintState } from 'state/mint/hooks'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
-import { simpleRpcProvider } from 'utils/providers'
+import { ethers } from 'ethers'
+import { getAllowance } from 'utils/getList'
 const { Option } = Select
 
 const Buy: React.FC<any> = props => {
@@ -57,6 +47,7 @@ const Buy: React.FC<any> = props => {
   const { account } = useActiveWeb3React()
   const commonState = useCommonState()
   const tradeState = useTradeState()
+  const library = useProvider()
   const { onPresentConnectModal, onPresentAccountModal } = useWalletModal(login, logout, account || undefined)
   const [tokenA, setTokenA] = useState(commonState.defaultAsset)
   const [tokenB, setTokenB] = useState(commonState.defaultCAsset)
@@ -76,15 +67,24 @@ const Buy: React.FC<any> = props => {
   const [APrice, setAPrice] = useState(Number(tokenAamount) / Number(tokenBamount))
   const [BPrice, setBPrice] = useState(Number(tokenBamount) / Number(tokenAamount))
   const { assetBaseInfoObj } = commonState
+
+  const [allowance, setAllowance] = useState("0")
+  const getTokenAllowance = useCallback(async(tokenAddress: any, decimal: string) => {
+    if(account !== undefined && account !== null) {
+      const contract = new ethers.Contract(tokenAddress, lpContractAbi, library)
+      const allowance = await getAllowance(contract, account, SwapRouterAddress, decimal )
+      setAllowance(allowance.allowance)
+      setTokenApprove(parseFloat(allowance.allowance) > 0)
+    }
+  }, [account])
+
   useEffect(() => {
-    if (commonState.assetBaseInfoObj[tokenA].balance) {
-      setTokenABalance(commonState.assetBaseInfoObj[tokenA].balance)
+    if(library !== undefined && tokenA !== "" && tokenA !== undefined) {
+      const assetTokenA = commonState.assetBaseInfoObj[tokenA]
+      setTokenABalance(assetTokenA.balance)
+      getTokenAllowance(assetTokenA.address, assetTokenA.decimals)
     }
-    if (tokenA || commonState.assetBaseInfoObj[tokenA].swapContractAllowance) {
-      setTokenA(tokenA)
-      setTokenApprove(commonState.assetBaseInfoObj[tokenA].swapContractAllowance)
-    }
-  }, [tokenA, commonState.assetBaseInfoObj])
+  }, [library, tokenA, commonState.assetBaseInfoObj])
 
   const [tokenAaddress, setTokenAaddress] = useState(commonState.assetBaseInfoObj[tokenA]?.address)
   const [tokenBaddress, setTokenBaddress] = useState(commonState.assetBaseInfoObj[tokenB]?.address)
@@ -112,8 +112,6 @@ const Buy: React.FC<any> = props => {
   const [priceForm, setPriceForm] = useState(0)
   const [reserves0, setReserves0] = useState(0)
   async function getReserver(result: string) {
-    const provider = window.ethereum
-    const library = getLibrary(provider) ?? simpleRpcProvider
     const contract = new ethers.Contract(result, lpContractAbi, library)
     const reserves = await contract.getReserves()
     const token0 = await contract.token0()
