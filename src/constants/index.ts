@@ -43,6 +43,13 @@ export const AdminAddress = '0x51B6F9dc5a67fCF62c84E2314651100f8Bc5cF43'
 
 export const SwapFactoryAddress = '0x03A8C741d36a8bF689A24C1F5d59cc122704E85F' 
 export const SwapRouterAddress = '0xeF1F06F0a9645A143Eaccb543f5bda85A9BD21D9' 
+
+// nTSLA 
+export const nTSLATokenAddress = "0xC0837c7933e8e19F615453e978f76c1C72bc8d16"
+export const nTSLALpTokenAddress = "0x66b9A44d9487175177698BCD9812dBdeeA08fb3D"
+export const nTSLAShortTokenAddress = "0xC2a6701cC948e01375B6042466439F21CaeAe3ac"
+
+
 interface Person {
   name: string
   age?: number
@@ -66,3 +73,63 @@ export const oracleList = [
     oraclePrice: null,
   },
 ]
+
+export const lpPairDetails = [
+  {
+    // SE / USD
+    tokenA: USDCaddress,
+    tokenB: nAssetAddress,
+    lp: LongTokenAddress, 
+    tokenADecimal: 6,
+    tokenBDecimal: 18
+  }, 
+  {
+    tokenA: USDCaddress,
+    tokenB: nTSLATokenAddress,
+    lp: nTSLALpTokenAddress, 
+    tokenADecimal: 6,
+    tokenBDecimal: 18
+  }
+]
+
+// Move this to backend
+export const shortStakes = [
+  {
+    shortId: 1, // sSE
+    rootId: 5,
+    shortToken: ShortTokenAddress,
+    shortTokenDecimal: 18,
+    name: "sSE",
+
+  },
+  {
+    shortId: 2, // sTSLA
+    rootId: 7,
+    shortToken: nTSLAShortTokenAddress,
+    shortTokenDecimal: 18,
+    name: "sTSLA",
+  }
+]
+
+export const longStakes = [
+  {
+    longId: 1, // nSE
+    rootId: 4,
+    lpToken: LongTokenAddress,
+    lpTokenDecimal: 18,
+    name: "nSE",
+
+  },
+  {
+    longId: 2, // nTSLA
+    rootId: 6,
+    lpToken: nTSLALpTokenAddress,
+    lpTokenDecimal: 18,
+    name: "nTSLA",
+  }
+]
+
+export const getLpPairDetail = (tokenA: string, tokenB: string) => {
+  const lpDetail = lpPairDetails.find(l => l.tokenA.toLowerCase() === tokenA.toLowerCase() && l.tokenB.toLowerCase() === tokenB.toLowerCase())
+  return lpDetail
+}
