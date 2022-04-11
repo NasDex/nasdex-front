@@ -131,10 +131,23 @@ export const longStakes = [
 ]
 
 export const getLpPairDetail = (tokenA: string, tokenB: string) => {
-  const lpDetail = lpPairDetails.find(l => l.tokenA.toLowerCase() === tokenA.toLowerCase() && l.tokenB.toLowerCase() === tokenB.toLowerCase())
+  if(tokenA === undefined || tokenB === undefined) {
+    console.log(`Token A / Token B is undefined`)
+    return
+  }
+
+  if(tokenA.toLowerCase() === tokenB.toLowerCase()) {
+    console.log(`Token A is equals to token B`)
+    return
+  }
+
+  const lpDetail = lpPairDetails.find(l => 
+    ((l.tokenA.toLowerCase() === tokenA.toLowerCase() || l.tokenA.toLowerCase() === tokenB.toLowerCase()) 
+    && (l.tokenB.toLowerCase() === tokenA.toLowerCase() || l.tokenB.toLowerCase() === tokenB.toLowerCase()))
+  )
+  
   return lpDetail
 }
-
 export const getLpDetailByAddress = async(lpAddress: string | undefined) => {
   if(lpAddress === undefined) { return null}
   const lpPairDetailVals = Object.values(lpPairDetails)
