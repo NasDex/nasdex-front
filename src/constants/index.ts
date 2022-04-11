@@ -47,7 +47,7 @@ export const SwapRouterAddress = '0x270Ec6bE0C9D67370C2B247D5AF1CC0B7dED0d4a'
 // nTSLA 
 export const nTSLATokenAddress = "0xe532dcE6BEFe42Ca8767DFa2abFCE2b99087168B"
 export const nTSLALpTokenAddress = "0x8dEf846Af4c574835D6406ceB442eEE57eE1C424"
-
+export const nTSLAShortTokenAddress = "0x12C590aD53CD55677D15B9E2f7D5866B6E1931bB"
 interface Person {
   name: string
   age?: number
@@ -98,7 +98,7 @@ export const shortStakes = [
   {
     shortId: 1, // sSE
     rootId: 5,
-    shortToken: "0xef4c2e11E136e2824d4Ec9bc4b147d8C38d931f5",
+    shortToken: ShortTokenAddress,
     shortTokenDecimal: 18,
     name: "sSE",
 
@@ -106,7 +106,7 @@ export const shortStakes = [
   {
     shortId: 2, // sTSLA
     rootId: 7,
-    shortToken: "0x12C590aD53CD55677D15B9E2f7D5866B6E1931bB",
+    shortToken: nTSLAShortTokenAddress,
     shortTokenDecimal: 18,
     name: "sTSLA",
   }
@@ -116,7 +116,7 @@ export const longStakes = [
   {
     longId: 1, // nSE
     rootId: 4,
-    lpToken: "0x5f1BD282C552446887919E810901b55Bc6dA2ac4",
+    lpToken: LongTokenAddress,
     lpTokenDecimal: 18,
     name: "nSE",
 
@@ -124,7 +124,7 @@ export const longStakes = [
   {
     longId: 2, // nTSLA
     rootId: 6,
-    lpToken: "0x8dEf846Af4c574835D6406ceB442eEE57eE1C424",
+    lpToken: nTSLALpTokenAddress,
     lpTokenDecimal: 18,
     name: "nTSLA",
   }
