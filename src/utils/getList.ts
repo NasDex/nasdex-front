@@ -58,7 +58,7 @@ export async function getCommonAssetInfo(library: any ,account?: string | undefi
 
     if(account !== undefined && account !== null) {
       const balance = await getBalance(assetContract, account, assetDecimal)
-      asset.balance = balance
+      asset.balance = balance.balance
 
       // const _promises = []
       // _promises.push(getAllowance(assetContract, account, mintAddress, assetDecimal))
