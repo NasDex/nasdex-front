@@ -4,7 +4,7 @@
 import react, { useEffect, useState } from 'react'
 import { Modal, Button, Input } from 'antd'
 import '../../style/Profile/unstake.less'
-import { useCommonState } from 'state/common/hooks'
+import { useCommonState, useProvider } from 'state/common/hooks'
 import { getOneAssetInfo, getSwapPrice } from 'utils/getList'
 import { useFarmState } from 'state/farm/hooks'
 import { fixD, numToWei } from 'utils'
@@ -55,6 +55,7 @@ const Stake = ({ onDismiss = defaultOnDismiss, poolInfo,
   const MasterChefTestContract = useMasterChefTestContract()
   const { account } = useActiveWeb3React()
   const dispatch = useDispatch()
+  const library = useProvider()
   const [openWaiting] = useModal(
     <OrderNoifcation
       type="noMessageWaitings"
@@ -170,6 +171,9 @@ const Stake = ({ onDismiss = defaultOnDismiss, poolInfo,
       swapPrice = await getSwapPrice(
         commonState.assetBaseInfoObj[poolInfo.cAssetTokenName].address,
         commonState.assetBaseInfoObj[poolInfo.assetTokenName].address,
+        commonState.assetBaseInfoObj[poolInfo.cAssetTokenName].decimals,
+        commonState.assetBaseInfoObj[poolInfo.assetTokenName].decimals,
+        library
       )
       if (swapPrice) {
         const token0Name = commonState.assetsNameInfo[swapPrice.token0]

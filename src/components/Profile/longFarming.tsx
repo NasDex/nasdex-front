@@ -12,7 +12,7 @@ import { useWeb3React } from '@web3-react/core'
 import { useWalletModal } from 'components/WalletModal'
 import useAuth from 'hooks/useAuth'
 import { useMasterChefTestContract, useLongStakingContract } from 'constants/hooks/useContract'
-import { useCommonState } from 'state/common/hooks'
+import { useCommonState, useProvider } from 'state/common/hooks'
 import { getSwapPrice, getOneAssetInfo, getAssetList } from 'utils/getList'
 import { fixD, getpriceList } from 'utils'
 import { useDispatch } from 'react-redux'
@@ -48,8 +48,9 @@ const LongFarming: React.FC<any> = props => {
   const [profileLongFarmConfirm, setProfileLongFarmConfirm] = useState(false)
 
   const { login, logout } = useAuth()
-  const provider = window.ethereum
-  const library = getLibrary(provider) ?? simpleRpcProvider
+  // const provider = window.ethereum
+  // const library = getLibrary(provider) ?? simpleRpcProvider
+  const library = useProvider()
   const { onPresentConnectModal, onPresentAccountModal } = useWalletModal(login, logout, account || undefined)
   const LongStakingContract = useLongStakingContract()
   const MasterChefTestContract = useMasterChefTestContract()

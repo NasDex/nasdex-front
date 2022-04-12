@@ -11,7 +11,7 @@ import useModal from '../../../hooks/useModal'
 import { useLongStakingContract } from 'constants/hooks/useContract'
 import { parseUnits, formatUnits } from 'ethers/lib/utils'
 import { upDateTxHash } from 'state/farm/actions'
-import { useCommonState } from 'state/common/hooks'
+import { useCommonState, useProvider } from 'state/common/hooks'
 import { upDateOneAssetBaseInfo } from '../../../state/common/actions'
 import { getOneAssetInfo, getSwapPrice } from 'utils/getList'
 import { useActiveWeb3React } from 'hooks'
@@ -63,8 +63,9 @@ const LongOrderConfirm = ({
   const [sharePool, setSharePool] = useState('')
   const { account } = useActiveWeb3React()
   const [isChildTab, setChildTab] = useState(true)
-  const provider = window.ethereum
-  const library = getLibrary(provider) ?? simpleRpcProvider
+  // const provider = window.ethereum
+  // const library = getLibrary(provider) ?? simpleRpcProvider
+  const library = useProvider()
   const [openNoifcation] = useModal(<OrderNoifcation type="success" title={t('LongFarm')} from="farm"></OrderNoifcation>)
   const longStakingContract = useLongStakingContract()
   const [openWaringNoifcation] = useModal(
@@ -194,6 +195,9 @@ const LongOrderConfirm = ({
     swapPrice = await getSwapPrice(
       commonState.assetBaseInfoObj[tokenA].address,
       commonState.assetBaseInfoObj[tokenB].address,
+      commonState.assetBaseInfoObj[tokenA].decimals,
+      commonState.assetBaseInfoObj[tokenB].decimals,
+      library
     )
     if (swapPrice) {
       const contract = new ethers.Contract(swapPrice.result, ltokenAbi, library)
