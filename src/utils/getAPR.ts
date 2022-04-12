@@ -1,6 +1,6 @@
 /** @format */
 
-import { getLpDetailByAddress, nAssetShort } from "../constants/index"
+import { getLpDetailByAddress, longStakes, shortStakes } from "../constants/index"
 
 export async function getApr(
   price: any,
@@ -109,7 +109,7 @@ export async function getCommonLongApr(
   account: any,
   LongStakingAddress: any,
   formatUnits: any,
-  lTokenAbi: any,
+  lpTokenAbi: any,
   ethers: any,
   library: any,
   commonState: any,
@@ -121,32 +121,38 @@ export async function getCommonLongApr(
   let cAsset: any
   let swapPrice: any
   const totalAllocPoint = await MasterChefTestContract.totalAllocPoint()
-  const longPoolInfoItem = await LongStakingContract.poolInfo(Number(farmPoolItem.longId))
-  if (longPoolInfoItem) {
-    info.longrootPid = longPoolInfoItem.rootPid.toString()
-    info.longToken = longPoolInfoItem.lpToken
+
+ 
+  // const longPoolInfoItem = await LongStakingContract.poolInfo(Number(farmPoolItem.longId))
+  // if (longPoolInfoItem) {
+  //   info.longrootPid = longPoolInfoItem.rootPid.toString()
+  //   info.longToken = longPoolInfoItem.lpToken
+  //   console.log(`Farm pool item ${longId}, root id ${info.longrootPid}, lpToken ${info.longToken}`)
+  // }
+  const longId = farmPoolItem.longId
+  const longPoolInfoItem = longStakes.filter(l => l.longId === parseFloat(longId)) 
+  if(longPoolInfoItem === undefined || longPoolInfoItem.length <= 0) {
+    console.log(`Long pool info item is undefined`)
+    return
   }
-  const longPoolInfoItemDetails = await MasterChefTestContract.poolInfo(info.longrootPid)
+
+  const { lpToken, rootId } = longPoolInfoItem[0]
+  const longPoolInfoItemDetails = await MasterChefTestContract.poolInfo(rootId)
   if (longPoolInfoItemDetails) {
     info.longAllocPoint = longPoolInfoItemDetails.allocPoint.toString()
   }
-  const longContract = new ethers.Contract(info.longToken, lTokenAbi, library) // lp contract
-  let longAprP: any
-  const tokenPairInfo = await getLpDetailByAddress(info.longToken)
-  const token0 = tokenPairInfo.tokenA
-  const token1 = tokenPairInfo.tokenB
-  // const token0 = await longContract.token0()
-  // const token1 = await longContract.token1()
-  const reserves = await longContract.getReserves()
-  const token0Name = assetsNameInfo[token0]
-  const token1Name = assetsNameInfo[token1]
-  const reserves0 = Number(formatUnits(reserves[0], assetBaseInfoObj[token0Name]?.decimals))
-  const reserves1 = Number(formatUnits(reserves[1], assetBaseInfoObj[token1Name]?.decimals))
 
-  // debugger
-  // if(farmPoolItem.name === 'nTSLA') {
-  //   console.log(`Address ${info.longToken} , Reserves0 ${reserves0.toString()}, reserves1 ${reserves1.toString()}`)
-  // }
+  // Create LP Contract
+  const longContract = new ethers.Contract(lpToken, lpTokenAbi, library) // lp contract
+  const reserves = await longContract.getReserves()
+  const tokenPairInfo = await getLpDetailByAddress(lpToken)
+  if(tokenPairInfo === null) {
+    console.log(`Missing token pair info`)
+    return
+  }
+  const token0 = tokenPairInfo.tokenA
+  const reserves0 = Number(formatUnits(reserves[0], tokenPairInfo.tokenADecimal))
+  const reserves1 = Number(formatUnits(reserves[1], tokenPairInfo.tokenBDecimal))
 
   if (reserves0 == 0 && reserves1 == 0) {
     asset = 0
@@ -166,6 +172,7 @@ export async function getCommonLongApr(
 
   const longTvlF = asset * swapPrice + cAsset * assetBaseInfoObj[farmPoolItem.cAssetName].unitPrice
   const day = Number(formatUnits(nsdxPerBlock, 18)) * 43200
+  let longAprP: any
   if (Number(formatUnits(nsdxPerBlock, 18)) > 0 && longTvlF > 0) {
     longAprP =
       ((((day * Number(info.longAllocPoint)) / Number(totalAllocPoint.toString())) * 365 * Number(price.NSDX)) /
@@ -198,19 +205,32 @@ export async function getCommonShortApr(
   const {assetBaseInfoObj, assetName} = commonState
   const info: any = {}
   const totalAllocPoint = await MasterChefTestContract.totalAllocPoint()
-  const shortPoolInfoItem = await ShortStakingContract.poolInfo(Number(farmPoolItem.shortId))
-  if (shortPoolInfoItem) {
-    info.rootPid = shortPoolInfoItem.rootPid.toString()
-    info.shortToken = shortPoolInfoItem.shortToken
+
+  
+  // const shortPoolInfoItem = await ShortStakingContract.poolInfo(Number(farmPoolItem.shortId))
+  // if (shortPoolInfoItem) {
+  //   info.rootPid = shortPoolInfoItem.rootPid.toString()
+  //   info.shortToken = shortPoolInfoItem.shortToken
+
+  //   console.log(`Farm pool item short id ${farmPoolItem.shortId}, root id ${ info.rootPid}, short token ${info.shortToken.toString()}`)
+  // }
+  const shortId = farmPoolItem.shortId
+  const shortPoolInfoItem = shortStakes.filter(s => s.shortId === parseFloat(shortId))
+  if(shortPoolInfoItem === undefined || shortPoolInfoItem.length <= 0) {
+    console.log(`Short pool info item is undefined`)
+    return
   }
-  const shortPoolInfoItemDetails = await MasterChefTestContract.poolInfo(info.rootPid)
+
+  const { shortToken, shortTokenDecimal, rootId } = shortPoolInfoItem[0]
+  const shortPoolInfoItemDetails = await MasterChefTestContract.poolInfo(rootId)
   if (shortPoolInfoItemDetails) {
     info.shortAllocPoint = shortPoolInfoItemDetails.allocPoint.toString()
   }
-  const shortContract = new ethers.Contract(info.shortToken, lTokenAbi, library)
-  const decimals = nAssetShort.find(s => s.address.toLowerCase() === info.shortToken.toLowerCase())?.decimal || 18
+
+  const shortContract = new ethers.Contract(shortToken, lTokenAbi, library)
   const totalStaked = await shortContract.totalSupply()
-  const totalStakedNum = Number(formatUnits(totalStaked, decimals.toString()))
+  const totalStakedNum = formatUnits(totalStaked, shortTokenDecimal)
+
   let shortAprP: any
   const shortTvlF = totalStakedNum * Number(oraclePrice)
   const day = Number(formatUnits(nsdxPerBlock, 18)) * 43200

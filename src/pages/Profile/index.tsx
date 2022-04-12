@@ -9,7 +9,7 @@ import { formatUnits } from 'ethers/lib/utils'
 import '../../style/Profile/index.less'
 import { useWeb3React } from '@web3-react/core'
 import { fixD, getpriceList } from 'utils'
-import { useCommonState } from 'state/common/hooks'
+import { useCommonState, useProvider } from 'state/common/hooks'
 import { getSwapPrice } from 'utils/getList'
 import { oracleList, USDCaddress } from '../../constants/index'
 import { useDispatch } from 'react-redux'
@@ -38,6 +38,7 @@ const Profile: React.FC<any> = props => {
   const stakeState = useStakeState()
   const { priceList } = stakeState
   const LPContract = useLpContract()
+  const library = useProvider()
   async function initPrice() {
     const reservesValue = await LPContract.getReserves()
     let currencyANum: any
@@ -60,8 +61,8 @@ const Profile: React.FC<any> = props => {
     let swapPrice: any
     let balance: any
     let oraclePrice: any
-    const provider = window.ethereum
-    const library = getLibrary(provider) ?? simpleRpcProvider
+    // const provider = window.ethereum
+    // const library = getLibrary(provider) ?? simpleRpcProvider
     for (let i = 0; i < commonState.allAssetsListInfo.length; i++) {
       const asset = commonState.allAssetsListInfo[i].name
       const contract = new ethers.Contract(commonState.assetBaseInfoObj[asset].address, Erc20Abi, library)
@@ -72,7 +73,13 @@ const Profile: React.FC<any> = props => {
         commonState.assetBaseInfoObj[asset].type == 'asset' ||
         commonState.assetBaseInfoObj[asset].isNoNStableCoin == 1
       ) {
-        const swapPriceObj = await getSwapPrice(USDCaddress, commonState.assetBaseInfoObj[asset].address)
+        const swapPriceObj = await getSwapPrice(
+          USDCaddress, 
+          commonState.assetBaseInfoObj[asset].address,
+          "6",
+          commonState.assetBaseInfoObj[asset].decimals,
+          library
+        )
         if (swapPriceObj) {
           const token0Name = commonState.assetsNameInfo[swapPriceObj.token0]
           const token1Name = commonState.assetsNameInfo[swapPriceObj.token1]

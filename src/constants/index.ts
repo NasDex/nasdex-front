@@ -47,7 +47,7 @@ export const SwapRouterAddress = '0x270Ec6bE0C9D67370C2B247D5AF1CC0B7dED0d4a'
 // nTSLA 
 export const nTSLATokenAddress = "0xe532dcE6BEFe42Ca8767DFa2abFCE2b99087168B"
 export const nTSLALpTokenAddress = "0x8dEf846Af4c574835D6406ceB442eEE57eE1C424"
-
+export const nTSLAShortTokenAddress = "0x12C590aD53CD55677D15B9E2f7D5866B6E1931bB"
 interface Person {
   name: string
   age?: number
@@ -93,25 +93,63 @@ export const lpPairDetails = [
   }
 ]
 
-export const nAssetShort = [
+// Move this to backend
+export const shortStakes = [
   {
+    shortId: 1, // sSE
+    rootId: 5,
+    shortToken: ShortTokenAddress,
+    shortTokenDecimal: 18,
     name: "sSE",
-    decimal: 18,
-    address: "0xef4c2e11E136e2824d4Ec9bc4b147d8C38d931f5"
-  }, 
+
+  },
   {
+    shortId: 2, // sTSLA
+    rootId: 7,
+    shortToken: nTSLAShortTokenAddress,
+    shortTokenDecimal: 18,
     name: "sTSLA",
-    decimal: 18,
-    address: "0x12C590aD53CD55677D15B9E2f7D5866B6E1931bB"
+  }
+]
+
+export const longStakes = [
+  {
+    longId: 1, // nSE
+    rootId: 4,
+    lpToken: LongTokenAddress,
+    lpTokenDecimal: 18,
+    name: "nSE",
+
+  },
+  {
+    longId: 2, // nTSLA
+    rootId: 6,
+    lpToken: nTSLALpTokenAddress,
+    lpTokenDecimal: 18,
+    name: "nTSLA",
   }
 ]
 
 export const getLpPairDetail = (tokenA: string, tokenB: string) => {
-  const lpDetail = lpPairDetails.find(l => l.tokenA.toLowerCase() === tokenA.toLowerCase() && l.tokenB.toLowerCase() === tokenB.toLowerCase())
+  if(tokenA === undefined || tokenB === undefined) {
+    console.log(`Token A / Token B is undefined`)
+    return
+  }
+
+  if(tokenA.toLowerCase() === tokenB.toLowerCase()) {
+    console.log(`Token A is equals to token B`)
+    return
+  }
+
+  const lpDetail = lpPairDetails.find(l => 
+    ((l.tokenA.toLowerCase() === tokenA.toLowerCase() || l.tokenA.toLowerCase() === tokenB.toLowerCase()) 
+    && (l.tokenB.toLowerCase() === tokenA.toLowerCase() || l.tokenB.toLowerCase() === tokenB.toLowerCase()))
+  )
+  
   return lpDetail
 }
-
-export const getLpDetailByAddress = async(lpAddress: string) => {
+export const getLpDetailByAddress = async(lpAddress: string | undefined) => {
+  if(lpAddress === undefined) { return null}
   const lpPairDetailVals = Object.values(lpPairDetails)
   const lpDetail = lpPairDetailVals.filter(l => l.lp.toLowerCase() === lpAddress.toLowerCase())
   return lpDetail[0]

@@ -10,7 +10,7 @@ import { fixD, getpriceList } from 'utils'
 import { upDateOneAssetBaseInfo } from 'state/common/actions'
 import { useActiveWeb3React } from 'hooks'
 import { getLibrary } from 'utils/getLibrary'
-import { useCommonState } from 'state/common/hooks'
+import { useCommonState, useProvider } from 'state/common/hooks'
 import { useDispatch } from 'react-redux'
 import ETHOracle from '../../constants/abis/ETHOracle.json'
 import STAOracle from '../../constants/abis/STAOracle.json'
@@ -32,8 +32,9 @@ const Farm = () => {
   const { account } = useActiveWeb3React()
   const commonState = useCommonState()
   const dispatch = useDispatch()
-  const provider = window.ethereum
-  const library = getLibrary(provider) ?? simpleRpcProvider
+  // const provider = window.ethereum
+  // const library = getLibrary(provider) ?? simpleRpcProvider
+  const library = useProvider()
   const { assetBaseInfoObj } = commonState
   const stakeState = useStakeState()
   const { priceList } = stakeState
@@ -56,73 +57,77 @@ const Farm = () => {
       }),
     )
   }
-  async function initData() {
+  async function                                                                                                                                                                                               initData() {
     let swapPrice: any
     let balance: any
     let oraclePrice: any
-    for (let i = 0; i < commonState.allAssetsListInfo.length; i++) {
-      const asset = commonState.allAssetsListInfo[i].name
-      const contract = new ethers.Contract(commonState.assetBaseInfoObj[asset].address, Erc20Abi, library)
-      if (commonState.assetBaseInfoObj[asset] && account) {
-        balance = formatUnits(await contract.balanceOf(account), commonState.assetBaseInfoObj[asset].decimals)
-      }
-      if (commonState.assetBaseInfoObj[asset].type == 'asset') {
-        // Getting swap price
-        const swapPriceObj = await getSwapPrice(USDCaddress, commonState.assetBaseInfoObj[asset].address)
-        if (swapPriceObj) {
-          const token0Name = commonState.assetsNameInfo[swapPriceObj.token0]
-          const token1Name = commonState.assetsNameInfo[swapPriceObj.token1]
-          const reserves0 = Number(
-            formatUnits(swapPriceObj.reserves[0], commonState.assetBaseInfoObj[token0Name]?.decimals),
-          )
-          const reserves1 = Number(
-            formatUnits(swapPriceObj.reserves[1], commonState.assetBaseInfoObj[token1Name]?.decimals),
-          )
 
-          if (reserves0 == 0 && reserves1 == 0) {
-            swapPrice = 0
+    if(commonState.allAssetsListInfo === undefined) {
+      return
+    }
+
+    const nAsset = commonState.allAssetsListInfo.filter((a :any) => a.type === "asset")
+
+    for (let i = 0; i < nAsset.length; i++) {
+      const asset = commonState.allAssetsListInfo[i].name
+      
+      // Getting swap price
+      const swapPriceObj = await getSwapPrice(
+        USDCaddress, 
+        commonState.assetBaseInfoObj[asset].address, 
+        "6",
+        commonState.assetBaseInfoObj[asset].decimals,
+        library
+      )
+      if (swapPriceObj) {
+        const token0Name = commonState.assetsNameInfo[swapPriceObj.token0]
+        const token1Name = commonState.assetsNameInfo[swapPriceObj.token1]
+        const reserves0 = Number(
+          formatUnits(swapPriceObj.reserves[0], commonState.assetBaseInfoObj[token0Name]?.decimals),
+        )
+        const reserves1 = Number(
+          formatUnits(swapPriceObj.reserves[1], commonState.assetBaseInfoObj[token1Name]?.decimals),
+        )
+
+        if (reserves0 == 0 && reserves1 == 0) {
+          swapPrice = 0
+        } else {
+          if (swapPriceObj.token0 == commonState.assetBaseInfoObj[asset].address) {
+            swapPrice = reserves1 / reserves0
           } else {
-            if (swapPriceObj.token0 == commonState.assetBaseInfoObj[asset].address) {
-              swapPrice = reserves1 / reserves0
-            } else {
-              swapPrice = reserves0 / reserves1
-            }
+            swapPrice = reserves0 / reserves1
           }
         }
-      
-        // Getting oracle price
-        const oracleInfo = oracleList.find(i => i.assetKey === asset)
-        if (oracleInfo !== undefined) {
-          const priceOracleContract = new ethers.Contract(oracleInfo.address, STAOracle, library)
-          const price = await priceOracleContract.latestRoundData()
-          oraclePrice = fixD(formatUnits(price.answer, oracleInfo.decimal), 4)
-        }
-
-      } else {
-        if (asset == 'NSDX') {
-          swapPrice = priceList.NSDX
-        } else {
-          swapPrice = ''
-        }
       }
-      const Info = { ...commonState.assetBaseInfoObj[asset], swapPrice, balance, oraclePrice }
+    
+      // Getting oracle price
+      const oracleInfo = oracleList.find(i => i.assetKey === asset)
+      if (oracleInfo !== undefined) {
+        const priceOracleContract = new ethers.Contract(oracleInfo.address, STAOracle, library)
+        const price = await priceOracleContract.latestRoundData()
+        oraclePrice = fixD(formatUnits(price.answer, oracleInfo.decimal), 4)
+      }
+     
+      const Info = { ...commonState.assetBaseInfoObj[asset], swapPrice, oraclePrice }
       dispatch(upDateOneAssetBaseInfo({ oneAssetBaseInfo: Info }))
     }
   }
   useEffect(() => {
-    let timer: any
-    const getBaseData = () => {
-      initData()
-      return getBaseData
+    if(account !== undefined) {
+      let timer: any
+      const getBaseData = () => {
+        initData()
+        return getBaseData
+      }
+      initPrice()
+      if (account) {
+        timer = setInterval(getBaseData(), 30000)
+      }
+      return () => {
+        clearInterval(timer)                 
+      }
     }
-    initPrice()
-    if (account) {
-      timer = setInterval(getBaseData(), 30000)
-    }
-    return () => {
-      clearInterval(timer)
-    }
-  }, [account])
+  }, [])
 
   return (
     <div className="farm-container">

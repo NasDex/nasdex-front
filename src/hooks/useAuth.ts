@@ -1,6 +1,6 @@
 /** @format */
 
-import {useCallback} from 'react'
+import {useCallback, useEffect} from 'react'
 import {useWeb3React, UnsupportedChainIdError} from '@web3-react/core'
 import {
   NoEthereumProviderError,
@@ -15,10 +15,20 @@ import {connectorLocalStorageKey, ConnectorNames} from 'components/WalletModal'
 import notification from '../utils/notification'
 import {connectorsByName} from 'connectors'
 import {setupNetwork} from 'utils/wallet'
+import { useDispatch } from 'react-redux'
+import { loadProvider } from 'state/common/actions'
 
 const useAuth = () => {
-  const {activate, deactivate, chainId} = useWeb3React()
-  // const { toastError } = useToast()
+  const {activate, deactivate, library} = useWeb3React()
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    if(library !== undefined) {
+      const provider = library.provider
+      dispatch(loadProvider({provider}))
+    } 
+  }, [library])
+
   const login = useCallback(
     (connectorID: ConnectorNames) => {
       // console.log('connectorID####', connectorID)
@@ -61,7 +71,7 @@ const useAuth = () => {
                 // message: error.name,
                 message: 'ERROR',
                 description: error.message,
-              })
+              }) 
             }
           }
         })

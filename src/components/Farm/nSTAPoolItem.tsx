@@ -15,12 +15,13 @@ import { fixD } from 'utils'
 import { getCommonLongApr, getCommonShortApr } from 'utils/getAPR'
 import { formatUnits } from 'ethers/lib/utils'
 import { useActiveWeb3React } from 'hooks'
-import { useCommonState } from 'state/common/hooks'
+import { useCommonState, useProvider } from 'state/common/hooks'
 import { getSwapPrice } from 'utils/getList'
 import { upDateCoinStock, upDateFarmCoinSelect } from '../../state/farm/actions'
 import { useDispatch } from 'react-redux'
 import { getLibrary } from 'utils/getLibrary'
 import { ethers } from 'ethers'
+import lpContract from 'constants/abis/lpContract.json'
 import lTokenAbi from 'constants/abis/ltoken.json'
 import { LongStakingAddress, MasterChefTestAddress } from 'constants/index'
 import { useTranslation } from 'react-i18next'
@@ -42,70 +43,73 @@ const FarmPoolItem: React.FC<any> = props => {
   const ShortStakingContract = useShortStakingContract()
   const longStakingContract = useLongStakingContract()
   const MasterChefTestContract = useMasterChefTestContract()
-  const provider = window.ethereum
-  const library = getLibrary(provider) ?? simpleRpcProvider
+  // const provider = window.ethereum
+  // const library = getLibrary(provider) ?? simpleRpcProvider
+  const library = useProvider()
   const { priceList, farmPoolItem } = props
 
   async function getPoolInfo() {
     const price = priceList
 
-    // long apr
-    const _promises = []
-    _promises.push(
-      getCommonLongApr(
-        price,
-        farmPoolItem,
-        MasterChefTestContract,
-        longStakingContract,
-        account,
-        LongStakingAddress,
-        formatUnits,
-        lTokenAbi,
-        ethers,
-        library,
-        commonState,
+    if (commonState.assetBaseInfoObj[name].oraclePrice !== undefined) {
+      // long apr
+      const _promises = []
+      _promises.push(
+        getCommonLongApr(
+          price,
+          farmPoolItem,
+          MasterChefTestContract,
+          longStakingContract,
+          account,
+          LongStakingAddress,
+          formatUnits,
+          lpContract,
+          ethers,
+          library,
+          commonState,
+        )
       )
-    )
 
-    // Short apr
-    _promises.push(
-      getCommonShortApr(
-        commonState.assetBaseInfoObj[name].oraclePrice,
-        price,
-        props.farmPoolItem,
-        MasterChefTestContract,
-        ShortStakingContract,
-        account,
-        MasterChefTestAddress,
-        formatUnits,
-        lTokenAbi,
-        ethers,
-        library,
-        commonState,
+      // Short apr
+      _promises.push(
+        getCommonShortApr(
+          commonState.assetBaseInfoObj[name].oraclePrice,
+          price,
+          props.farmPoolItem,
+          MasterChefTestContract,
+          ShortStakingContract,
+          account,
+          MasterChefTestAddress,
+          formatUnits,
+          lTokenAbi,
+          ethers,
+          library,
+          commonState,
+        )
       )
-    )
 
-    const result  = await Promise.all(_promises)
-   
-    const longAprResult :{ longAprP: any; swapPrice: any; longTvlF: string | number; } = result[0] as { longAprP: any; swapPrice: any; longTvlF: string | number }
-    const shortAprResult:{shortAprP: any;shortTvlF: string | number} = result[1] as {shortAprP: any;shortTvlF: string | number}
+      const result = await Promise.all(_promises)
 
-    if (longAprResult.longTvlF) {
-      setLongTVL(fixD(longAprResult.longTvlF, 2))
-    }
-    if (longAprResult.longAprP < 100000000) {
-      setLongApr(fixD(longAprResult.longAprP, 2))
-      setSwapPrice(longAprResult.swapPrice)
-    } else {
-      setLongApr('Infinity')
-    }
-    if (shortAprResult.shortTvlF) {
-      setShortTVL(fixD(shortAprResult.shortTvlF, 2))
-    }
-    if (shortAprResult.shortAprP < 100000000) {
-      setApr(fixD(shortAprResult.shortAprP, 2))
-    } else {
-      setApr('Infinity')
+      const longAprResult :{ longAprP: any; swapPrice: any; longTvlF: string | number; } = result[0] as { longAprP: any; swapPrice: any; longTvlF: string | number }
+      const shortAprResult: { shortAprP: any; shortTvlF: string | number } = result[1] as { shortAprP: any; shortTvlF: string | number }
+
+      if (longAprResult.longTvlF) {
+        setLongTVL(fixD(longAprResult.longTvlF, 2))
+      }
+      if (longAprResult.longAprP < 100000000) {
+        setLongApr(fixD(longAprResult.longAprP, 2))
+        setSwapPrice(longAprResult.swapPrice)
+      } else {
+        setLongApr('Infinity')
+      }
+      if (shortAprResult !== undefined && shortAprResult.shortTvlF) {
+        setShortTVL(fixD(shortAprResult.shortTvlF, 2))
+      }
+      if (shortAprResult !== undefined && shortAprResult.shortAprP < 100000000) {
+        setApr(fixD(shortAprResult.shortAprP, 2))
+      } else {
+        setApr('Infinity')
+      }
     }
   }
 
@@ -128,14 +132,19 @@ const FarmPoolItem: React.FC<any> = props => {
     }
   }, [name, swapPrice, oraclePrice, commonState.assetBaseInfoObj])
 
-  useEffect(() => {
-    getPrice()
-  }, [account])
+  // useEffect(() => {
+  //   if(account !== undefined && library) {
+  //     getPrice()
+  //   }
+  // }, [account])
 
   async function getPrice() {
     const swapPrice = await getSwapPrice(
       commonState.assetBaseInfoObj[cAssetName].address,
       commonState.assetBaseInfoObj[name].address,
+      commonState.assetBaseInfoObj[cAssetName].decimals,
+      commonState.assetBaseInfoObj[name].decimals,
+      library
     )
 
     if (swapPrice) {
@@ -157,21 +166,24 @@ const FarmPoolItem: React.FC<any> = props => {
   }
 
   useEffect(() => {
-    let timer: any
-    const getBaseData = async () => {
-      await getPoolInfo()
-      return getBaseData
+    if(library !== undefined) {
+      let timer: any
+      const getBaseData = async () => {
+        await getPoolInfo()
+        return getBaseData
+      }
+  
+      getBaseData().then(() => {
+        if (ShortStakingContract && MasterChefTestContract) {
+          timer = setInterval(async () => await getBaseData(), 30000)
+        }
+        return () => {
+          clearInterval(timer)
+        }
+      })
     }
-
-    getBaseData().then(() => {
-      if (ShortStakingContract && MasterChefTestContract) {
-        timer = setInterval(async () => await getBaseData(), 30000)
-      }
-      return () => {
-        clearInterval(timer)
-      }
-    })
-  }, [account, ShortStakingContract, ShortStockAContract, MasterChefTestContract])
+  }, [account, library, ShortStakingContract, ShortStockAContract, MasterChefTestContract, commonState.assetBaseInfoObj[name].oraclePrice])
+  
   function thousands(num: any) {
     const str = num.toString()
     const reg = str.indexOf(".") > -1 ? /(\d)(?=(\d{3})+\.)/g : /(\d)(?=(?:\d{3})+$)/g
