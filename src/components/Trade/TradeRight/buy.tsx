@@ -14,7 +14,7 @@ import useAuth from 'hooks/useAuth'
 import { useCommonState, useProvider } from 'state/common/hooks'
 import { useTradeState } from 'state/trade/hooks'
 import useApproveFarm from 'components/common/approve/index'
-import { SwapRouterAddress } from 'constants/index'
+import { getLpPairDetail, SwapRouterAddress } from 'constants/index'
 import {
   useSwapFactoryContract,
   useSwapRouterContract,
@@ -68,19 +68,23 @@ const Buy: React.FC<any> = props => {
   const [BPrice, setBPrice] = useState(Number(tokenBamount) / Number(tokenAamount))
   const { assetBaseInfoObj } = commonState
 
+  // Getting allowance
   const [allowance, setAllowance] = useState("0")
   const getTokenAllowance = useCallback(async(tokenAddress: any, decimal: string) => {
     if(account !== undefined && account !== null) {
       const contract = new ethers.Contract(tokenAddress, lpContractAbi, library)
       const allowance = await getAllowance(contract, account, SwapRouterAddress, decimal )
       setAllowance(allowance.allowance)
+      // console.log(`Allowance of ${tokenAddress} on contract ${allowance.allowance}`)
       setTokenApprove(parseFloat(allowance.allowance) > 0)
     }
   }, [account])
 
+  // Setting token A balance and token A allowance
   useEffect(() => {
     if(library !== undefined && tokenA !== "" && tokenA !== undefined) {
       const assetTokenA = commonState.assetBaseInfoObj[tokenA]
+      // console.log(`Token A is changing, balance for token A :`, assetTokenA)
       setTokenABalance(assetTokenA.balance)
       getTokenAllowance(assetTokenA.address, assetTokenA.decimals)
     }
@@ -91,22 +95,26 @@ const Buy: React.FC<any> = props => {
 
   const [pair, setPair] = useState('')
   useEffect(() => {
-    if (tokenAaddress && tokenBaddress && account) {
-      getPair()
+    if(library !== undefined) {
+      if (tokenAaddress && tokenBaddress && account !== undefined) {
+        getPair()
+      }
+      if (pair) {
+        getReserver(pair)
+      }
     }
-    if (pair) {
-      getReserver(pair)
-    }
-  }, [tokenAaddress, tokenBaddress, account, pair])
-  const swapFactoryContract = useSwapFactoryContract()
+  }, [library, tokenAaddress, tokenBaddress, account, pair])
+  // const swapFactoryContract = useSwapFactoryContract()
 
   async function getPair() {
-    const result = await swapFactoryContract.getPair(tokenAaddress, tokenBaddress)
-    if (Number(formatUnits(result, 18)) > 0) {
-      setPair(result)
-    } else {
-      setPair('')
-    }
+    // const result = await swapFactoryContract.getPair(tokenAaddress, tokenBaddress)
+    // if (Number(formatUnits(result, 18)) > 0) {
+    //   setPair(result)
+    // } else {
+    //   setPair('')
+    // }
+    const result = getLpPairDetail(tokenAaddress, tokenBaddress)
+    setPair(result !== undefined && result.lp !== undefined ? result.lp : "")
   }
   const [priceTo, setPriceTo] = useState(0)
   const [priceForm, setPriceForm] = useState(0)
@@ -147,6 +155,7 @@ const Buy: React.FC<any> = props => {
       console.error(e)
     }
   }, [onApprove, account])
+  
   const [minimumReceived, setMinimumReceived] = useState('')
   const swapRouterContract = useSwapRouterContract()
   useEffect(() => {
@@ -172,6 +181,7 @@ const Buy: React.FC<any> = props => {
 
   const fixDPreciseA = assetBaseInfoObj[tokenA].fixDPrecise
   const fixDPreciseB = assetBaseInfoObj[tokenB].fixDPrecise
+
   async function getAmountsOut() {
     if (tokenAamount == '' || tokenAamount == '0') {
       return false
@@ -195,6 +205,7 @@ const Buy: React.FC<any> = props => {
     setBPrice(Number(tokenBamount) / Number(tokenAamount))
     setAPrice(Number(tokenAamount) / Number(tokenBamount))
   }, [tokenAamount, tokenBamount])
+
   function minusNum(a: any, b: any, price: any) {
     if (a && b && price) {
       let num
@@ -305,6 +316,7 @@ const Buy: React.FC<any> = props => {
             ) : ((tokenA && fixDPreciseA && commonState.assetBaseInfoObj[tokenA]?.balance ?
               (fixD(commonState.assetBaseInfoObj[tokenA]?.balance, fixDPreciseA)) : '0.0')) : '0.0'}
 
+            {/** Max Button */}
             {Number(commonState.assetBaseInfoObj[tokenA]?.balance) <= 0 ? null :
               <Button
                 disabled={Number(commonState.assetBaseInfoObj[tokenA]?.balance) > 0 && account ? false : true}
