@@ -10,7 +10,7 @@ import waringPng from '../../../img/common/waring@2x.png'
 import ConfirmOrder from '../shortOrderConfirm/index'
 import Notification from '../../../utils/notification'
 import { useMintState } from 'state/mint/hooks'
-import { useCommonState } from 'state/common/hooks'
+import { useCommonState, useProvider } from 'state/common/hooks'
 import { getSwapPrice } from 'utils/getList'
 type IconType = 'success' | 'info' | 'error' | 'warning'
 import useModal from '../../../hooks/useModal'
@@ -65,6 +65,7 @@ const Short: React.FC<any> = props => {
   const [selectStock, setSelectStock] = useState(props.assetName)
   const { login, logout } = useAuth()
   const { account } = useActiveWeb3React()
+  const library = useProvider()
   const { onPresentConnectModal, onPresentAccountModal } = useWalletModal(login, logout, account || undefined)
   const openNotificationWithIcon = (type: IconType) => {
     Notification({
@@ -195,32 +196,40 @@ const Short: React.FC<any> = props => {
   }
   const debounce = useDebounceHook(tradeAmount, 100)
   useEffect(() => {
+    const nAssetOraclePrice = commonState.assetBaseInfoObj[selectStock].oraclePrice 
+    const cAssetOraclePrice = commonState.assetBaseInfoObj[selectCoin].oraclePrice
+    const isCassetNonStablecoin = commonState.assetBaseInfoObj[selectCoin].isNoNStableCoin === undefined 
+      ? false 
+      : commonState.assetBaseInfoObj[selectCoin].isNoNStableCoin === 0 
+        ? false
+        : true
+    const inputAmount = Number(debounce)
+    const collateralRatio = Number(sliderValue)/100
+
+    let collateralAmount=0
+    let precise = 0
+
+    // nAsset input change
     if (amountInputFocus) {
       setTradeCollateral('')
-      const result = (
-        (Number(debounce) * commonState.assetBaseInfoObj[selectStock].oraclePrice * Number(sliderValue)) /
-        100
-      ).toString()
-      if (Number(result) > 0) {
-        setTradeCollateral(fixD(result, commonState.assetBaseInfoObj[selectCoin].fixDPrecise))
-      } else {
-        setTradeCollateral('')
-      }
+      collateralAmount = (isCassetNonStablecoin) 
+        ? ((inputAmount * nAssetOraclePrice) / cAssetOraclePrice) * collateralRatio 
+        : inputAmount * nAssetOraclePrice * collateralRatio 
+      const result = collateralAmount.toString()
+      precise = commonState.assetBaseInfoObj[selectCoin].fixDPrecise
+      setTradeCollateral(fixD(result, precise))
     }
+
+    // cAsset input changes
     if (collateralInputFocus) {
-      if (Number(sliderValue) > 0) {
-        setAmount('')
-        const amount = (
-          (Number(tradeCollateral) / commonState.assetBaseInfoObj[selectStock].oraclePrice / Number(sliderValue)) *
-          100
-        ).toString()
-        if (Number(amount) > 0) {
-          setAmount(fixD(amount, commonState.assetBaseInfoObj[selectStock].fixDPrecise))
-        } else {
-          setAmount('')
-        }
-      }
+      const cAmountBeforeCollateral = parseFloat(tradeCollateral) / collateralRatio
+      const finalOraclePrice = isCassetNonStablecoin
+        ? nAssetOraclePrice / cAssetOraclePrice
+        : nAssetOraclePrice
+      const expectedNassetAmount = (cAmountBeforeCollateral / finalOraclePrice).toString()
+      setAmount(fixD(expectedNassetAmount, commonState.assetBaseInfoObj[selectStock].fixDPrecise))
     }
+
     if (debounce && amountInputFocus && farmState.slippageTolerance) {
       getAmountsOut(debounce)
     }
@@ -277,7 +286,13 @@ const Short: React.FC<any> = props => {
 
   async function getPrice() {
     let price
-    const swapPrice = await getSwapPrice(commonState.assetBaseInfoObj[selectStock].address, commonState.assetBaseInfoObj[selectCoin].address)
+    const swapPrice = await getSwapPrice(
+      commonState.assetBaseInfoObj[selectStock].address, 
+      commonState.assetBaseInfoObj[selectCoin].address,
+      commonState.assetBaseInfoObj[selectStock].decimals, 
+      commonState.assetBaseInfoObj[selectStock].decimals, 
+      library
+    )
     if (swapPrice) {
       const token0Name = commonState.assetsNameInfo[swapPrice.token0]
       const token1Name = commonState.assetsNameInfo[swapPrice.token1]
@@ -551,7 +566,7 @@ const Short: React.FC<any> = props => {
       <div className="tips-available">
         <div className="content">
           <img src={waringPng} alt="" />
-          <span>{selectCoin} {t('ruturnTips')}</span>
+          <span>USDC {t('ruturnTips')}</span>
         </div>
       </div>
       {
