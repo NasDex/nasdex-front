@@ -16,7 +16,7 @@ import { useMintState } from 'state/mint/hooks'
 import { useManageState } from 'state/manage/hooks'
 import { useFarmState } from 'state/farm/hooks'
 import { useTradeState } from 'state/trade/hooks'
-import { useCommonState } from 'state/common/hooks'
+import { useCommonState, useProvider } from 'state/common/hooks'
 import { getSwapPrice, getOneAssetInfo } from 'utils/getList'
 import { upDateOneAssetBaseInfo } from 'state/common/actions'
 import { useActiveWeb3React } from 'hooks'
@@ -83,8 +83,10 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
   const chartRef = useRef(null)
   const { account } = useActiveWeb3React()
   const [isTab, setIsTab] = useState(false)
-  const provider = window.ethereum
-  const library = getLibrary(provider) ?? simpleRpcProvider
+  // const provider = window.ethereum
+  // const library = getLibrary(provider) ?? simpleRpcProvider
+
+  const library = useProvider()
 
   async function getOraclePrice(assetName: any, cAssetName: any) {
     let asset = ''
@@ -161,26 +163,29 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
     setIsTab(!isTab)
   }, [tradeState.isTab])
   useEffect(() => {
-    if (!assetName) {
-      setAssetName(commonState.defaultAsset)
+    // Run the code when account is not undefined
+    if(account !== undefined && library !== undefined) {
+      if (!assetName) {
+        setAssetName(commonState.defaultAsset)
+      }
+      if (!cAssetName) {
+        setAssetName(commonState.defaultCAsset)
+      }
+      getOraclePrice(assetName, cAssetName)
+      let timer: any
+      const getBaseData = () => {
+        getPrice(assetName, cAssetName)
+        return getBaseData
+      }
+      if (assetName && cAssetName) {
+        timer = setInterval(getBaseData(), 15000) // Refresh every 15s
+      }
+      return () => {
+        clearInterval(timer)
+      }
     }
-    if (!cAssetName) {
-      setAssetName(commonState.defaultCAsset)
-    }
-    console.log(`Getting price oracle price`)
-    getOraclePrice(assetName, cAssetName)
-    let timer: any
-    const getBaseData = () => {
-      getPrice(assetName, cAssetName)
-      return getBaseData
-    }
-    if (assetName && cAssetName) {
-      timer = setInterval(getBaseData(), 15000)
-    }
-    return () => {
-      clearInterval(timer)
-    }
-  }, [account, assetName, cAssetName])
+  }, [library,account, assetName, cAssetName])
+
   async function getPrice(assetName: any, cAssetName: any) {
     if (commonState.assetBaseInfoObj[assetName] && commonState.assetBaseInfoObj[assetName]?.type == 'asset') {
       assetName = assetName
@@ -194,6 +199,9 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
     const swapPriceResult = await getSwapPrice(
       commonState.assetBaseInfoObj[cAssetName]?.address,
       commonState.assetBaseInfoObj[assetName]?.address,
+      commonState.assetBaseInfoObj[cAssetName]?.decimals,
+      commonState.assetBaseInfoObj[assetName]?.decimals,
+      library
     )
     if (swapPriceResult) {
       const token0Name = commonState.assetsNameInfo[swapPriceResult.token0]
@@ -219,13 +227,13 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
       }
     }
   }
+  
   useEffect(() => {
     if (from == 'mint' && mintState.mintCoinStock) {
       console.log(`Changed from state nAsset ${mintState.mintCoinStock}`)
       setAssetName(mintState.mintCoinStock)
     }
     if (from == 'mint' && mintState.mintCoinSelect) {
-      console.log(`Changed from state asset ${mintState.mintCoinSelect}`)
       setcAssetName(mintState.mintCoinSelect)
     }
     if ((from == 'farm' || from == 'longFarm') && farmState.farmCoinStock) {

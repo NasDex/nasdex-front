@@ -1,5 +1,6 @@
 /** @format */
 
+import { JsonRpcProvider, StaticJsonRpcProvider } from '@ethersproject/providers'
 import {createAction} from '@reduxjs/toolkit'
 
 
@@ -25,4 +26,6 @@ export const upDateProfileMintDeadline = createAction<{profileMintDeadline: stri
 export const upDateCommonFee = createAction<{feeRate: any}>('app/upDateCommonFee')
 export const updateDefaultCAsset = createAction<{defaultCAsset: string}>('app/updateDefaultCAsset')
 export const updateDefaultAsset = createAction<{defaultAsset: string}>('app/updateDefaultAsset')
+
+export const loadProvider = createAction<{provider: any}>('app/loadProvider')
 

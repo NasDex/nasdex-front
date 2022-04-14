@@ -1,6 +1,8 @@
 /** @format */
 
+import { JsonRpcProvider, StaticJsonRpcProvider } from '@ethersproject/providers'
 import {createReducer, nanoid} from '@reduxjs/toolkit'
+import { ethers } from 'ethers'
 import {
   upDateOpenConfirmManageSuccess,
   upDateManageOpenConfirm,
@@ -16,7 +18,8 @@ import {
   upDateCommonFee,
   upDateOpenWeb,
   updateDefaultAsset,
-  updateDefaultCAsset
+  updateDefaultCAsset,
+  loadProvider
 } from './actions'
 
 export interface ApplicationState {
@@ -35,6 +38,7 @@ export interface ApplicationState {
   feeRate: any
   defaultAsset: string
   defaultCAsset: string
+  provider: any
 }
 
 const initialState: ApplicationState = {
@@ -86,6 +90,7 @@ const initialState: ApplicationState = {
     positionId: '',
     isShort: false,
   },
+  provider: undefined
 }
 export default createReducer(initialState, builder =>
   builder
@@ -135,5 +140,12 @@ export default createReducer(initialState, builder =>
   })
   .addCase(updateDefaultCAsset, (state, action) => {
       state.defaultCAsset = action.payload.defaultCAsset
-    })
+  })
+  .addCase(loadProvider, (state,action) => {
+    const libraryProvider = action.payload.provider
+    if(libraryProvider !== undefined) {
+      const web3Provider = new ethers.providers.Web3Provider(libraryProvider)
+      state.provider = web3Provider
+    }
+  })
 )

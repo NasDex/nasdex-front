@@ -5,7 +5,7 @@ import '../../style/Profile/card.less'
 import { getAssetList } from 'utils/getList'
 import { Skeleton } from 'antd'
 import { useWeb3React } from '@web3-react/core'
-import { useCommonState } from 'state/common/hooks'
+import { useCommonState, useProvider } from 'state/common/hooks'
 import { fixD } from 'utils'
 import { getSwapPrice } from 'utils/getList'
 import { getLibrary } from 'utils/getLibrary'
@@ -31,8 +31,9 @@ const ProfileCard: React.FC<ProfileCardProps> = props => {
   const [totalTvl, setTotalNum] = useState('')
   const { account } = useWeb3React()
   const commonState = useCommonState()
-  const provider = window.ethereum
-  const library = getLibrary(provider) ?? simpleRpcProvider
+  // const provider = window.ethereum
+  // const library = getLibrary(provider) ?? simpleRpcProvider
+  const library = useProvider()
   const LPContract = useLpContract()
   useEffect(() => {
     const getBaseData = () => {
@@ -70,7 +71,11 @@ const ProfileCard: React.FC<ProfileCardProps> = props => {
       config.longFarmingInfoPre.forEach(async (pool: any) => {
         const swapPriceObj = await getSwapPrice(
           commonState.assetBaseInfoObj[pool.cAssetName].address,
-          commonState.assetBaseInfoObj[pool.name].address)
+          commonState.assetBaseInfoObj[pool.name].address,
+          commonState.assetBaseInfoObj[pool.cAssetName].decimals,
+          commonState.assetBaseInfoObj[pool.name].decimals,
+          library
+        )
         if (swapPriceObj) {
           const token0Name = commonState.assetsNameInfo[swapPriceObj.token0]
           const token1Name = commonState.assetsNameInfo[swapPriceObj.token1]
