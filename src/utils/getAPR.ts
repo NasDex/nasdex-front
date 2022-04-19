@@ -1,6 +1,7 @@
 /** @format */
 
 import { getLpDetailByAddress, longStakes, shortStakes } from "../constants/index"
+import { simpleRpcProvider } from "./providers"
 
 export async function getApr(
   price: any,
@@ -143,7 +144,8 @@ export async function getCommonLongApr(
   }
 
   // Create LP Contract
-  const longContract = new ethers.Contract(lpToken, lpTokenAbi, library) // lp contract
+  const customProvider = simpleRpcProvider
+  const longContract = new ethers.Contract(lpToken, lpTokenAbi, customProvider) // lp contract
   const reserves = await longContract.getReserves()
   const tokenPairInfo = await getLpDetailByAddress(lpToken)
   if(tokenPairInfo === null) {
@@ -227,7 +229,8 @@ export async function getCommonShortApr(
     info.shortAllocPoint = shortPoolInfoItemDetails.allocPoint.toString()
   }
 
-  const shortContract = new ethers.Contract(shortToken, lTokenAbi, library)
+  const customProvider = simpleRpcProvider
+  const shortContract = new ethers.Contract(shortToken, lTokenAbi, customProvider)
   const totalStaked = await shortContract.totalSupply()
   const totalStakedNum = formatUnits(totalStaked, shortTokenDecimal)
 
