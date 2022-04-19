@@ -17,7 +17,7 @@ import { useManageState } from 'state/manage/hooks'
 import { useFarmState } from 'state/farm/hooks'
 import { useTradeState } from 'state/trade/hooks'
 import { useCommonState, useProvider } from 'state/common/hooks'
-import { getSwapPrice, getOneAssetInfo } from 'utils/getList'
+import { getSwapPrice, getOneAssetInfo, getOraclePrice } from 'utils/getList'
 import { upDateOneAssetBaseInfo } from 'state/common/actions'
 import { useActiveWeb3React } from 'hooks'
 import { getLibrary } from 'utils/getLibrary'
@@ -88,90 +88,89 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
 
   const library = useProvider()
 
-  async function getOraclePrice(assetName: any, cAssetName: any) {
-    let asset = ''
-    let cAsset = ''
-    let oraclePrice
-    let cOraclePrice
+  // async function getOraclePrice(assetName: any, cAssetName: any) {
+  //   let asset = ''
+  //   let cAsset = ''
+  //   let oraclePrice
+  //   let cOraclePrice
+  //   if (commonState.assetBaseInfoObj[assetName]?.type == 'asset') {
+  //     asset = assetName
+  //     cAsset = cAssetName
+  //   } else {
+  //     asset = cAssetName
+  //     cAsset = assetName
+  //   }
+  //   // if (asset == 'nSE') {
+  //   //   const SEOracleContract = new ethers.Contract(SEOracleAddress, STAOracle, library)
+  //   //   const SEOraclePrice = await SEOracleContract.latestRoundData()
+  //   //   const SEOracleDecimal = await SEOracleContract.decimals()
+  //   //   oraclePrice = fixD(formatUnits(SEOraclePrice.answer, SEOracleDecimal), 4)
+  //   // }
 
-    if (commonState.assetBaseInfoObj[assetName]?.type == 'asset') {
-      asset = assetName
-      cAsset = cAssetName
-    } else {
-      asset = cAssetName
-      cAsset = assetName
-    }
-    // if (asset == 'nSE') {
-    //   const SEOracleContract = new ethers.Contract(SEOracleAddress, STAOracle, library)
-    //   const SEOraclePrice = await SEOracleContract.latestRoundData()
-    //   const SEOracleDecimal = await SEOracleContract.decimals()
-    //   oraclePrice = fixD(formatUnits(SEOraclePrice.answer, SEOracleDecimal), 4)
-    // }
+  //   (
+  //     await Promise.all(
+  //       oracleList.map(async ol => {
+  //         if (asset == ol.assetKey || cAsset == ol.assetKey) {
+  //           const contract = new ethers.Contract(ol.address, STAOracle, library)
+  //           const price = await contract.latestRoundData()
+  //           const decimals = await contract.decimals()
+  //           oraclePrice = fixD(formatUnits(price.answer, decimals), 4)
+  //           return {
+  //             ...ol,
+  //             oraclePrice,
+  //           }
+  //         } else {
+  //           return ol
+  //         }
+  //       }),
+  //     )
+  //   ).forEach(ol => {
+  //     if (asset == ol.assetKey) {
+  //       oraclePrice = Number(ol.oraclePrice)
+  //     } else if (cAsset == ol.assetKey) {
+  //       cOraclePrice = Number(ol.oraclePrice)
+  //     }
+  //   })
 
-    (
-      await Promise.all(
-        oracleList.map(async ol => {
-          if (asset == ol.assetKey || cAsset == ol.assetKey) {
-            const contract = new ethers.Contract(ol.address, STAOracle, library)
-            const price = await contract.latestRoundData()
-            const decimals = await contract.decimals()
-            oraclePrice = fixD(formatUnits(price.answer, decimals), 4)
-            return {
-              ...ol,
-              oraclePrice,
-            }
-          } else {
-            return ol
-          }
-        }),
-      )
-    ).forEach(ol => {
-      if (asset == ol.assetKey) {
-        oraclePrice = Number(ol.oraclePrice)
-      } else if (cAsset == ol.assetKey) {
-        cOraclePrice = Number(ol.oraclePrice)
-      }
-    })
+  //   // if (cAsset == 'aUST') {
+  //   //   const AUSTOracleContract = new ethers.Contract(aUSTOracleAddress, STAOracle, library)
+  //   //   const AUSTOraclePrice = await AUSTOracleContract.latestRoundData()
+  //   //   const AUSTOracleDecimal = await AUSTOracleContract.decimals()
+  //   //   cOraclePrice = fixD(formatUnits(AUSTOraclePrice.answer, AUSTOracleDecimal), 4)
+  //   // }
 
-    // if (cAsset == 'aUST') {
-    //   const AUSTOracleContract = new ethers.Contract(aUSTOracleAddress, STAOracle, library)
-    //   const AUSTOraclePrice = await AUSTOracleContract.latestRoundData()
-    //   const AUSTOracleDecimal = await AUSTOracleContract.decimals()
-    //   cOraclePrice = fixD(formatUnits(AUSTOraclePrice.answer, AUSTOracleDecimal), 4)
-    // }
-
-    if (account) {
-      const assetNewInfo = await getOneAssetInfo(
-        asset,
-        commonState.assetBaseInfoObj[asset]?.address,
-        account,
-        commonState.assetBaseInfoObj,
-      )
-      const oneAssetInfo = { ...commonState.assetBaseInfoObj[asset], ...assetNewInfo, oraclePrice }
-      dispatch(upDateOneAssetBaseInfo({ oneAssetBaseInfo: oneAssetInfo }))
-      const cassetNewInfo = await getOneAssetInfo(
-        cAsset,
-        commonState.assetBaseInfoObj[cAsset]?.address,
-        account,
-        commonState.assetBaseInfoObj,
-      )
-      const onecAssetInfo = { ...commonState.assetBaseInfoObj[cAsset], ...cassetNewInfo, oraclePrice: cOraclePrice }
-      dispatch(upDateOneAssetBaseInfo({ oneAssetBaseInfo: onecAssetInfo }))
-    }
-  }
+  //   if (account) {
+  //     const assetNewInfo = await getOneAssetInfo(
+  //       asset,
+  //       commonState.assetBaseInfoObj[asset]?.address,
+  //       account,
+  //       commonState.assetBaseInfoObj,
+  //     )
+  //     const oneAssetInfo = { ...commonState.assetBaseInfoObj[asset], ...assetNewInfo, oraclePrice }
+  //     dispatch(upDateOneAssetBaseInfo({ oneAssetBaseInfo: oneAssetInfo }))
+  //     const cassetNewInfo = await getOneAssetInfo(
+  //       cAsset,
+  //       commonState.assetBaseInfoObj[cAsset]?.address,
+  //       account,
+  //       commonState.assetBaseInfoObj,
+  //     )
+  //     const onecAssetInfo = { ...commonState.assetBaseInfoObj[cAsset], ...cassetNewInfo, oraclePrice: cOraclePrice }
+  //     dispatch(upDateOneAssetBaseInfo({ oneAssetBaseInfo: onecAssetInfo }))
+  //   }
+  // }
   useEffect(() => {
     setIsTab(!isTab)
   }, [tradeState.isTab])
   useEffect(() => {
     // Run the code when account is not undefined
     if(account !== undefined && library !== undefined) {
-      if (!assetName) {
-        setAssetName(commonState.defaultAsset)
-      }
-      if (!cAssetName) {
-        setAssetName(commonState.defaultCAsset)
-      }
-      getOraclePrice(assetName, cAssetName)
+      // if (!assetName) {
+      //   setAssetName(commonState.defaultAsset)
+      // }
+      // if (!cAssetName) {
+      //   setAssetName(commonState.defaultCAsset)
+      // }
+     
       let timer: any
       const getBaseData = () => {
         getPrice(assetName, cAssetName)
@@ -194,8 +193,7 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
       assetName = cAssetName
       cAssetName = assetName
     }
-    let price
-    let oraclePrice
+    
     const swapPriceResult = await getSwapPrice(
       commonState.assetBaseInfoObj[cAssetName]?.address,
       commonState.assetBaseInfoObj[assetName]?.address,
@@ -212,19 +210,25 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
       const reserves1 = Number(
         formatUnits(swapPriceResult.reserves[1], commonState.assetBaseInfoObj[token1Name]?.decimals),
       )
+      let price
+
       if (swapPriceResult.token0 == commonState.assetBaseInfoObj[assetName]?.address) {
         price = (reserves1 / reserves0).toString()
       } else {
         price = (reserves0 / reserves1).toString()
       }
-      oraclePrice = Number(commonState.assetBaseInfoObj[assetName]?.oraclePrice)
-      if (Number(price) - oraclePrice > 0) {
-        const result = ((Number(price) - oraclePrice) / oraclePrice) * 100
-        setPremiumValue(fixD(result.toString(), 2))
-      } else {
-        const result = ((oraclePrice - Number(price)) / oraclePrice) * 100
-        setPremiumValue('-' + fixD(result.toString(), 2))
-      }
+      // oraclePrice = Number(commonState.assetBaseInfoObj[assetName]?.oraclePrice)
+      let oraclePrice: any = await getOraclePrice(assetName)
+
+      price = parseFloat(price)
+      oraclePrice = parseFloat(oraclePrice)
+     
+      const basePrice = price > oraclePrice ? price : oraclePrice
+      const toBeComparedPrice = price > oraclePrice ? oraclePrice : price
+
+      const premiumValue = ((basePrice - toBeComparedPrice) / basePrice) * 100
+
+      setPremiumValue(fixD(premiumValue.toString(), 2))
     }
   }
   
