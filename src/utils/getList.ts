@@ -174,6 +174,31 @@ export async function getSwapPrice(tokenAaddress: any, tokenBaddress: any, token
   }
 }
 
+export async function getOraclePrice(assetName: string) {
+  try {
+    if (assetName === undefined || assetName === "") {
+      throw new Error(`Token A / Token B address is undefined`)
+    }
+    
+    const oracleInfo = oracleList.find(i => i.assetKey.toLowerCase() === assetName.toLowerCase())
+    if (oracleInfo === undefined) {
+      console.log(`Oracle info is undefined for ${assetName}`)
+      return
+    }
+
+    const customProvider = simpleRpcProvider
+    const contract = new ethers.Contract(oracleInfo.address, STAOracle, customProvider)
+    const price = await contract.latestRoundData()
+    const decimals = await contract.decimals()
+    const oraclePrice = fixD(formatUnits(price.answer, decimals), 4)
+
+    return oraclePrice
+
+  } catch (err: any) {
+    console.error(`Error in getSwapPrice() : `, err)
+  }
+}
+
 export async function getAssetList(): Promise<any> {
   const response = await fetch('https://beta-api.nasdex.xyz/config.json', {
     method: 'get',
