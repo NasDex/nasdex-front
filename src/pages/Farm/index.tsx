@@ -102,8 +102,9 @@ const Farm = () => {
     
       // Getting oracle price
       const oracleInfo = oracleList.find(i => i.assetKey === asset)
+      const customProvider = simpleRpcProvider
       if (oracleInfo !== undefined) {
-        const priceOracleContract = new ethers.Contract(oracleInfo.address, STAOracle, library)
+        const priceOracleContract = new ethers.Contract(oracleInfo.address, STAOracle, customProvider)
         const price = await priceOracleContract.latestRoundData()
         oraclePrice = fixD(formatUnits(price.answer, oracleInfo.decimal), 4)
       }
