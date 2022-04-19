@@ -2,6 +2,7 @@
 
 import {useActiveWeb3React} from 'hooks'
 import {useMemo} from 'react'
+import { simpleRpcProvider } from 'utils/dist/providers'
 import {
   getMasterchefContract,
   getNSDXContract,
@@ -66,8 +67,10 @@ export const useNSDXTestContract = () => {
   return useMemo(() => getNSDXTestContract(library?.getSigner()), [library])
 }
 export const useMasterChefTestContract = () => {
-  const {library} = useActiveWeb3React()
-  return useMemo(() => getMasterChefTestContract(library?.getSigner()), [library])
+  //const {library} = useActiveWeb3React()
+  const customProvider = simpleRpcProvider
+  return useMemo(() => getMasterChefTestContract(customProvider), [customProvider])
+  // return useMemo(() => getMasterChefTestContract(library?.getSigner()), [library])
 }
 export const useShortStockAContract = () => {
   const {library} = useActiveWeb3React()

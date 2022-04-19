@@ -29,6 +29,7 @@ export async function getCommonAssetInfo(library: any ,account?: string | undefi
   // const provider = window.ethereum
   // const library = getLibrary(provider) || simpleRpcProvider
   // const assetBaseInfo: any = []
+  const customProvider = simpleRpcProvider
   let assetBaseInfoArr: any = []
 
   // Get asset list from backend
@@ -49,7 +50,7 @@ export async function getCommonAssetInfo(library: any ,account?: string | undefi
    
     const asset:any = assetBaseInfoArr[i]
    
-    const assetContract = new ethers.Contract(asset.address, Erc20Abi, library)
+    const assetContract = new ethers.Contract(asset.address, Erc20Abi, customProvider)
 
     const assetDecimal =  asset.decimals
     const assetType = asset.type
@@ -78,7 +79,7 @@ export async function getCommonAssetInfo(library: any ,account?: string | undefi
         const oracleInfo = oracleList.find(i => i.assetKey === assetName)
 
         if (oracleInfo !== undefined) {
-          const priceOracleContract = new ethers.Contract(oracleInfo.address, STAOracle, library)
+          const priceOracleContract = new ethers.Contract(oracleInfo.address, STAOracle, customProvider)
           const price = await priceOracleContract.latestRoundData()
           asset.oraclePrice = fixD(formatUnits(price.answer, oracleInfo.decimal), 4)
         }
