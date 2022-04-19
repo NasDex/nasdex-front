@@ -134,8 +134,10 @@ export async function getSwapPrice(tokenAaddress: any, tokenBaddress: any, token
     }
 
     const lpAddress = lpInfo.lp
-    console.log(`Provider at ${new Date().toString()} `, library)
-    const contract = new ethers.Contract(lpAddress, lpContractAbi, library)
+    const customProvider = simpleRpcProvider
+    console.log(`Provider at ${new Date().toString()} `, customProvider)
+    console.log(`lp address ${lpAddress}`)
+    const contract = new ethers.Contract(lpAddress, lpContractAbi, customProvider)
     const reserves = await contract.getReserves()
 
     const reserves0Raw = reserves[0].toString()
