@@ -62,11 +62,25 @@ const ProfileList: React.FC<any> = props => {
   const {assetsNameInfo, assetBaseInfoObj} = commonState
   const PositionsContract = usePositionsContract()
   const [dataSource, setDataSource] = useState([])
-  const [load, setLoad] = useState(true)
+  const [load, setLoad] = useState(false)
   async function getPositions(newaccount: any) {
     const startAt = 0
     const limit = 100
+
+    if(load) {
+      console.log(`Performing position checking, skip this turn`)
+      return
+    }
+
+    setLoad(true)
+  
     const positionList = await PositionsContract.getPositions(newaccount, startAt, limit)
+    if(positionList.length <= 0){
+      setLoad(false)
+      console.log(`No positions found`)
+      return
+    }
+    
     const result: any = []
     const farmingPositionInfo: any = []
     positionList.forEach((position: any) => {
@@ -148,9 +162,13 @@ const ProfileList: React.FC<any> = props => {
       setDataSource(result)
     } else {
       setDataSource([])
-      dispatch(upDateFarmingPositionInfo({farmingPositionInfo: []}))
+      if(JSON.stringify(commonState.farmingPositionInfo) !== "") {
+        dispatch(upDateFarmingPositionInfo({farmingPositionInfo: []}))
+      }
       setLoad(false)
     }
+
+    setLoad(false)
   }
   useEffect(() => {
     let timer: any
@@ -164,7 +182,7 @@ const ProfileList: React.FC<any> = props => {
     return () => {
       clearInterval(timer)
     }
-  }, [account, commonState.farmingPositionInfo])
+  }, [account]) // commonState.farmingPositionInfo removed to prevent infinite loop
   useEffect(() => {
     if (!clickHeaderActive) {
       if (props.pageName) {

@@ -60,8 +60,9 @@ export const useShortStakingContract = () => {
   return useMemo(() => getShortStakingContract(library?.getSigner()), [library])
 }
 export const usePositionsContract = () => {
-  const {library} = useActiveWeb3React()
-  return useMemo(() => getPositionsContract(library?.getSigner()), [library])
+  // const {library} = useActiveWeb3React()
+  const customProvider = simpleRpcProvider
+  return useMemo(() => getPositionsContract(customProvider), [customProvider])
 }
 export const useNSDXTestContract = () => {
   const {library} = useActiveWeb3React()
