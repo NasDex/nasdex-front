@@ -19,7 +19,8 @@ import {
   upDateAllAssetsListInfo,
   updateDefaultCAsset,
   updateDefaultAsset,
-  upDateAssetBaseInfoObj
+  upDateAssetBaseInfoObj,
+  updateLongFarmingInfo
 } from 'state/common/actions'
 
 // Please refer note.txt for v1 code
@@ -37,9 +38,11 @@ export async function getCommonAssetInfo(library: any ,account?: string | undefi
 
   const assetBaseInfoObj = JSON.parse(JSON.stringify(config.assetPre))
   const assetsName: any = config.assetsNameInfoPre
+  const longFarmingInfo: any = config.longFarmingInfoPre
   dispatch(updateDefaultCAsset({ defaultCAsset: config.default.cAsset }))
   dispatch(updateDefaultAsset({ defaultAsset: config.default.asset }))
   dispatch(upDateAssetBaseInfoObj({ assetBaseInfoObj: config.assetPre }))
+  dispatch(updateLongFarmingInfo({ longFarmingInfo: longFarmingInfo }))
 
   assetBaseInfoArr = Object.values(assetBaseInfoObj)
   const updatedList: any[] = []
@@ -219,4 +222,22 @@ export async function getOneAssetInfo(asset: string, address: string, account: a
   const contract = new ethers.Contract(address, Erc20Abi, library)
   const balance = formatUnits(await contract.balanceOf(account), assetBaseInfoObj[asset].decimals)
   return { balance }
+}
+
+export async function totalSupply(assetAddress: string, assetDecimal = "18") {
+  try {
+    if (assetAddress === undefined || assetAddress === "") {
+      throw new Error(`Asset address is undefined`)
+    }
+    
+    const customProvider = simpleRpcProvider
+    const contract = new ethers.Contract(assetAddress, Erc20Abi, customProvider)
+    const totalSupplyRaw = await contract.totalSupply()
+    const totalSupply = fixD(formatUnits(totalSupplyRaw, assetDecimal), 4)
+   
+    return { totalSupply, totalSupplyRaw}
+
+  } catch (err: any) {
+    console.error(`Error in totalSupply() : `, err)
+  }
 }

@@ -19,7 +19,8 @@ import {
   upDateOpenWeb,
   updateDefaultAsset,
   updateDefaultCAsset,
-  loadProvider
+  loadProvider,
+  updateLongFarmingInfo
 } from './actions'
 
 export interface ApplicationState {
@@ -90,7 +91,7 @@ const initialState: ApplicationState = {
     positionId: '',
     isShort: false,
   },
-  provider: undefined
+  provider: undefined,
 }
 export default createReducer(initialState, builder =>
   builder
@@ -148,4 +149,7 @@ export default createReducer(initialState, builder =>
       state.provider = web3Provider
     }
   })
+  .addCase(updateLongFarmingInfo, (state, action) => {
+    state.longFarmingInfo = action.payload.longFarmingInfo
+  }),
 )

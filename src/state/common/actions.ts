@@ -28,4 +28,5 @@ export const updateDefaultCAsset = createAction<{defaultCAsset: string}>('app/up
 export const updateDefaultAsset = createAction<{defaultAsset: string}>('app/updateDefaultAsset')
 
 export const loadProvider = createAction<{provider: any}>('app/loadProvider')
+export const updateLongFarmingInfo = createAction<{longFarmingInfo: any}>('app/updateLongFarmingInfo')
 

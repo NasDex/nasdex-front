@@ -39,8 +39,9 @@ export const useNSDX = () => {
   return useMemo(() => getNSDXContract(library?.getSigner()), [library])
 }
 export const useLpContract = () => {
-  const {library} = useActiveWeb3React()
-  return useMemo(() => getLPContract(library?.getSigner()), [library])
+  // const {library} = useActiveWeb3React()
+  const customProvider = simpleRpcProvider
+  return useMemo(() => getLPContract(customProvider), [customProvider])
 }
 export const useMintContract = () => {
   const {library} = useActiveWeb3React()
