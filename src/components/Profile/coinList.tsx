@@ -35,7 +35,7 @@ const CoinList: React.FC<any> = props => {
     allAssetsListInfo = info
     if (allAssetsListInfo.length > 0) {
       allAssetsListInfo.forEach((position: any) => {
-        if (position.balance > 0 && account) {
+        if (parseFloat(position.balance) > 0 && account) {
           let value: any
           if (position.type == 'asset') {
             value = (Number(position.swapPrice) * Number(position.balance)).toString()
@@ -57,7 +57,7 @@ const CoinList: React.FC<any> = props => {
     if (result.length > 0) {
       setAssetInfo(result)
     } else {
-      setAssetInfo(notAccount)
+      setAssetInfo(notAccount) // Show NSDX + USDC
     }
   }
   useEffect(() => {
