@@ -96,7 +96,7 @@ const PositionTable: React.FC<any> = props => {
 
   const { account } = useActiveWeb3React()
   const commonState = useCommonState()
-  const [load, setLoad] = useState(true)
+  const [load, setLoad] = useState(false)
   const [dataSource, setDataSource] = useState([])
   const infoArr: any = []
   Object.keys(commonState.assetBaseInfoObj).forEach(function (trait) {
@@ -104,42 +104,53 @@ const PositionTable: React.FC<any> = props => {
   })
   async function getPositions() {
     const result: any = []
-    if (infoArr.length > 0) {
-      infoArr.forEach((position: any) => {
-        if (position.type == 'asset') {
-          if (position.balance > 0) {
-            const value = (
-              Number(commonState.assetBaseInfoObj[position.name].swapPrice) * Number(position.balance)
-            ).toString()
-            result.push({
-              key: position.id,
-              assetAmount: position.balance,
-              oraclePrice: 40,
-              assetTokenName: position.name,
-              cAssetTokenName: 'USDC',
-              value: value,
-              swapPrice: position.swapPrice,
-            })
-          }
-        }
-      })
+
+    if(load) {
+      console.log(`Ongoing positions processing, skip this turn`)
+      return
     }
-    if (result && result.length > 0) {
-      result.sort(function (a: any, b: any) {
-        return b.value - a.value
-      })
-      setLoad(false)
-      setDataSource(result)
-    } else {
+
+    setLoad(true)
+
+    if(infoArr.length <= 0) {
+      console.log(`No info arr`)
       setLoad(false)
       setDataSource([])
+      return
     }
+
+    infoArr.forEach((position: any) => {
+      if (position.type == 'asset') {
+        if (position.balance > 0) {
+          const value = (
+            Number(commonState.assetBaseInfoObj[position.name].swapPrice) * Number(position.balance)
+          ).toString()
+          result.push({
+            key: position.id,
+            assetAmount: position.balance,
+            oraclePrice: 40,
+            assetTokenName: position.name,
+            cAssetTokenName: 'USDC',
+            value: value,
+            swapPrice: position.swapPrice,
+          })
+        }
+      }
+    })
+
+    result.sort(function (a: any, b: any) {
+      return b.value - a.value
+    })
+
+    setLoad(false)
+    setDataSource(result)
   }
   useEffect(() => {
     if (account) {
       getPositions()
     }
   }, [account, commonState.assetBaseInfoObj])
+  
   const { login, logout } = useAuth()
   const { onPresentConnectModal, onPresentAccountModal } = useWalletModal(login, logout, account || undefined)
   const connectWallet = [
