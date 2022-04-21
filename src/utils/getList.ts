@@ -42,6 +42,7 @@ export async function getCommonAssetInfo(library: any ,account?: string | undefi
   dispatch(updateDefaultCAsset({ defaultCAsset: config.default.cAsset }))
   dispatch(updateDefaultAsset({ defaultAsset: config.default.asset }))
   dispatch(upDateAssetBaseInfoObj({ assetBaseInfoObj: config.assetPre }))
+  dispatch(upDateAssetsNameInfo({assetsNameInfo: assetsName}))
   dispatch(updateLongFarmingInfo({ longFarmingInfo: longFarmingInfo }))
 
   assetBaseInfoArr = Object.values(assetBaseInfoObj)
@@ -104,7 +105,7 @@ export async function getCommonAssetInfo(library: any ,account?: string | undefi
   const cAssetsListInfo = updatedList.filter(a => !nonCAsset.includes(a.name) && a.type === 'cAsset')
   const assetsListInfo  = updatedList.filter(a => a.type === 'asset') 
 
-  dispatch(upDateAssetsNameInfo({ assetsNameInfo: assetsName }))
+  // dispatch(upDateAssetsNameInfo({ assetsNameInfo: assetsName }))
   dispatch(upDateAssetsListInfo({ assetsListInfo: assetsListInfo }))
   dispatch(upDateCAssetsListInfo({ cAssetsListInfo: cAssetsListInfo }))
   dispatch(upDateAllAssetsListInfo({ allAssetsListInfo: updatedList }))
@@ -139,8 +140,8 @@ export async function getSwapPrice(tokenAaddress: any, tokenBaddress: any, token
 
     const lpAddress = lpInfo.lp
     const customProvider = simpleRpcProvider
-    console.log(`Provider at ${new Date().toString()} `, customProvider)
-    console.log(`lp address ${lpAddress}`)
+    // console.log(`Provider at ${new Date().toString()} `, customProvider)
+    // console.log(`lp address ${lpAddress}`)
     const contract = new ethers.Contract(lpAddress, lpContractAbi, customProvider)
     const reserves = await contract.getReserves()
 
@@ -158,7 +159,7 @@ export async function getSwapPrice(tokenAaddress: any, tokenBaddress: any, token
       tokenPrice1 = parseFloat(reserves0) / parseFloat(reserves1)
     }
 
-    console.log(`Refresh swap price for ${lpAddress} at ${new Date().toString()} , token0 ${tokenPrice0}, token1 ${tokenPrice1}`)
+    // console.log(`Refresh swap price for ${lpAddress} at ${new Date().toString()} , token0 ${tokenPrice0}, token1 ${tokenPrice1}`)
 
     const result = {
       token0: lpInfo.tokenA,
