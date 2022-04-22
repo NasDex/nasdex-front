@@ -3,8 +3,6 @@
 import { JsonRpcProvider, StaticJsonRpcProvider } from '@ethersproject/providers'
 import {createAction} from '@reduxjs/toolkit'
 
-
-
 export const upDateManageOpenConfirm = createAction<{manageOpenConfirm: boolean}>('app/upDateManageOpenConfirm')
 export const upDateOpenWeb = createAction<{openWeb: boolean}>('app/upDateOpenWeb')
 
@@ -29,4 +27,8 @@ export const updateDefaultAsset = createAction<{defaultAsset: string}>('app/upda
 
 export const loadProvider = createAction<{provider: any}>('app/loadProvider')
 export const updateLongFarmingInfo = createAction<{longFarmingInfo: any}>('app/updateLongFarmingInfo')
+
+export const updatePricesRawData = createAction<{pricesRawData :any}>('app/updatePricesRawData')
+export const updateSwapPrices = createAction<{swapPrices: any}>('app/updateSwapPrices')
+export const updateOraclePrices = createAction<{oraclePrices:any}>('app/updateOraclePrices')
 
