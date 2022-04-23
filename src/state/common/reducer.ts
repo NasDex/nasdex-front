@@ -24,7 +24,9 @@ import {
   updateLongFarmingInfo,
   updatePricesRawData,
   updateSwapPrices,
-  updateOraclePrices
+  updateOraclePrices,
+  updateAssetsList,
+  updateAssetsBalances
 } from './actions'
 
 export interface ApplicationState {
@@ -47,6 +49,8 @@ export interface ApplicationState {
   pricesRaw: any
   swapPrices: any
   oraclePrices: any
+  assets: any, 
+  assetBalances: any
 }
 
 const initialState: ApplicationState = {
@@ -101,7 +105,9 @@ const initialState: ApplicationState = {
   provider: undefined,
   pricesRaw: [],
   swapPrices: {},
-  oraclePrices: {}
+  oraclePrices: {},
+  assets: null, 
+  assetBalances: null
 }
 export default createReducer(initialState, builder =>
   builder
@@ -171,4 +177,10 @@ export default createReducer(initialState, builder =>
   .addCase(updateOraclePrices, (state, action) => {
     state.oraclePrices = action.payload.oraclePrices
   })
+  .addCase(updateAssetsList, (state, action) => {
+    state.assets = action.payload.assets
+  })
+  .addCase(updateAssetsBalances, (state, action) => {
+    state.assetBalances = action.payload.assetBalances
+  }) 
 )

@@ -18,7 +18,7 @@ export default function usePrice() {
             if(!isProgress) {
                 setInProgress(true)
 
-                const request = await fetch('http://localhost:8080/v1/price/latest', {
+                const request = await fetch('https://test-api.nasdex.xyz/v1/price/latest', {
                     method: 'get',
                 })
 

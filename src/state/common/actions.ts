@@ -31,4 +31,5 @@ export const updateLongFarmingInfo = createAction<{longFarmingInfo: any}>('app/u
 export const updatePricesRawData = createAction<{pricesRawData :any}>('app/updatePricesRawData')
 export const updateSwapPrices = createAction<{swapPrices: any}>('app/updateSwapPrices')
 export const updateOraclePrices = createAction<{oraclePrices:any}>('app/updateOraclePrices')
-
+export const updateAssetsList = createAction<{assets: any}>('app/updateAssetsList')
+export const updateAssetsBalances = createAction<{assetBalances:any}>('app/updateAssetsBalances')
