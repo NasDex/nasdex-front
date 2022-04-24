@@ -104,32 +104,37 @@ const CoinList: React.FC<any> = props => {
 
   return (
     <div className="coin-list">
-      {assetInfo.map((ele: any, key: any) => (
-        <div className="coin-item" key={key}>
-          <div className="coin-item-left">
-            <img
-              className="coin-logo"
-              src={ele.name ? require(`../../img/coin/${ele.name}.png`).default : { zhanweifu }}
-              alt=""
-            />
-            {ele.name}
-          </div>
-          <div className="coin-item-right">
-            <div className="coin-balance">
-              <p className="balance-num">
-                {account
-                  ? ele.tokenBalance < 0.000001 && ele.tokenBalance > 0
-                    ? '<0.000001'
-                    : fixD(ele.tokenBalance, 6)
-                  : '0.0'}
-              </p>
-              <p className="balance-price">
-                $ {account ? (ele.value < 0.0001 && ele.value > 0 ? '<0.0001' : fixD(ele.value, 4)) : '0.0'}
-              </p>
+      {assetInfo.map((ele: any, key: any) => {
+        if(ele === undefined) {
+          return null
+        }
+        return (
+          <div className="coin-item" key={key}>
+            <div className="coin-item-left">
+              <img
+                className="coin-logo"
+                src={ele !== undefined ? require(`../../img/coin/${ele.name}.png`).default : { zhanweifu }}
+                alt=""
+              />
+              {ele !== undefined ? ele.name : ""}
+            </div>
+            <div className="coin-item-right">
+              <div className="coin-balance">
+                <p className="balance-num">
+                  {account
+                    ? ele.tokenBalance < 0.000001 && ele.tokenBalance > 0
+                      ? '<0.000001'
+                      : fixD(ele.tokenBalance, 6)
+                    : '0.0'}
+                </p>
+                <p className="balance-price">
+                  $ {account ? (ele.value < 0.0001 && ele.value > 0 ? '<0.0001' : fixD(ele.value, 4)) : '0.0'}
+                </p>
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        )
+      })}
     </div>
   )
 }
