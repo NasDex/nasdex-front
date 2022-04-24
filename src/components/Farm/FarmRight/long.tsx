@@ -27,7 +27,7 @@ import lpContractAbi from '../../../constants/abis/lpContract.json'
 import { getAllowance, getAssetList } from 'utils/getList'
 import { useTranslation } from 'react-i18next'
 import { useSwapFactoryContract } from 'constants/hooks/useContract'
-import { simpleRpcProvider } from 'utils/dist/providers'
+import { simpleRpcProvider } from 'utils/providers'
 const { Option } = Select
 
 const Long: React.FC<any> = props => {

@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from "react"
 import { useDispatch } from "react-redux"
 import { updateAssetsBalances, updateAssetsList, upDateAssetsNameInfo, updateLongFarmAssetsList } from "state/common/actions"
 import { useCommonState } from "state/common/hooks"
-import { simpleRpcProvider } from "utils/dist/providers"
+import { simpleRpcProvider } from "utils/providers"
 import { getAssetList } from "utils/getList"
 import Erc20Contract from '../../src/constants/abis/erc20.json'
 

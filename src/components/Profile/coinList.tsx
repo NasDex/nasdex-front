@@ -65,7 +65,7 @@ const CoinList: React.FC<any> = props => {
     const assetBalances = commonState.assetBalances
     const swapPrices = commonState.swapPrices
 
-    if(assets !== null && assets !== undefined && assetBalances !== null) {
+    if(assets !== null && assets !== undefined && assetBalances !== null && assetBalances !== undefined) {
       const allAssetsListInfo = Object.values(assets)
 
       const result = allAssetsListInfo.map((position: any) => {

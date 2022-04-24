@@ -2,7 +2,7 @@
 
 import {useActiveWeb3React} from 'hooks'
 import {useMemo} from 'react'
-import { simpleRpcProvider } from 'utils/dist/providers'
+import { simpleRpcProvider } from 'utils/providers'
 import {
   getMasterchefContract,
   getNSDXContract,
