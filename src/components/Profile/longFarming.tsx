@@ -12,7 +12,7 @@ import { useWeb3React } from '@web3-react/core'
 import { useWalletModal } from 'components/WalletModal'
 import useAuth from 'hooks/useAuth'
 import { useMasterChefTestContract, useLongStakingContract } from 'constants/hooks/useContract'
-import { useCommonState } from 'state/common/hooks'
+import { useCommonState, useProvider } from 'state/common/hooks'
 import { getSwapPrice, getOneAssetInfo, getAssetList } from 'utils/getList'
 import { fixD, getpriceList } from 'utils'
 import { useDispatch } from 'react-redux'
@@ -27,9 +27,11 @@ import { getLibrary } from 'utils/getLibrary'
 import { getApr, getRecevied } from 'utils/getAPR'
 import { ethers } from 'ethers'
 import lTokenAbi from 'constants/abis/ltoken.json'
+import lpContractAbi from 'constants/abis/lpContract.json'
 import { useStakeState } from 'state/stake/hooks'
 import { useTranslation } from 'react-i18next'
 import { simpleRpcProvider } from 'utils/providers'
+
 const LongFarming: React.FC<any> = props => {
   const { t, i18n } = useTranslation()
   const [load, setLoad] = useState(true)
@@ -48,8 +50,9 @@ const LongFarming: React.FC<any> = props => {
   const [profileLongFarmConfirm, setProfileLongFarmConfirm] = useState(false)
 
   const { login, logout } = useAuth()
-  const provider = window.ethereum
-  const library = getLibrary(provider) ?? simpleRpcProvider
+  // const provider = window.ethereum
+  // const library = getLibrary(provider) ?? simpleRpcProvider
+  const library = useProvider()
   const { onPresentConnectModal, onPresentAccountModal } = useWalletModal(login, logout, account || undefined)
   const LongStakingContract = useLongStakingContract()
   const MasterChefTestContract = useMasterChefTestContract()
@@ -119,33 +122,36 @@ const LongFarming: React.FC<any> = props => {
         MasterChefTestAddress,
         LongStakingAddress,
         formatUnits,
-        lTokenAbi,
+        lpContractAbi,
         ethers,
         library,
         commonState,
         longFarmingUserInfo,
+        commonState.swapPrices
       )
 
-      const obj = {
-        key: ele.longId,
-        id: ele.name == 'NSDX' ? ele.id : ele.longId,
-        name: `${ele.name} - ${ele.cAssetName} LP`,
-        assetTokenName: ele.name,
-        cAssetTokenName: ele.cAssetName,
-        APR: poolInfo.longAprP < 100000000 ? fixD(poolInfo.longAprP, 2) : 'Infinity',
-        Rewards: formatUnits(poolInfo.Reward, assetBaseInfoObj[ele.name].decimals),
-        Staked: formatUnits(longFarmingUserInfo.amount, assetBaseInfoObj[ele.name].decimals),
-        longId: ele.longId,
-        longAllocPoint: poolInfo.info.longAllocPoint,
-        totalStakedNum: poolInfo.totalStakedNum,
-        longRootPid: ele.name == 'NSDX' ? '' : poolInfo.longPoolInfoItem.rootPid.toString(),
-        assetStaked:
-          ele.name == 'NSDX'
-            ? formatUnits(longFarmingUserInfo.amount, assetBaseInfoObj[ele.name].decimals)
-            : poolInfo.asset,
-        cAssetStaked: ele.name == 'NSDX' ? null : poolInfo.cAsset,
+      if(poolInfo !== null) {
+        const obj = {
+          key: ele.longId,
+          id: ele.name == 'NSDX' ? ele.id : ele.longId,
+          name: `${ele.name} - ${ele.cAssetName} LP`,
+          assetTokenName: ele.name,
+          cAssetTokenName: ele.cAssetName,
+          APR: poolInfo.longAprP < 100000000 ? fixD(poolInfo.longAprP, 2) : 'Infinity',
+          Rewards: formatUnits(poolInfo.Reward, assetBaseInfoObj[ele.name].decimals),
+          Staked: formatUnits(longFarmingUserInfo.amount, assetBaseInfoObj[ele.name].decimals),
+          longId: ele.longId,
+          longAllocPoint: poolInfo.info.longAllocPoint,
+          totalStakedNum: poolInfo.totalSupply,
+          longRootPid: ele.name == 'NSDX' ? '' : poolInfo.longPoolInfoItem.rootPid.toString(),
+          assetStaked:
+            ele.name == 'NSDX'
+              ? formatUnits(longFarmingUserInfo.amount, assetBaseInfoObj[ele.name].decimals)
+              : poolInfo.asset,
+          cAssetStaked: ele.name == 'NSDX' ? null : poolInfo.cAsset,
+        }
+        return obj
       }
-      return obj
     }
   }
 
@@ -210,12 +216,13 @@ const LongFarming: React.FC<any> = props => {
       return getBaseData
     }
     if (account && farmListArray.length > 0) {
-      timer = setInterval(getBaseData(), 5000)
+      timer = setInterval(getBaseData(), 10000)
     }
     return () => {
       clearInterval(timer)
     }
   }, [account, farmListArray])
+  /** Get long farming info */
   useEffect(() => {
     getLongFarmingInfo()
   }, [account])
@@ -447,3 +454,4 @@ const TableList: React.FC<any> = props => {
   )
 }
 export default LongFarming
+

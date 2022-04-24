@@ -115,7 +115,7 @@
         "type": "uint256"
       },
       {
-        "internalType": "contract IShortToken",
+        "internalType": "contract IStakingToken",
         "name": "_shortToken",
         "type": "address"
       },
@@ -260,7 +260,7 @@
     "name": "poolInfo",
     "outputs": [
       {
-        "internalType": "contract IShortToken",
+        "internalType": "contract IStakingToken",
         "name": "shortToken",
         "type": "address"
       },
@@ -307,11 +307,37 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "_masterChef",
+        "type": "address"
+      }
+    ],
+    "name": "setMasterChef",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
         "name": "_mintAddr",
         "type": "address"
       }
     ],
     "name": "setMintAddr",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_nsdx",
+        "type": "address"
+      }
+    ],
+    "name": "setNsdx",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -355,7 +381,7 @@
       {
         "components": [
           {
-            "internalType": "contract IShortToken",
+            "internalType": "contract IStakingToken",
             "name": "shortToken",
             "type": "address"
           },

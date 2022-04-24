@@ -2,6 +2,7 @@
 
 import {useActiveWeb3React} from 'hooks'
 import {useMemo} from 'react'
+import { simpleRpcProvider } from 'utils/providers'
 import {
   getMasterchefContract,
   getNSDXContract,
@@ -38,8 +39,9 @@ export const useNSDX = () => {
   return useMemo(() => getNSDXContract(library?.getSigner()), [library])
 }
 export const useLpContract = () => {
-  const {library} = useActiveWeb3React()
-  return useMemo(() => getLPContract(library?.getSigner()), [library])
+  // const {library} = useActiveWeb3React()
+  const customProvider = simpleRpcProvider
+  return useMemo(() => getLPContract(customProvider), [customProvider])
 }
 export const useMintContract = () => {
   const {library} = useActiveWeb3React()
@@ -58,16 +60,19 @@ export const useShortStakingContract = () => {
   return useMemo(() => getShortStakingContract(library?.getSigner()), [library])
 }
 export const usePositionsContract = () => {
-  const {library} = useActiveWeb3React()
-  return useMemo(() => getPositionsContract(library?.getSigner()), [library])
+  // const {library} = useActiveWeb3React()
+  const customProvider = simpleRpcProvider
+  return useMemo(() => getPositionsContract(customProvider), [customProvider])
 }
 export const useNSDXTestContract = () => {
   const {library} = useActiveWeb3React()
   return useMemo(() => getNSDXTestContract(library?.getSigner()), [library])
 }
 export const useMasterChefTestContract = () => {
-  const {library} = useActiveWeb3React()
-  return useMemo(() => getMasterChefTestContract(library?.getSigner()), [library])
+  //const {library} = useActiveWeb3React()
+  const customProvider = simpleRpcProvider
+  return useMemo(() => getMasterChefTestContract(customProvider), [customProvider])
+  // return useMemo(() => getMasterChefTestContract(library?.getSigner()), [library])
 }
 export const useShortStockAContract = () => {
   const {library} = useActiveWeb3React()
@@ -102,6 +107,7 @@ export const useAssetContract = () => {
   return useMemo(() => getAssetContact(library?.getSigner()), [library])
 }
 export const useLongStakingContract = () => {
-  const {library} = useActiveWeb3React()
-  return useMemo(() => getLongStakingContract(library?.getSigner()), [library])
+  // const {library} = useActiveWeb3React()
+  const customProvider = simpleRpcProvider
+  return useMemo(() => getLongStakingContract(customProvider), [customProvider])
 }

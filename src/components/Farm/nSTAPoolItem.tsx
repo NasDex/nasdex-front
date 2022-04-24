@@ -15,12 +15,13 @@ import { fixD } from 'utils'
 import { getCommonLongApr, getCommonShortApr } from 'utils/getAPR'
 import { formatUnits } from 'ethers/lib/utils'
 import { useActiveWeb3React } from 'hooks'
-import { useCommonState } from 'state/common/hooks'
+import { useCommonState, useProvider } from 'state/common/hooks'
 import { getSwapPrice } from 'utils/getList'
 import { upDateCoinStock, upDateFarmCoinSelect } from '../../state/farm/actions'
 import { useDispatch } from 'react-redux'
 import { getLibrary } from 'utils/getLibrary'
 import { ethers } from 'ethers'
+import lpContract from 'constants/abis/lpContract.json'
 import lTokenAbi from 'constants/abis/ltoken.json'
 import { LongStakingAddress, MasterChefTestAddress } from 'constants/index'
 import { useTranslation } from 'react-i18next'
@@ -42,61 +43,81 @@ const FarmPoolItem: React.FC<any> = props => {
   const ShortStakingContract = useShortStakingContract()
   const longStakingContract = useLongStakingContract()
   const MasterChefTestContract = useMasterChefTestContract()
-  const provider = window.ethereum
-  const library = getLibrary(provider) ?? simpleRpcProvider
-  const { priceList } = props
+  // const provider = window.ethereum
+  // const library = getLibrary(provider) ?? simpleRpcProvider
+  const library = useProvider()
+  const { priceList, farmPoolItem } = props
 
   async function getPoolInfo() {
     const price = priceList
-    const longAprResult = await getCommonLongApr(
-      price,
-      props.farmPoolItem,
-      MasterChefTestContract,
-      longStakingContract,
-      account,
-      LongStakingAddress,
-      formatUnits,
-      lTokenAbi,
-      ethers,
-      library,
-      commonState,
-    )
-    if (longAprResult.longTvlF) {
-      setLongTVL(fixD(longAprResult.longTvlF, 2))
-    }
-    if (longAprResult.longAprP < 100000000) {
-      setLongApr(fixD(longAprResult.longAprP, 2))
-      setSwapPrice(longAprResult.swapPrice)
-    } else {
-      setLongApr('Infinity')
-    }
-    const shortAprResult = await getCommonShortApr(
-      commonState.assetBaseInfoObj[name].oraclePrice,
-      price,
-      props.farmPoolItem,
-      MasterChefTestContract,
-      ShortStakingContract,
-      account,
-      MasterChefTestAddress,
-      formatUnits,
-      lTokenAbi,
-      ethers,
-      library,
-      commonState,
-    )
-    if (shortAprResult.shortTvlF) {
-      setShortTVL(fixD(shortAprResult.shortTvlF, 2))
-    }
-    if (shortAprResult.shortAprP < 100000000) {
-      setApr(fixD(shortAprResult.shortAprP, 2))
-    } else {
-      setApr('Infinity')
+
+    if (commonState.assetBaseInfoObj[name].oraclePrice !== undefined) {
+      // long apr
+      const _promises = []
+      _promises.push(
+        getCommonLongApr(
+          price,
+          farmPoolItem,
+          MasterChefTestContract,
+          longStakingContract,
+          account,
+          LongStakingAddress,
+          formatUnits,
+          lpContract,
+          ethers,
+          library,
+          commonState,
+        )
+      )
+
+      // Short apr
+      _promises.push(
+        getCommonShortApr(
+          commonState.assetBaseInfoObj[name].oraclePrice,
+          price,
+          props.farmPoolItem,
+          MasterChefTestContract,
+          ShortStakingContract,
+          account,
+          MasterChefTestAddress,
+          formatUnits,
+          lTokenAbi,
+          ethers,
+          library,
+          commonState,
+        )
+      )
+
+      const result = await Promise.all(_promises)
+
+      const longAprResult :{ longAprP: any; swapPrice: any; longTvlF: string | number; } = result[0] as { longAprP: any; swapPrice: any; longTvlF: string | number }
+      const shortAprResult: { shortAprP: any; shortTvlF: string | number } = result[1] as { shortAprP: any; shortTvlF: string | number }
+
+      if (longAprResult.longTvlF) {
+        setLongTVL(fixD(longAprResult.longTvlF, 2))
+      }
+      if (longAprResult.longAprP < 100000000) {
+        setLongApr(fixD(longAprResult.longAprP, 2))
+        setSwapPrice(longAprResult.swapPrice)
+      } else {
+        setLongApr('Infinity')
+      }
+      if (shortAprResult !== undefined && shortAprResult.shortTvlF) {
+        setShortTVL(fixD(shortAprResult.shortTvlF, 2))
+      }
+      if (shortAprResult !== undefined && shortAprResult.shortAprP < 100000000) {
+        setApr(fixD(shortAprResult.shortAprP, 2))
+      } else {
+        setApr('Infinity')
+      }
     }
   }
+
   function selectAssetname(name: any, cAssetName: any) {
     dispatch(upDateCoinStock({ farmCoinStock: name }))
     dispatch(upDateFarmCoinSelect({ farmCoinSelect: cAssetName }))
   }
+
   useEffect(() => {
     if (name) {
       setOraclePrice(commonState.assetBaseInfoObj[name].oraclePrice)
@@ -110,44 +131,65 @@ const FarmPoolItem: React.FC<any> = props => {
       setPremium('-' + fixD(result.toString(), 2))
     }
   }, [name, swapPrice, oraclePrice, commonState.assetBaseInfoObj])
-  useEffect(() => {
-    getPrice()
-  }, [account])
+
+  // useEffect(() => {
+  //   if(account !== undefined && library) {
+  //     getPrice()
+  //   }
+  // }, [account])
+
   async function getPrice() {
     const swapPrice = await getSwapPrice(
       commonState.assetBaseInfoObj[cAssetName].address,
       commonState.assetBaseInfoObj[name].address,
+      commonState.assetBaseInfoObj[cAssetName].decimals,
+      commonState.assetBaseInfoObj[name].decimals,
+      library
     )
+
     if (swapPrice) {
       const token0Name = commonState.assetsNameInfo[swapPrice.token0]
       const token1Name = commonState.assetsNameInfo[swapPrice.token1]
       const reserves0 = Number(formatUnits(swapPrice.reserves[0], commonState.assetBaseInfoObj[token0Name]?.decimals))
       const reserves1 = Number(formatUnits(swapPrice.reserves[1], commonState.assetBaseInfoObj[token1Name]?.decimals))
-      if (swapPrice.token0 == commonState.assetBaseInfoObj[name].address) {
-        setSwapPrice((reserves1 / reserves0).toString())
+
+      if (reserves0 == 0 && reserves1 == 0) {
+        setSwapPrice('0')
       } else {
-        setSwapPrice((reserves0 / reserves1).toString())
+        if (swapPrice.token0 == commonState.assetBaseInfoObj[name].address) {
+          setSwapPrice((reserves1 / reserves0).toString())
+        } else {
+          setSwapPrice((reserves0 / reserves1).toString())
+        }
       }
     }
   }
+
   useEffect(() => {
-    let timer: any
-    const getBaseData = () => {
-      getPoolInfo()
-      return getBaseData
+    if(library !== undefined) {
+      let timer: any
+      const getBaseData = async () => {
+        await getPoolInfo()
+        return getBaseData
+      }
+  
+      getBaseData().then(() => {
+        if (ShortStakingContract && MasterChefTestContract) {
+          timer = setInterval(async () => await getBaseData(), 30000)
+        }
+        return () => {
+          clearInterval(timer)
+        }
+      })
     }
-    if (ShortStakingContract && MasterChefTestContract) {
-      timer = setInterval(getBaseData(), 30000)
-    }
-    return () => {
-      clearInterval(timer)
-    }
-  }, [account, ShortStakingContract, ShortStockAContract, MasterChefTestContract])
+  }, [account, library, ShortStakingContract, ShortStockAContract, MasterChefTestContract, commonState.assetBaseInfoObj[name].oraclePrice])
+  
   function thousands(num: any) {
     const str = num.toString()
     const reg = str.indexOf(".") > -1 ? /(\d)(?=(\d{3})+\.)/g : /(\d)(?=(?:\d{3})+$)/g
     return str.replace(reg, "$1,")
   }
+
   return (
     <div className="farm-pool-item">
       <div className="pool-header">
@@ -160,22 +202,22 @@ const FarmPoolItem: React.FC<any> = props => {
       <div className='farmPoolBox'>
         <div className="apr-info">
           <div className="long-apr">
-            <div className="long-apr-title">{!longApr ? <Skeleton active paragraph={{ rows: 0 }} /> : `${longApr}%`}</div>
+            <div className="long-apr-title">{longApr == '' ? <Skeleton active paragraph={{ rows: 0 }} /> : `${longApr}%`}</div>
             <div className="long-apr-text">{t('LongAPR')}</div>
           </div>
           <div className="short-apr">
-            <div className="long-apr-title">{!aprShort ? <Skeleton active paragraph={{ rows: 0 }} /> : `${aprShort}%`}</div>
+            <div className="long-apr-title">{aprShort == '' ? <Skeleton active paragraph={{ rows: 0 }} /> : `${aprShort}%`}</div>
             <div className="long-apr-text">{t('ShortAPR')}</div>
           </div>
         </div>
         <div className="apr-info">
           <div className="long-TVL">
-            <div className="long-TVL-title">{!longTVL ? <Skeleton active paragraph={{ rows: 0 }} /> : `$${thousands(longTVL)}`}</div>
+            <div className="long-TVL-title">{longTVL == '' ? <Skeleton active paragraph={{ rows: 0 }} /> : `$${thousands(longTVL)}`}</div>
             <div className="long-apr-text">{t('LongTVL')}</div>
             <div className="hover">${thousands(longTVL)}</div>
           </div>
           <div className="short-TVL">
-            <div className="long-TVL-title">{!shortTVL ? <Skeleton active paragraph={{ rows: 0 }} /> : `$${thousands(shortTVL)}`}</div>
+            <div className="long-TVL-title">{shortTVL == '' ? <Skeleton active paragraph={{ rows: 0 }} /> : `$${thousands(shortTVL)}`}</div>
             <div className="long-apr-text">{t('ShortTVL')}</div>
             <div className="hover">${thousands(shortTVL)}</div>
           </div>

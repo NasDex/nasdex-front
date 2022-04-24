@@ -12,27 +12,35 @@ import LongShort from './pages/Farm/longShortIndex'
 import Profile from './pages/Profile'
 import Manage from './pages/Manage'
 import Trade from './pages/Trade'
-import { useCommonState } from 'state/common/hooks'
+import { useCommonState, useProvider } from 'state/common/hooks'
 import { getCommonAssetInfo } from 'utils/getList'
 import { upDateOpenWeb } from 'state/common/actions'
 import { useDispatch } from 'react-redux'
 import './style/base.less'
 import './style/global.less'
 import './style/antdesign.less'
+import usePrice from 'hooks/usePrice'
+import useAssetBalance from 'hooks/useAssetBalance'
 
 export default function App() {
   const dispatch = useDispatch()
-  const { account } = useActiveWeb3React()
+  const { account,  active } = useActiveWeb3React()
+  const common = useCommonState()
   const commonState = useCommonState()
   const { assetBaseInfoObj } = commonState
   useEagerConnect()
 
+  // Sync swap and oracle price
+  usePrice()
+  useAssetBalance()
+
   useEffect(() => {
     dispatch(upDateOpenWeb({ openWeb: true }))
-    if (account) {
-      getCommonAssetInfo(account)
-    } else { getCommonAssetInfo() }
-  }, [account, commonState.openWeb])
+    const provider = common.provider
+    if(active && provider !== undefined) {
+      getCommonAssetInfo(provider, account)
+    }
+  }, [common.provider, account, commonState.openWeb])
   return (
     <Suspense fallback={null}>
       <BrowserRouter>
@@ -45,7 +53,7 @@ export default function App() {
             <Route exact strict path="/farm" component={Farm}></Route>
             <Route exact strict path="/farming/:poolType" component={LongShort}></Route>
             <Route exact strict path="/farming/:poolType/:cAssetName/:assetName" component={LongShort}></Route>
-            <Route exact strict path="/profile" component={Profile}></Route>
+             <Route exact strict path="/profile" component={Profile}></Route>
             <Route exact strict path="/profile/:pageName" component={Profile}></Route>
             <Route exact strict path="/manage/:positionId" component={Manage}></Route>
             <Route exact strict path="/trade" component={Trade}></Route>

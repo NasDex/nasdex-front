@@ -2,10 +2,9 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /** @format */
 
-import react, { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import '../../../style/Farm/long.less'
 import { Input, Select, Button, Skeleton } from 'antd'
-import TipsImg from '../../../img/common/tips@2x.png'
 import { fixD } from 'utils'
 import useModal from '../../../hooks/useModal'
 import ConfirmOrder from '../longOrderConfirm/index'
@@ -18,17 +17,16 @@ type IconType = 'success' | 'info' | 'error' | 'warning'
 import { formatUnits } from 'ethers/lib/utils'
 import { upDateFarmCoinSelect, upDateCoinStock } from '../../../state/farm/actions'
 import { useFarmState } from 'state/farm/hooks'
-import { useCommonState } from 'state/common/hooks'
+import { useCommonState, useProvider } from 'state/common/hooks'
 import { upDateOneAssetBaseInfo } from 'state/common/actions'
 import { useDispatch } from 'react-redux'
-import { LongStakingAddress } from '../../../constants/index'
-import { getLibrary } from 'utils/getLibrary'
+import { getLpPairDetail, LongStakingAddress } from '../../../constants/index'
 import { ethers } from 'ethers'
 import Erc20Abi from 'constants/abis/erc20.json'
-import { useSwapFactoryContract } from 'constants/hooks/useContract'
 import lpContractAbi from '../../../constants/abis/lpContract.json'
-import { getAssetList } from 'utils/getList'
+import { getAllowance, getAssetList } from 'utils/getList'
 import { useTranslation } from 'react-i18next'
+import { useSwapFactoryContract } from 'constants/hooks/useContract'
 import { simpleRpcProvider } from 'utils/providers'
 const { Option } = Select
 
@@ -61,7 +59,8 @@ const Long: React.FC<any> = props => {
   const [tokenB, setTokenB] = useState(props.cAssetName)
   const { login, logout } = useAuth()
   const { account } = useActiveWeb3React()
-  const { onPresentConnectModal, onPresentAccountModal } = useWalletModal(login, logout, account || undefined)
+  const { onPresentConnectModal } = useWalletModal(login, logout, account || undefined)
+  const library = useProvider()
   const [openConfirmOrder] = useModal(
     <ConfirmOrder
       openNotificationWithIcon={openNotificationWithIcon}
@@ -85,12 +84,47 @@ const Long: React.FC<any> = props => {
     }
   }, [farmState.farmCoinSelect, farmState.farmCoinStock])
 
+  const [allowanceA, setAllowanceA] = useState("")
+  const [allowanceB, setAllowanceB] = useState("")
+  const getTokenAllowance = useCallback(async(tokenAddress: any, decimal: string, isTokenA: boolean) => {
+    if(account !== undefined && account !== null) {
+      const contract = new ethers.Contract(tokenAddress, lpContractAbi, library)
+      const allowance = await getAllowance(contract, account, LongStakingAddress, decimal )
+      isTokenA ? setAllowanceA(allowance.allowance) : setAllowanceB(allowance.allowance)
+    }
+  }, [account])
+  useEffect(() => {
+    if(tokenA !== undefined && tokenA !== null && library !== undefined) {
+      console.log(`Token A is changing ${tokenA}. Get allowance`)
+      const tokenADecimal = commonState.assetBaseInfoObj[tokenA].decimals
+      const tokenAAddress = commonState.assetBaseInfoObj[tokenA].address
+      getTokenAllowance(tokenAAddress, tokenADecimal, true)
+    }
+  }, [tokenA, account, library])
+  useEffect(() => {
+    if(tokenB !== undefined && tokenB !== null && library !== undefined) {
+      console.log(`Token B is changing ${tokenB}. Get allowance`)
+      const tokenBDecimal = commonState.assetBaseInfoObj[tokenB].decimals
+      const tokenBAddress = commonState.assetBaseInfoObj[tokenB].address
+      getTokenAllowance(tokenBAddress, tokenBDecimal, false)
+    }
+  }, [tokenB, account, library])
+  useEffect(()=> {
+      if(library !== undefined) {
+        const tokenADecimal = commonState.assetBaseInfoObj[tokenA].decimals
+        const tokenAAddress = commonState.assetBaseInfoObj[tokenA].address
+        getTokenAllowance(tokenAAddress, tokenADecimal, true)
+  
+        const tokenBDecimal = commonState.assetBaseInfoObj[tokenB].decimals
+        const tokenBAddress = commonState.assetBaseInfoObj[tokenB].address
+        getTokenAllowance(tokenBAddress, tokenBDecimal, false)
+      }
+  }, [library])
+
   const [requestedApproval, setRequestedApproval] = useState(false)
-  const provider = window.ethereum
-  const library = getLibrary(provider) ?? simpleRpcProvider
   const handleApprove = useCallback(
     async (asset: any) => {
-      const contract = new ethers.Contract(commonState.assetBaseInfoObj[asset].address, Erc20Abi, library?.getSigner())
+      const contract = new ethers.Contract(commonState.assetBaseInfoObj[asset].address, Erc20Abi, library.getSigner())
       try {
         setRequestedApproval(true)
         const tx = await contract.approve(LongStakingAddress, ethers.constants.MaxUint256)
@@ -196,21 +230,28 @@ const Long: React.FC<any> = props => {
   const swapFactoryContract = useSwapFactoryContract()
 
   async function getPair() {
-    const result = await swapFactoryContract.getPair(
-      commonState.assetBaseInfoObj[tokenA].address,
-      commonState.assetBaseInfoObj[tokenB].address,
-    )
-    if (Number(formatUnits(result, 18)) > 0) {
-      setPair(result)
-    } else {
-      setPair('')
+    // const result = await swapFactoryContract.getPair(
+    //   commonState.assetBaseInfoObj[tokenA].address,
+    //   commonState.assetBaseInfoObj[tokenB].address,
+    // )
+    // if (Number(formatUnits(result, 18)) > 0) {
+    //   setPair(result)
+    // } else {
+    //   setPair('')
+    // }
+    const tokenAAddress = commonState.assetBaseInfoObj[tokenA].address
+    const tokenBAddress = commonState.assetBaseInfoObj[tokenB].address
+
+    const result = getLpPairDetail(tokenAAddress, tokenBAddress)
+    console.log(`Get pair result in long tsx`, result)
+    if(result !== undefined) {
+      setPair(result.lp)
     }
   }
 
   async function getReserver(result: string) {
-    const provider = window.ethereum
-    const library = getLibrary(provider) ?? simpleRpcProvider
-    const contract = new ethers.Contract(result, lpContractAbi, library)
+    const customProvider = simpleRpcProvider
+    const contract = new ethers.Contract(result, lpContractAbi, customProvider)
     const reserves = await contract.getReserves()
     const token0 = await contract.token0()
     const token1 = await contract.token1()
@@ -460,11 +501,11 @@ const Long: React.FC<any> = props => {
         <Button className="long-farm" disabled>
           {t('InsufficientLiquidity')}
         </Button>
-      ) : !commonState.assetBaseInfoObj[tokenA]?.longFarmAllowance ? (
+      ) : parseFloat(allowanceA) <= 0 ? (
         <Button className="long-farm" loading={requestedApproval} onClick={() => handleApprove(`${tokenA}`)}>
           <span>{t('Approve')} {tokenA}</span>
         </Button>
-      ) : !commonState.assetBaseInfoObj[tokenB]?.longFarmAllowance ? (
+      ) : parseFloat(allowanceB) <= 0 ? (
         <Button className="long-farm" loading={requestedApproval} onClick={() => handleApprove(`${tokenB}`)}>
           <span>{t('Approve')} {tokenB}</span>
         </Button>
@@ -481,6 +522,7 @@ const Long: React.FC<any> = props => {
           {t('LongFarm')}
         </Button>
       )}
+      {/* {allowanceA} / {allowanceB} */}
     </div>
   )
 }

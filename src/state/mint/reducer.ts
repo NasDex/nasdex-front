@@ -62,9 +62,15 @@ export default createReducer(initialState, builder =>
       state.mintNowPrice = action.payload.mintNowPrice
     })
     .addCase(upDateCoinSelect, (state, action) => {
+      if(action.payload.mintCoinSelect === undefined || action.payload.mintCoinSelect === "") {
+        return
+      }
       state.mintCoinSelect = action.payload.mintCoinSelect
     })
     .addCase(upDateCoinStock, (state, action) => {
+      if(action.payload.mintCoinStock === undefined || action.payload.mintCoinStock === "") {
+        return
+      }
       state.mintCoinStock = action.payload.mintCoinStock
     })
     .addCase(upDateTxHash, (state, action) => {

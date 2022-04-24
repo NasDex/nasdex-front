@@ -75,7 +75,6 @@ const DefaultPoolItem: React.FC<any> = props => {
   async function getPoolInfo() {
     const info: any = {}
     const poolInfoItem = await MasterChefContract.poolInfo(defaultPoolItem.pid)
-    console.log('poolInfoItem', poolInfoItem)
     info.lastRewardBlock = poolInfoItem.lastRewardBlock.toString()
     info.allocPoint = poolInfoItem.allocPoint.toString()
     setPoolInfo(info)

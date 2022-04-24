@@ -1,8 +1,7 @@
 /** @format */
 
+import { JsonRpcProvider, StaticJsonRpcProvider } from '@ethersproject/providers'
 import {createAction} from '@reduxjs/toolkit'
-
-
 
 export const upDateManageOpenConfirm = createAction<{manageOpenConfirm: boolean}>('app/upDateManageOpenConfirm')
 export const upDateOpenWeb = createAction<{openWeb: boolean}>('app/upDateOpenWeb')
@@ -26,3 +25,13 @@ export const upDateCommonFee = createAction<{feeRate: any}>('app/upDateCommonFee
 export const updateDefaultCAsset = createAction<{defaultCAsset: string}>('app/updateDefaultCAsset')
 export const updateDefaultAsset = createAction<{defaultAsset: string}>('app/updateDefaultAsset')
 
+export const loadProvider = createAction<{provider: any}>('app/loadProvider')
+export const loadAccount = createAction<{account:string | null | undefined}>('app/loadAccount')
+export const updateLongFarmingInfo = createAction<{longFarmingInfo: any}>('app/updateLongFarmingInfo')
+
+export const updatePricesRawData = createAction<{pricesRawData :any}>('app/updatePricesRawData')
+export const updateSwapPrices = createAction<{swapPrices: any}>('app/updateSwapPrices')
+export const updateOraclePrices = createAction<{oraclePrices:any}>('app/updateOraclePrices')
+export const updateAssetsList = createAction<{assets: any}>('app/updateAssetsList')
+export const updateLongFarmAssetsList = createAction<{longFarmAssets:any}>('app/updateLongFarmAssetsList')
+export const updateAssetsBalances = createAction<{assetBalances:any}>('app/updateAssetsBalances')

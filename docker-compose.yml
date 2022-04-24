@@ -3,7 +3,7 @@ services:
   nginx:
     container_name: 'frontend'
     restart: always
-    image: daoventures/nasdex-frontend-develop:latest
+    image: daoventures/nasdex-frontend-beta:latest
     ports: 
       - 80:80
       - 443:443

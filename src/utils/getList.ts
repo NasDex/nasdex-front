@@ -1,172 +1,207 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /** @format */
 
-import {SEOracleAddress, ETHOracleAddress, mintAddress, USDCaddress, SwapFactoryAddress, SwapRouterAddress, LongStakingAddress, oracleList} from 'constants/index'
-import {ethers} from 'ethers'
-import {formatUnits} from 'ethers/lib/utils'
-import {fixD} from 'utils'
-import {getLibrary} from 'utils/getLibrary'
-import MintAbi from 'constants/abis/Mint.json'
-import ETHOracle from 'constants/abis/ETHOracle.json'
+import { mintAddress, USDCaddress, SwapRouterAddress, LongStakingAddress, oracleList, getLpPairDetail } from 'constants/index'
+import { ethers } from 'ethers'
+import { formatUnits } from 'ethers/lib/utils'
+import { fixD } from 'utils'
+import { getLibrary } from 'utils/getLibrary'
 import STAOracle from 'constants/abis/STAOracle.json'
 import Erc20Abi from 'constants/abis/erc20.json'
-import SwapFactoryAbi from 'constants/abis/swapFactory.json'
 import lpContractAbi from 'constants/abis/lpContract.json'
 import store from '../state/index'
-import {simpleRpcProvider} from './providers'
+import { simpleRpcProvider } from './providers'
 
 import {
-  upDateAssetBaseInfoObj,
   upDateAssetsNameInfo,
   upDateCAssetsListInfo,
   upDateAssetsListInfo,
   upDateAllAssetsListInfo,
-  upDateCommonFee,
-  upDateOpenWeb,
   updateDefaultCAsset,
-  updateDefaultAsset
+  updateDefaultAsset,
+  upDateAssetBaseInfoObj,
+  updateLongFarmingInfo
 } from 'state/common/actions'
-import { upDateCoinSelect as upDateMintCoinSelect, upDateCoinStock as upDateMintCoinStock } from 'state/mint/actions'
-import { upDateFarmCoinSelect, upDateCoinStock as upDateFarmCoinStock } from 'state/farm/actions'
-import { upDateTradeCoinSelect, upDateCoinStock as upDateTradeCoinStock } from 'state/trade/actions'
-import { upDatePositionInfo} from 'state/manage/actions'
 
-export async function getCommonAssetInfo(account?: string) {
+// Please refer note.txt for v1 code
+export async function getCommonAssetInfo(library: any ,account?: string | undefined | null) {
   const dispatch = store.dispatch
-  dispatch(upDatePositionInfo({ positionInfo: {
-    assetTokenName: 'nSE',
-    assetToken: '',
-    cAssetToken: '',
-    cAssetTokenName: 'USDC',
-    assetAmount: '',
-    cAssetAmount: '',
-    cRatio: '',
-    isShort: '',
-  } }))
-  dispatch(upDateMintCoinSelect({ mintCoinSelect: '' }))
-  dispatch(upDateMintCoinStock({ mintCoinStock: '' }))
-  dispatch(upDateFarmCoinSelect({ farmCoinSelect: '' }))
-  dispatch(upDateFarmCoinStock({ farmCoinStock: '' }))
-  dispatch(upDateTradeCoinSelect({ tradeCoinSelect: '' }))
-  dispatch(upDateTradeCoinStock({ tradeCoinStock: '' }))
-  dispatch(upDateOpenWeb({openWeb: false}))
-  const provider = window.ethereum
-  const library = getLibrary(provider) || simpleRpcProvider
-  const assetBaseInfo: any = []
-  let assetBaseInfoArr: any = []
-  const config = await getAssetList()
-  dispatch(updateDefaultCAsset({defaultCAsset: config.default.cAsset}))
-  dispatch(updateDefaultAsset({ defaultAsset: config.default.asset }))
-  const assetBaseInfoObj: any = config.assetPre
 
-  Object.keys(assetBaseInfoObj).forEach(function (assetName) {
-    assetBaseInfo.push(assetBaseInfoObj[assetName])
-  })
-  assetBaseInfoArr = assetBaseInfo
+  // const provider = window.ethereum
+  // const library = getLibrary(provider) || simpleRpcProvider
+  // const assetBaseInfo: any = []
+  const customProvider = simpleRpcProvider
+  let assetBaseInfoArr: any = []
+
+  // Get asset list from backend
+  const config = await getAssetList()
+
+  const assetBaseInfoObj = JSON.parse(JSON.stringify(config.assetPre))
   const assetsName: any = config.assetsNameInfoPre
-  const assetsListInfo: any = []
-  const allAssetsListInfo: any = []
-  const cAssetsListInfo: any = []
+  const longFarmingInfo: any = config.longFarmingInfoPre
+  dispatch(updateDefaultCAsset({ defaultCAsset: config.default.cAsset }))
+  dispatch(updateDefaultAsset({ defaultAsset: config.default.asset }))
+  dispatch(upDateAssetBaseInfoObj({ assetBaseInfoObj: config.assetPre }))
+  dispatch(upDateAssetsNameInfo({assetsNameInfo: assetsName}))
+  dispatch(updateLongFarmingInfo({ longFarmingInfo: longFarmingInfo }))
+
+  assetBaseInfoArr = Object.values(assetBaseInfoObj)
+  const updatedList: any[] = []
+  const updateAsset:any = {}
 
   // Checking for asset balance and allowance
   for (let i = 0; i < assetBaseInfoArr.length; i++) {
-    const asset = assetBaseInfoArr[i].name
-    if (account) {
-      // Checking user balance
-      const contract = new ethers.Contract(assetBaseInfoObj[asset].address, Erc20Abi, library)
-      const balance = formatUnits(await contract.balanceOf(account), assetBaseInfoObj[asset].decimals)
-      if (assetBaseInfoObj[asset] && account) {
-        assetBaseInfoObj[asset].balance = balance
-      }
+   
+    const asset:any = assetBaseInfoArr[i]
+   
+    const assetContract = new ethers.Contract(asset.address, Erc20Abi, customProvider)
 
-      // Allowance on Mint Contract
-      const result = await contract.allowance(account, mintAddress)
-      const allowance = Number(formatUnits(result.toString(), assetBaseInfoObj[asset].decimals))
-      if (allowance <= 0 && assetBaseInfoObj[asset]) {
-        assetBaseInfoObj[asset].mintContractAllowance = false
-      } else {
-        assetBaseInfoObj[asset].mintContractAllowance = true
-      }
+    const assetDecimal =  asset.decimals
+    const assetType = asset.type
+    const assetName = asset.name
+    const assetAddress = asset.address
 
-      // Allowance on Swap Contract
-      const swapResult = await contract.allowance(account, SwapRouterAddress)
-      const swapContractAllowance = Number(formatUnits(swapResult.toString(), assetBaseInfoObj[asset].decimals))
-      if (swapContractAllowance <= 0 && assetBaseInfoObj[asset]) {
-        assetBaseInfoObj[asset].swapContractAllowance = false
-      } else {
-        assetBaseInfoObj[asset].swapContractAllowance = true
-      }
+    if(account !== undefined && account !== null) {
+      const balance = await getBalance(assetContract, account, assetDecimal)
+      asset.balance = balance.balance
 
-      // Allowance on Long Farm Contract
-      const longFarmResult = await contract.allowance(account, LongStakingAddress)
-      const longFarmAllowance = Number(formatUnits(longFarmResult.toString(), assetBaseInfoObj[asset].decimals))
-      if (longFarmAllowance <= 0 && assetBaseInfoObj[asset]) {
-        assetBaseInfoObj[asset].longFarmAllowance = false
-      } else {
-        assetBaseInfoObj[asset].longFarmAllowance = true
-      }
+      // const _promises = []
+      // _promises.push(getAllowance(assetContract, account, mintAddress, assetDecimal))
+      // _promises.push(getAllowance(assetContract, account, SwapRouterAddress, assetDecimal))
+      // _promises.push(getAllowance(assetContract, account, LongStakingAddress, assetDecimal))
+      // const [mint, swap ] = await Promise.all(_promises)
 
-      // Price oracle
-      if(assetBaseInfoObj[asset].type === 'asset') {
-        const assetName = assetBaseInfoObj[asset].name
+      // asset.mintContractAllowance = mint.isAllowanceGranted 
+      // asset.swapContractAllowance = swap.isAllowanceGranted
+      // asset.longFarmAllowance = longFarm.isAllowanceGranted
+
+      // Collateral asset which is not a stablecoin type
+      const nonStablecoinCAsset = ['aUST']
+
+      if (assetType === "asset" || nonStablecoinCAsset.includes(assetName)) {
+        // Price oracle
         const oracleInfo = oracleList.find(i => i.assetKey === assetName)
 
-        if(oracleInfo !== undefined) {
-          const priceOracleContract = new ethers.Contract(oracleInfo.address, STAOracle, library)
+        if (oracleInfo !== undefined) {
+          const priceOracleContract = new ethers.Contract(oracleInfo.address, STAOracle, customProvider)
           const price = await priceOracleContract.latestRoundData()
-          assetBaseInfoObj[asset].oraclePrice = fixD(formatUnits(price.answer, 8), 4)
+          asset.oraclePrice = fixD(formatUnits(price.answer, oracleInfo.decimal), 4)
         }
       }
     }
 
-    // Get Swap Price reserves 0 and reserves 1 
-    if (assetBaseInfoObj[asset].type == 'asset') {
-      const swapPriceResult = await getSwapPrice(USDCaddress, assetBaseInfoObj[asset].address)
+    // Find swap price
+    if(assetType === 'asset') {
+      const swapPriceResult = await getSwapPrice(USDCaddress, assetAddress, "6", assetDecimal.toString(), library)
+      const nAssetTokenPrice = swapPriceResult?.tokenPrice1 // nAssetIndex is 1 in the lp
+      asset.swapPrice = nAssetTokenPrice
+    } 
 
-      if (swapPriceResult) {
-        const token0Name = assetsName[swapPriceResult.token0]
-        const token1Name = assetsName[swapPriceResult.token1]
-        
-        const reserves0 = Number(formatUnits(swapPriceResult.reserves[0], assetBaseInfoObj[token0Name].decimals))
-        const reserves1 = Number(formatUnits(swapPriceResult.reserves[1], assetBaseInfoObj[token1Name].decimals))
-
-        if(reserves0 > 0 && reserves1 > 0) {
-          if (swapPriceResult.token0 == assetBaseInfoObj[asset].address) {
-            assetBaseInfoObj[asset].swapPrice = reserves1 / reserves0
-          } else {
-            assetBaseInfoObj[asset].swapPrice = reserves0 / reserves1
-          }
-        } else {
-          // Return 0 if either one of reserves is 0
-          assetBaseInfoObj[asset].swapPrice = 0
-        }
-      }
-    }
-
-    if (assetBaseInfoObj[asset].type == 'asset') {
-      assetsListInfo.push(assetBaseInfoObj[asset])
-    } else {
-      if (assetBaseInfoObj[asset].name !== 'WMATIC') {
-        if (assetBaseInfoObj[asset].name !== 'NSDX') {
-          cAssetsListInfo.push(assetBaseInfoObj[asset])
-        }
-      }
-    }
-
-    allAssetsListInfo.push(assetBaseInfoObj[asset])
+    updatedList.push(asset)
+    updateAsset[assetName] = asset
   }
 
-  const MintContract = new ethers.Contract(mintAddress, MintAbi, library)
-  const feerate = (await MintContract.feeRate()) / 1000
-  // const SEOracleContract = new ethers.Contract(SEOracleAddress, STAOracle, library)
-  // const SEOraclePrice = await SEOracleContract.latestRoundData()
-  // assetBaseInfoObj['nSE'].oraclePrice = fixD(formatUnits(SEOraclePrice.answer, 8), 4)
-  dispatch(upDateAssetsNameInfo({assetsNameInfo: assetsName}))
-  dispatch(upDateAssetBaseInfoObj({assetBaseInfoObj: assetBaseInfoObj}))
-  dispatch(upDateAssetsListInfo({assetsListInfo: assetsListInfo}))
-  dispatch(upDateCAssetsListInfo({cAssetsListInfo: cAssetsListInfo}))
-  dispatch(upDateAllAssetsListInfo({allAssetsListInfo: allAssetsListInfo}))
-  dispatch(upDateCommonFee({feeRate: feerate * 100}))
+  const nonCAsset = ['WMATIC', 'NSDX']
+  const cAssetsListInfo = updatedList.filter(a => !nonCAsset.includes(a.name) && a.type === 'cAsset')
+  const assetsListInfo  = updatedList.filter(a => a.type === 'asset') 
+
+  // dispatch(upDateAssetsNameInfo({ assetsNameInfo: assetsName }))
+  dispatch(upDateAssetsListInfo({ assetsListInfo: assetsListInfo }))
+  dispatch(upDateCAssetsListInfo({ cAssetsListInfo: cAssetsListInfo }))
+  dispatch(upDateAllAssetsListInfo({ allAssetsListInfo: updatedList }))
+  dispatch(upDateAssetBaseInfoObj({ assetBaseInfoObj: updateAsset }))
+}
+
+async function getBalance(contract: any, account: string, decimal: string){
+  const balanceRaw = await contract.balanceOf(account)
+  const balance = formatUnits(balanceRaw, decimal)
+  return { balance, balanceRaw: balanceRaw.toString() }
+}
+
+export async function getAllowance(contract:any, account:string, spender:string, decimal: string) {
+  const allowanceRaw = await contract.allowance(account, spender)
+  const allowance = formatUnits(allowanceRaw, decimal)
+  const isAllowanceGranted = parseFloat(allowance) > 0
+  return { allowance, allowanceRaw: allowanceRaw.toString(), isAllowanceGranted}
+}
+
+export async function getSwapPrice(tokenAaddress: any, tokenBaddress: any, tokenADecimal = "18" , tokenBDecimal = "18", library: any) {
+  try {
+    if (tokenAaddress === undefined || tokenBaddress === undefined) {
+      throw new Error(`Token A / Token B address is undefined`)
+    }
+    // const provider = window.ethereum
+    // const library = getLibrary(provider) ?? simpleRpcProvider
+    const lpInfo = getLpPairDetail(tokenAaddress, tokenBaddress)
+    if (lpInfo === undefined) {
+      console.log(`LP info is undefined for ${tokenAaddress} and  ${tokenBaddress}, quit getSwapPrice()`)
+      return
+    }
+
+    const lpAddress = lpInfo.lp
+    const customProvider = simpleRpcProvider
+    // console.log(`Provider at ${new Date().toString()} `, customProvider)
+    // console.log(`lp address ${lpAddress}`)
+    const contract = new ethers.Contract(lpAddress, lpContractAbi, customProvider)
+    const reserves = await contract.getReserves()
+
+    const reserves0Raw = reserves[0].toString()
+    const reserves1Raw = reserves[1].toString()
+
+    const reserves0 = formatUnits(reserves0Raw, tokenADecimal)
+    const reserves1 = formatUnits(reserves1Raw, tokenBDecimal)
+
+    let tokenPrice0 = 0
+    let tokenPrice1 = 0
+
+    if(parseFloat(reserves1) >0  &&  parseFloat(reserves0) > 0) {
+      tokenPrice0 = parseFloat(reserves1) / parseFloat(reserves0)
+      tokenPrice1 = parseFloat(reserves0) / parseFloat(reserves1)
+    }
+
+    // console.log(`Refresh swap price for ${lpAddress} at ${new Date().toString()} , token0 ${tokenPrice0}, token1 ${tokenPrice1}`)
+
+    const result = {
+      token0: lpInfo.tokenA,
+      token1: lpInfo.tokenB,
+      reserves,
+      result: lpAddress,
+      reserves0,
+      reserves1,
+      tokenPrice0,
+      tokenPrice1
+    }
+
+    return result
+
+  } catch (err: any) {
+    console.error(`Error in getSwapPrice() : `, err)
+  }
+}
+
+export async function getOraclePrice(assetName: string) {
+  try {
+    if (assetName === undefined || assetName === "") {
+      throw new Error(`Token A / Token B address is undefined`)
+    }
+    
+    const oracleInfo = oracleList.find(i => i.assetKey.toLowerCase() === assetName.toLowerCase())
+    if (oracleInfo === undefined) {
+      console.log(`Oracle info is undefined for ${assetName}`)
+      return
+    }
+
+    const customProvider = simpleRpcProvider
+    const contract = new ethers.Contract(oracleInfo.address, STAOracle, customProvider)
+    const price = await contract.latestRoundData()
+    const decimals = await contract.decimals()
+    const oraclePrice = fixD(formatUnits(price.answer, decimals), 4)
+
+    return oraclePrice
+
+  } catch (err: any) {
+    console.error(`Error in getSwapPrice() : `, err)
+  }
 }
 
 export async function getAssetList(): Promise<any> {
@@ -179,29 +214,31 @@ export async function getAssetList(): Promise<any> {
   }
 }
 
-export async function getSwapPrice(tokenAaddress: any, tokenBaddress: any) {
-  let price: any
-  const provider = window.ethereum
-  const library = getLibrary(provider)??simpleRpcProvider
-  const swapFactoryContract = new ethers.Contract(SwapFactoryAddress, SwapFactoryAbi, library)
-  const result = await swapFactoryContract.getPair(tokenAaddress, tokenBaddress)
-  if (Number(formatUnits(result, 18)) > 0) {
-    const contract = new ethers.Contract(result, lpContractAbi, library)
-    const reserves = await contract.getReserves()
-    const token0 = await contract.token0()
-    const token1 = await contract.token1()
-    return {token0, token1, reserves, result}
-  }
-}
-
 export async function getOneAssetInfo(asset: string, address: string, account: any, assetBaseInfoObj: any) {
   if (!account) {
     return false
   }
   const provider = window.ethereum
-  const library = getLibrary(provider)??simpleRpcProvider
+  const library = getLibrary(provider) ?? simpleRpcProvider
   const contract = new ethers.Contract(address, Erc20Abi, library)
   const balance = formatUnits(await contract.balanceOf(account), assetBaseInfoObj[asset].decimals)
-  return {balance}
+  return { balance }
 }
 
+export async function totalSupply(assetAddress: string, assetDecimal = "18") {
+  try {
+    if (assetAddress === undefined || assetAddress === "") {
+      throw new Error(`Asset address is undefined`)
+    }
+    
+    const customProvider = simpleRpcProvider
+    const contract = new ethers.Contract(assetAddress, Erc20Abi, customProvider)
+    const totalSupplyRaw = await contract.totalSupply()
+    const totalSupply = fixD(formatUnits(totalSupplyRaw, assetDecimal), 4)
+   
+    return { totalSupply, totalSupplyRaw}
+
+  } catch (err: any) {
+    console.error(`Error in totalSupply() : `, err)
+  }
+}

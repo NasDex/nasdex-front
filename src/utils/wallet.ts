@@ -14,14 +14,14 @@
  export const setupNetwork = async () => {
    const provider = window.ethereum
    if (provider) {
-     const chainId = parseInt(String(ChainId.MUMBAI_TESTNET), 10)
+     const chainId = parseInt(String(ChainId.MAINNET), 10)
      try {
        await provider.request({
          method: 'wallet_addEthereumChain',
          params: [
            {
              chainId: `0x${chainId.toString(16)}`,
-             chainName: 'Mumbai Testnet',
+             chainName: 'MAATIC Mainnet',
              nativeCurrency: {
                name: 'MATIC',
                symbol: 'matic',
