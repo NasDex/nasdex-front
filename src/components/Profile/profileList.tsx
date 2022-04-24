@@ -172,52 +172,55 @@ const ProfileList: React.FC<any> = props => {
   //   setLoad(false)
   // }
 
-  const getPosition = useCallback( async(header: string) => {
+  const getPosition = useCallback(async (header: string) => {
     try {
-      const positions: any = await getPositions(commonState.account)
+      if (commonState.account !== undefined) {
+        console.log(`Account before get position  ${commonState.account}`)
+        const positions: any = await getPositions(commonState.account, commonState.assetsNameInfo, commonState.assetBaseInfoObj)
 
-      if(positions === undefined) {
-        console.log(`Positions is undefined`)
-        return
-      }
-  
-      const shortPositions = positions.map((p:any) => {
-        return {
-          positionId: p.key,
-          isShort: p.isShort,
+        if (positions === undefined) {
+          console.log(`Positions is undefined`)
+          return
         }
-      })
-  
-      positions.sort(function (a: any, b: any) {
-        if (parseInt(a.cRatio) == parseInt(b.cRatio)) {
-          return b.cAssetAmountSub - a.cAssetAmountSub
-        } else {
-          return a.cRatio - b.cRatio
+
+        const shortPositions = positions.map((p: any) => {
+          return {
+            positionId: p.key,
+            isShort: p.isShort,
+          }
+        })
+
+        positions.sort(function (a: any, b: any) {
+          if (parseInt(a.cRatio) == parseInt(b.cRatio)) {
+            return b.cAssetAmountSub - a.cAssetAmountSub
+          } else {
+            return a.cRatio - b.cRatio
+          }
+        })
+
+        if (JSON.stringify(shortPositions) !== JSON.stringify(commonState.farmingPositionInfo)) {
+          dispatch(upDateFarmingPositionInfo({ farmingPositionInfo: shortPositions }))
         }
-      })
-  
-      if (JSON.stringify(shortPositions) !== JSON.stringify(commonState.farmingPositionInfo)) {
-        dispatch(upDateFarmingPositionInfo({farmingPositionInfo: shortPositions}))
+
+        setDataSource(positions)
       }
-  
-      setDataSource(positions)
+
     } catch (err) {
-      
+
     } finally {
       setLoad(false)
     }
-  }, [headerActive])
+  }, [headerActive, commonState.account])
 
   useEffect(() => {
-    if (commonState.account) {
-      console.log(`lalala ${headerActive}`) 
+    if (commonState.account && commonState.assetBaseInfoObj !== undefined && commonState.assetsNameInfo !== null) {
+      console.log(`Checking ${headerActive.toLowerCase() === "positions"}`)
       if(headerActive.toLowerCase() === "positions") {
         getPosition(headerActive)
-        const positionTimer = window.setInterval(() => {getPosition(headerActive)}, 6000)
-        console.log(`Positiontimer ${positionTimer}`)
+        const positionTimer = window.setInterval(() => {getPosition(headerActive)}, 10000)
         setTimer(positionTimer)
       } else {
-        window.clearInterval(timer)
+        clearInterval(timer)
         setTimer(0)
       }
     }
@@ -225,7 +228,7 @@ const ProfileList: React.FC<any> = props => {
     return () => {
       clearInterval(timer)
     }
-  }, [commonState.account, headerActive]) // commonState.farmingPositionInfo removed to prevent infinite loop
+  }, [commonState.account, commonState.assetBaseInfoObj, commonState.assetsNameInfo , headerActive]) // commonState.farmingPositionInfo removed to prevent infinite loop
   
   useEffect(() => {
     if (!clickHeaderActive) {

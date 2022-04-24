@@ -11,12 +11,12 @@ export default function useProfile() {
     const commonState = useCommonState()
     const PositionContract = usePositionsContract()
 
-    const getPositions = useCallback(async(account:any) => {
+    const getPositions = useCallback(async(account:any, assetsNameInfo: any, assetBaseInfoObj: any) => {
         try {
             const startAt = 0
             const limit = 100
-            const assetsNameInfo = commonState.assetsNameInfo
-            const assetBaseInfoObj = commonState.assetBaseInfoObj
+            // const assetsNameInfo = commonState.assetsNameInfo
+            // const assetBaseInfoObj = commonState.assetBaseInfoObj
             
             if(account === null || account === undefined || account === "") {
                 throw new Error(`Account is undefined`)
