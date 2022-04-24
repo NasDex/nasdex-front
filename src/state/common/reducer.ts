@@ -26,7 +26,9 @@ import {
   updateSwapPrices,
   updateOraclePrices,
   updateAssetsList,
-  updateAssetsBalances
+  updateAssetsBalances,
+  updateLongFarmAssetsList,
+  loadAccount
 } from './actions'
 
 export interface ApplicationState {
@@ -50,7 +52,9 @@ export interface ApplicationState {
   swapPrices: any
   oraclePrices: any
   assets: any, 
+  longFarmAssets: any
   assetBalances: any
+  account: string | null |undefined
 }
 
 const initialState: ApplicationState = {
@@ -107,7 +111,9 @@ const initialState: ApplicationState = {
   swapPrices: {},
   oraclePrices: {},
   assets: null, 
-  assetBalances: null
+  longFarmAssets: null,
+  assetBalances: null,
+  account: ""
 }
 export default createReducer(initialState, builder =>
   builder
@@ -165,6 +171,9 @@ export default createReducer(initialState, builder =>
       state.provider = web3Provider
     }
   })
+  .addCase(loadAccount, (state,action) => {
+    state.account = action.payload.account
+  })
   .addCase(updateLongFarmingInfo, (state, action) => {
     state.longFarmingInfo = action.payload.longFarmingInfo
   })
@@ -182,5 +191,8 @@ export default createReducer(initialState, builder =>
   })
   .addCase(updateAssetsBalances, (state, action) => {
     state.assetBalances = action.payload.assetBalances
+  }) 
+  .addCase(updateLongFarmAssetsList, (state, action) => {
+    state.longFarmAssets = action.payload.longFarmAssets
   }) 
 )

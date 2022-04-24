@@ -107,6 +107,7 @@ export const useAssetContract = () => {
   return useMemo(() => getAssetContact(library?.getSigner()), [library])
 }
 export const useLongStakingContract = () => {
-  const {library} = useActiveWeb3React()
-  return useMemo(() => getLongStakingContract(library?.getSigner()), [library])
+  // const {library} = useActiveWeb3React()
+  const customProvider = simpleRpcProvider
+  return useMemo(() => getLongStakingContract(customProvider), [customProvider])
 }

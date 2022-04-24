@@ -1,5 +1,3 @@
-import { useWeb3React } from "@web3-react/core"
-import { assetsName } from "constants/dist"
 import { usePositionsContract } from "constants/hooks/useContract"
 import { formatUnits } from "ethers/lib/utils"
 import { useCallback } from "react"
@@ -9,16 +7,20 @@ import CalculateRate from "utils/calculateCollateral"
 import { getOraclePrice } from "utils/getList"
 
 export default function useProfile() {
-    const { account } = useWeb3React()
+    // const { account } = useWeb3React()
     const commonState = useCommonState()
     const PositionContract = usePositionsContract()
 
-    const getPositions = useCallback(async() => {
+    const getPositions = useCallback(async(account:any) => {
         try {
             const startAt = 0
             const limit = 100
             const assetsNameInfo = commonState.assetsNameInfo
             const assetBaseInfoObj = commonState.assetBaseInfoObj
+            
+            if(account === null || account === undefined || account === "") {
+                throw new Error(`Account is undefined`)
+            }
 
             const positionList = await PositionContract.getPositions(
                 account, 
@@ -54,13 +56,6 @@ export default function useProfile() {
                     ),
                 ) 
 
-                // cAsset and nAsset value
-                const cAssetPrice = cAsset.isNoNStablecoin === 0
-                    ? cAsset.unitPrice
-                    : cAsset.oraclePrice
-                const cAssetAmountValue = Number(formatUnits(position.cAssetAmount, cAsset.decimals)) * cAssetPrice
-                const nAssetValue =  Number(formatUnits(position.assetAmount, asset.decimals)) * asset.swapPrice
-
                 // oracle price
                 const _oraclePromises = []
                 _oraclePromises.push(getOraclePrice(assetName))
@@ -70,9 +65,14 @@ export default function useProfile() {
                 const oracleResult = await Promise.all(_oraclePromises)
                 const assetOraclePrice = oracleResult[0]
                 const cAssetOraclePrice = oracleResult[1] === undefined ? 1 :oracleResult[1]
-                // console.log(`Oracle price asset ${assetOraclePrice}, cAsset ${cAssetName} price ${cAssetOraclePrice}`)
 
-                // return result
+                // cAsset and nAsset value
+                const cAssetPrice = cAsset.isNoNStablecoin === 0
+                    ? cAsset.unitPrice
+                    : cAssetOraclePrice
+                const cAssetAmountValue = Number(formatUnits(position.cAssetAmount, cAsset.decimals)) * cAssetPrice
+                const nAssetValue =  Number(formatUnits(position.assetAmount, asset.decimals)) * asset.swapPrice
+
                 return {
                     key: position.id.toString(),
                     assetAmount: formatUnits(position.assetAmount, asset.decimals),

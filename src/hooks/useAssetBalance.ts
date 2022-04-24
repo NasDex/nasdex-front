@@ -3,7 +3,7 @@ import { formatUnits } from "ethers/lib/utils"
 import { useActiveWeb3React } from "hooks"
 import { useCallback, useEffect, useState } from "react"
 import { useDispatch } from "react-redux"
-import { updateAssetsBalances, updateAssetsList } from "state/common/actions"
+import { updateAssetsBalances, updateAssetsList, updateLongFarmAssetsList } from "state/common/actions"
 import { useCommonState } from "state/common/hooks"
 import { simpleRpcProvider } from "utils/dist/providers"
 import { getAssetList } from "utils/getList"
@@ -39,7 +39,9 @@ export default function useAssetBalance() {
     const findAssets = useCallback(async() => {
         const config = await getAssetList()
         const assets = config.assetPre
+        const longFarmAssets = config.longFarmingInfoPre
         dispatch(updateAssetsList({ assets }))
+        dispatch(updateLongFarmAssetsList({longFarmAssets}))
     }, [])
 
     const findAssetsBalance = async(assets: any, account:string |null) => {

@@ -1,6 +1,6 @@
 /** @format */
 
-import {useState, useEffect} from 'react'
+import {useState, useEffect, useCallback} from 'react'
 import '../../style/Profile/profileList.less'
 import {upDateFarmingPositionInfo} from 'state/common/actions'
 import ProfileTable from '../Profile/positionTable'
@@ -14,6 +14,7 @@ import {useDispatch} from 'react-redux'
 import {useWeb3React} from '@web3-react/core'
 import {useTranslation} from 'react-i18next'
 import useProfile from './hooks'
+import { useActiveWeb3React } from 'hooks'
 
 const ProfileList: React.FC<any> = props => {
   const {t, i18n} = useTranslation()
@@ -53,14 +54,16 @@ const ProfileList: React.FC<any> = props => {
         break
     }
   }
-  const {account} = useWeb3React()
+  // const {account} = useActiveWeb3React()
   const dispatch = useDispatch()
   const commonState = useCommonState()
 
   const [dataSource, setDataSource] = useState([])
   const [load, setLoad] = useState(true)
+  const [timer,setTimer] = useState(0)
 
   const { getPositions } = useProfile()
+  
   // async function getPositions(newaccount: any) {
   //   const startAt = 0
   //   const limit = 100
@@ -169,57 +172,61 @@ const ProfileList: React.FC<any> = props => {
   //   setLoad(false)
   // }
 
-  async function getPosition() {
+  const getPosition = useCallback( async(header: string) => {
     try {
-      if(headerActive) {
-        const positions: any = await getPositions()
+      const positions: any = await getPositions(commonState.account)
 
-        if(positions === undefined) {
-          console.log(`Positions is undefined`)
-          return
-        }
-    
-        const shortPositions = positions.map((p:any) => {
-          return {
-            positionId: p.key,
-            isShort: p.isShort,
-          }
-        })
-    
-        positions.sort(function (a: any, b: any) {
-          if (parseInt(a.cRatio) == parseInt(b.cRatio)) {
-            return b.cAssetAmountSub - a.cAssetAmountSub
-          } else {
-            return a.cRatio - b.cRatio
-          }
-        })
-    
-        if (JSON.stringify(shortPositions) !== JSON.stringify(commonState.farmingPositionInfo)) {
-          dispatch(upDateFarmingPositionInfo({farmingPositionInfo: shortPositions}))
-        }
-    
-        setDataSource(positions)
+      if(positions === undefined) {
+        console.log(`Positions is undefined`)
+        return
       }
+  
+      const shortPositions = positions.map((p:any) => {
+        return {
+          positionId: p.key,
+          isShort: p.isShort,
+        }
+      })
+  
+      positions.sort(function (a: any, b: any) {
+        if (parseInt(a.cRatio) == parseInt(b.cRatio)) {
+          return b.cAssetAmountSub - a.cAssetAmountSub
+        } else {
+          return a.cRatio - b.cRatio
+        }
+      })
+  
+      if (JSON.stringify(shortPositions) !== JSON.stringify(commonState.farmingPositionInfo)) {
+        dispatch(upDateFarmingPositionInfo({farmingPositionInfo: shortPositions}))
+      }
+  
+      setDataSource(positions)
     } catch (err) {
       
     } finally {
       setLoad(false)
     }
-  }
+  }, [headerActive])
 
   useEffect(() => {
-    let timer: any
-    const getBaseData = () => {
-      getPosition()
-      return getBaseData
+    if (commonState.account) {
+      console.log(`lalala ${headerActive}`) 
+      if(headerActive.toLowerCase() === "positions") {
+        getPosition(headerActive)
+        const positionTimer = window.setInterval(() => {getPosition(headerActive)}, 6000)
+        console.log(`Positiontimer ${positionTimer}`)
+        setTimer(positionTimer)
+      } else {
+        window.clearInterval(timer)
+        setTimer(0)
+      }
     }
-    if (account) {
-      timer = setInterval(getBaseData(), 5000)
-    }
+
     return () => {
       clearInterval(timer)
     }
-  }, [account]) // commonState.farmingPositionInfo removed to prevent infinite loop
+  }, [commonState.account, headerActive]) // commonState.farmingPositionInfo removed to prevent infinite loop
+  
   useEffect(() => {
     if (!clickHeaderActive) {
       if (props.pageName) {
@@ -231,6 +238,7 @@ const ProfileList: React.FC<any> = props => {
     setHeaderActive(tablieNav[pageName].label)
   }, [i18n.language])
   function resetHeaderActive(pageName: any, key: any) {
+    console.log(`reset header active ${pageName}`)
     setClickHeaderActive(true)
     setHeaderActive(pageName)
     setPageName(key)
