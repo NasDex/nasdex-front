@@ -214,7 +214,7 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
           break
       }
     }
-  }, [timeStatus, assetName, cAssetName])
+  }, [timeStatus, assetName, cAssetName, from])
   const [timeIndex, setTimeIndex] = useState(0)
   function TimeStatus(label: any, key: any) {
     setTimeStatus(label)
@@ -379,7 +379,7 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
     // console.log(` url : https://beta-api.nasdex.xyz/v1/price${lpUrl}?symbol=${symbol}&type=${type}&start=${beforeDate}&end=${nowDate}`)
     axios({
       method: 'GET',
-      baseURL: 'https://test-api.nasdex.xyz',
+      baseURL: 'https://beta-api.nasdex.xyz',
       url: `/v1/price${lpUrl}?symbol=${symbol}&type=${type}&start=${beforeDate}&end=${nowDate}`,
     }).then(res => {
       if (res && res.data && res.data.code === 0) {
