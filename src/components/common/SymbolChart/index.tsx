@@ -96,20 +96,20 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
       const swapPrice = swapPrices[combinedName]
 
       // Mint page handling
-      if(["mint"].includes(from)) {
+      if(["mint", "farm"].includes(from)) {
         setPrice(fixD(oraclePrice,4))
         setPriceLabel(cAssetName)
         calculatePremium(swapPrice, oraclePrice)
       }
 
-      // Mint page handling
-      if(["trade"].includes(from)) {
+      // trade page handling
+      if(["trade", "longFarm"].includes(from)) {
         setPrice(fixD(swapPrice,4))
         setPriceLabel(cAssetName)
         calculatePremium(swapPrice, oraclePrice)
       }
     }
-  }, [oraclePrices, swapPrices, cAssetName, assetName])
+  }, [oraclePrices, swapPrices, cAssetName, assetName, from])
  
   useEffect(() => {
     setIsTab(!isTab)
