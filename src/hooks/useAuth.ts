@@ -16,10 +16,10 @@ import notification from '../utils/notification'
 import {connectorsByName} from 'connectors'
 import {setupNetwork} from 'utils/wallet'
 import { useDispatch } from 'react-redux'
-import { loadProvider } from 'state/common/actions'
+import { loadAccount, loadProvider } from 'state/common/actions'
 
 const useAuth = () => {
-  const {activate, deactivate, library} = useWeb3React()
+  const {activate, deactivate, library, account} = useWeb3React()
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -28,6 +28,10 @@ const useAuth = () => {
       dispatch(loadProvider({provider}))
     } 
   }, [library])
+
+  useEffect(() =>  {
+    dispatch(loadAccount({ account }))
+  }, [account])
 
   const login = useCallback(
     (connectorID: ConnectorNames) => {

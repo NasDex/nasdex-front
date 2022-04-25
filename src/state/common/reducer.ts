@@ -2,6 +2,7 @@
 
 import { JsonRpcProvider, StaticJsonRpcProvider } from '@ethersproject/providers'
 import {createReducer, nanoid} from '@reduxjs/toolkit'
+import { USDCaddress, nAssetAddress, NSDXTestToken } from 'constants/index'
 import { ethers } from 'ethers'
 import {
   upDateOpenConfirmManageSuccess,
@@ -19,7 +20,15 @@ import {
   upDateOpenWeb,
   updateDefaultAsset,
   updateDefaultCAsset,
-  loadProvider
+  loadProvider,
+  updateLongFarmingInfo,
+  updatePricesRawData,
+  updateSwapPrices,
+  updateOraclePrices,
+  updateAssetsList,
+  updateAssetsBalances,
+  updateLongFarmAssetsList,
+  loadAccount
 } from './actions'
 
 export interface ApplicationState {
@@ -39,6 +48,13 @@ export interface ApplicationState {
   defaultAsset: string
   defaultCAsset: string
   provider: any
+  pricesRaw: any
+  swapPrices: any
+  oraclePrices: any
+  assets: any, 
+  longFarmAssets: any
+  assetBalances: any
+  account: string | null |undefined
 }
 
 const initialState: ApplicationState = {
@@ -59,7 +75,7 @@ const initialState: ApplicationState = {
     nSE: {
       id: '0',
       name: 'nSE',
-      address: '0xc7D14a939eE0265BEAB7456394E50Ccc6C665298',
+      address: nAssetAddress,
       type: 'asset',
       balance: '',
       decimals: 18,
@@ -70,7 +86,7 @@ const initialState: ApplicationState = {
     USDC: {
       id: '4',
       name: 'USDC',
-      address: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
+      address: USDCaddress,
       decimals: 6,
       type: 'cAsset',
       unitPrice: 1,
@@ -79,7 +95,7 @@ const initialState: ApplicationState = {
     NSDX: {
       id: '5',
       name: 'NSDX',
-      address: '0xE8d17b127BA8b9899a160D9a07b69bCa8E08bfc6',
+      address: NSDXTestToken,
       decimals: 18,
       type: 'oneAsset',
       unitPrice: 1,
@@ -90,7 +106,14 @@ const initialState: ApplicationState = {
     positionId: '',
     isShort: false,
   },
-  provider: undefined
+  provider: undefined,
+  pricesRaw: [],
+  swapPrices: {},
+  oraclePrices: {},
+  assets: null, 
+  longFarmAssets: null,
+  assetBalances: null,
+  account: ""
 }
 export default createReducer(initialState, builder =>
   builder
@@ -148,4 +171,28 @@ export default createReducer(initialState, builder =>
       state.provider = web3Provider
     }
   })
+  .addCase(loadAccount, (state,action) => {
+    state.account = action.payload.account
+  })
+  .addCase(updateLongFarmingInfo, (state, action) => {
+    state.longFarmingInfo = action.payload.longFarmingInfo
+  })
+  .addCase(updatePricesRawData, (state, action) => {
+    state.pricesRaw = action.payload.pricesRawData
+  })
+  .addCase(updateSwapPrices, (state, action) => {
+    state.swapPrices = action.payload.swapPrices
+  })
+  .addCase(updateOraclePrices, (state, action) => {
+    state.oraclePrices = action.payload.oraclePrices
+  })
+  .addCase(updateAssetsList, (state, action) => {
+    state.assets = action.payload.assets
+  })
+  .addCase(updateAssetsBalances, (state, action) => {
+    state.assetBalances = action.payload.assetBalances
+  }) 
+  .addCase(updateLongFarmAssetsList, (state, action) => {
+    state.longFarmAssets = action.payload.longFarmAssets
+  }) 
 )

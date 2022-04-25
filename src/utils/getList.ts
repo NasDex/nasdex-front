@@ -19,7 +19,8 @@ import {
   upDateAllAssetsListInfo,
   updateDefaultCAsset,
   updateDefaultAsset,
-  upDateAssetBaseInfoObj
+  upDateAssetBaseInfoObj,
+  updateLongFarmingInfo
 } from 'state/common/actions'
 
 // Please refer note.txt for v1 code
@@ -29,6 +30,7 @@ export async function getCommonAssetInfo(library: any ,account?: string | undefi
   // const provider = window.ethereum
   // const library = getLibrary(provider) || simpleRpcProvider
   // const assetBaseInfo: any = []
+  const customProvider = simpleRpcProvider
   let assetBaseInfoArr: any = []
 
   // Get asset list from backend
@@ -36,9 +38,12 @@ export async function getCommonAssetInfo(library: any ,account?: string | undefi
 
   const assetBaseInfoObj = JSON.parse(JSON.stringify(config.assetPre))
   const assetsName: any = config.assetsNameInfoPre
+  const longFarmingInfo: any = config.longFarmingInfoPre
   dispatch(updateDefaultCAsset({ defaultCAsset: config.default.cAsset }))
   dispatch(updateDefaultAsset({ defaultAsset: config.default.asset }))
   dispatch(upDateAssetBaseInfoObj({ assetBaseInfoObj: config.assetPre }))
+  dispatch(upDateAssetsNameInfo({assetsNameInfo: assetsName}))
+  dispatch(updateLongFarmingInfo({ longFarmingInfo: longFarmingInfo }))
 
   assetBaseInfoArr = Object.values(assetBaseInfoObj)
   const updatedList: any[] = []
@@ -49,7 +54,7 @@ export async function getCommonAssetInfo(library: any ,account?: string | undefi
    
     const asset:any = assetBaseInfoArr[i]
    
-    const assetContract = new ethers.Contract(asset.address, Erc20Abi, library)
+    const assetContract = new ethers.Contract(asset.address, Erc20Abi, customProvider)
 
     const assetDecimal =  asset.decimals
     const assetType = asset.type
@@ -78,7 +83,7 @@ export async function getCommonAssetInfo(library: any ,account?: string | undefi
         const oracleInfo = oracleList.find(i => i.assetKey === assetName)
 
         if (oracleInfo !== undefined) {
-          const priceOracleContract = new ethers.Contract(oracleInfo.address, STAOracle, library)
+          const priceOracleContract = new ethers.Contract(oracleInfo.address, STAOracle, customProvider)
           const price = await priceOracleContract.latestRoundData()
           asset.oraclePrice = fixD(formatUnits(price.answer, oracleInfo.decimal), 4)
         }
@@ -100,7 +105,7 @@ export async function getCommonAssetInfo(library: any ,account?: string | undefi
   const cAssetsListInfo = updatedList.filter(a => !nonCAsset.includes(a.name) && a.type === 'cAsset')
   const assetsListInfo  = updatedList.filter(a => a.type === 'asset') 
 
-  dispatch(upDateAssetsNameInfo({ assetsNameInfo: assetsName }))
+  // dispatch(upDateAssetsNameInfo({ assetsNameInfo: assetsName }))
   dispatch(upDateAssetsListInfo({ assetsListInfo: assetsListInfo }))
   dispatch(upDateCAssetsListInfo({ cAssetsListInfo: cAssetsListInfo }))
   dispatch(upDateAllAssetsListInfo({ allAssetsListInfo: updatedList }))
@@ -114,10 +119,15 @@ async function getBalance(contract: any, account: string, decimal: string){
 }
 
 export async function getAllowance(contract:any, account:string, spender:string, decimal: string) {
-  const allowanceRaw = await contract.allowance(account, spender)
-  const allowance = formatUnits(allowanceRaw, decimal)
-  const isAllowanceGranted = parseFloat(allowance) > 0
-  return { allowance, allowanceRaw: allowanceRaw.toString(), isAllowanceGranted}
+  try {
+    const allowanceRaw = await contract.allowance(account, spender)
+    const allowance = formatUnits(allowanceRaw, decimal)
+    const isAllowanceGranted = parseFloat(allowance) > 0
+    return { allowance, allowanceRaw: allowanceRaw.toString(), isAllowanceGranted}
+  } catch(err) {
+    console.log(`Error`, err)
+    return { allowance: "0", allowanceRaw: "0", isAllowanceGranted: false}
+  }
 }
 
 export async function getSwapPrice(tokenAaddress: any, tokenBaddress: any, tokenADecimal = "18" , tokenBDecimal = "18", library: any) {
@@ -134,8 +144,10 @@ export async function getSwapPrice(tokenAaddress: any, tokenBaddress: any, token
     }
 
     const lpAddress = lpInfo.lp
-    console.log(`Provider at ${new Date().toString()} `, library)
-    const contract = new ethers.Contract(lpAddress, lpContractAbi, library)
+    const customProvider = simpleRpcProvider
+    // console.log(`Provider at ${new Date().toString()} `, customProvider)
+    // console.log(`lp address ${lpAddress}`)
+    const contract = new ethers.Contract(lpAddress, lpContractAbi, customProvider)
     const reserves = await contract.getReserves()
 
     const reserves0Raw = reserves[0].toString()
@@ -152,7 +164,7 @@ export async function getSwapPrice(tokenAaddress: any, tokenBaddress: any, token
       tokenPrice1 = parseFloat(reserves0) / parseFloat(reserves1)
     }
 
-    console.log(`Refresh swap price for ${lpAddress} at ${new Date().toString()} , token0 ${tokenPrice0}, token1 ${tokenPrice1}`)
+    // console.log(`Refresh swap price for ${lpAddress} at ${new Date().toString()} , token0 ${tokenPrice0}, token1 ${tokenPrice1}`)
 
     const result = {
       token0: lpInfo.tokenA,
@@ -166,6 +178,31 @@ export async function getSwapPrice(tokenAaddress: any, tokenBaddress: any, token
     }
 
     return result
+
+  } catch (err: any) {
+    console.error(`Error in getSwapPrice() : `, err)
+  }
+}
+
+export async function getOraclePrice(assetName: string) {
+  try {
+    if (assetName === undefined || assetName === "") {
+      throw new Error(`Token A / Token B address is undefined`)
+    }
+    
+    const oracleInfo = oracleList.find(i => i.assetKey.toLowerCase() === assetName.toLowerCase())
+    if (oracleInfo === undefined) {
+      console.log(`Oracle info is undefined for ${assetName}`)
+      return
+    }
+
+    const customProvider = simpleRpcProvider
+    const contract = new ethers.Contract(oracleInfo.address, STAOracle, customProvider)
+    const price = await contract.latestRoundData()
+    const decimals = await contract.decimals()
+    const oraclePrice = fixD(formatUnits(price.answer, decimals), 4)
+
+    return oraclePrice
 
   } catch (err: any) {
     console.error(`Error in getSwapPrice() : `, err)
@@ -191,4 +228,22 @@ export async function getOneAssetInfo(asset: string, address: string, account: a
   const contract = new ethers.Contract(address, Erc20Abi, library)
   const balance = formatUnits(await contract.balanceOf(account), assetBaseInfoObj[asset].decimals)
   return { balance }
+}
+
+export async function totalSupply(assetAddress: string, assetDecimal = "18") {
+  try {
+    if (assetAddress === undefined || assetAddress === "") {
+      throw new Error(`Asset address is undefined`)
+    }
+    
+    const customProvider = simpleRpcProvider
+    const contract = new ethers.Contract(assetAddress, Erc20Abi, customProvider)
+    const totalSupplyRaw = await contract.totalSupply()
+    const totalSupply = fixD(formatUnits(totalSupplyRaw, assetDecimal), 4)
+   
+    return { totalSupply, totalSupplyRaw}
+
+  } catch (err: any) {
+    console.error(`Error in totalSupply() : `, err)
+  }
 }

@@ -19,6 +19,8 @@ import { useDispatch } from 'react-redux'
 import './style/base.less'
 import './style/global.less'
 import './style/antdesign.less'
+import usePrice from 'hooks/usePrice'
+import useAssetBalance from 'hooks/useAssetBalance'
 
 export default function App() {
   const dispatch = useDispatch()
@@ -27,6 +29,10 @@ export default function App() {
   const commonState = useCommonState()
   const { assetBaseInfoObj } = commonState
   useEagerConnect()
+
+  // Sync swap and oracle price
+  usePrice()
+  useAssetBalance()
 
   useEffect(() => {
     dispatch(upDateOpenWeb({ openWeb: true }))
@@ -47,7 +53,7 @@ export default function App() {
             <Route exact strict path="/farm" component={Farm}></Route>
             <Route exact strict path="/farming/:poolType" component={LongShort}></Route>
             <Route exact strict path="/farming/:poolType/:cAssetName/:assetName" component={LongShort}></Route>
-            <Route exact strict path="/profile" component={Profile}></Route>
+             <Route exact strict path="/profile" component={Profile}></Route>
             <Route exact strict path="/profile/:pageName" component={Profile}></Route>
             <Route exact strict path="/manage/:positionId" component={Manage}></Route>
             <Route exact strict path="/trade" component={Trade}></Route>

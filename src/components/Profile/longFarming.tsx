@@ -27,9 +27,11 @@ import { getLibrary } from 'utils/getLibrary'
 import { getApr, getRecevied } from 'utils/getAPR'
 import { ethers } from 'ethers'
 import lTokenAbi from 'constants/abis/ltoken.json'
+import lpContractAbi from 'constants/abis/lpContract.json'
 import { useStakeState } from 'state/stake/hooks'
 import { useTranslation } from 'react-i18next'
 import { simpleRpcProvider } from 'utils/providers'
+
 const LongFarming: React.FC<any> = props => {
   const { t, i18n } = useTranslation()
   const [load, setLoad] = useState(true)
@@ -120,33 +122,36 @@ const LongFarming: React.FC<any> = props => {
         MasterChefTestAddress,
         LongStakingAddress,
         formatUnits,
-        lTokenAbi,
+        lpContractAbi,
         ethers,
         library,
         commonState,
         longFarmingUserInfo,
+        commonState.swapPrices
       )
 
-      const obj = {
-        key: ele.longId,
-        id: ele.name == 'NSDX' ? ele.id : ele.longId,
-        name: `${ele.name} - ${ele.cAssetName} LP`,
-        assetTokenName: ele.name,
-        cAssetTokenName: ele.cAssetName,
-        APR: poolInfo.longAprP < 100000000 ? fixD(poolInfo.longAprP, 2) : 'Infinity',
-        Rewards: formatUnits(poolInfo.Reward, assetBaseInfoObj[ele.name].decimals),
-        Staked: formatUnits(longFarmingUserInfo.amount, assetBaseInfoObj[ele.name].decimals),
-        longId: ele.longId,
-        longAllocPoint: poolInfo.info.longAllocPoint,
-        totalStakedNum: poolInfo.totalStakedNum,
-        longRootPid: ele.name == 'NSDX' ? '' : poolInfo.longPoolInfoItem.rootPid.toString(),
-        assetStaked:
-          ele.name == 'NSDX'
-            ? formatUnits(longFarmingUserInfo.amount, assetBaseInfoObj[ele.name].decimals)
-            : poolInfo.asset,
-        cAssetStaked: ele.name == 'NSDX' ? null : poolInfo.cAsset,
+      if(poolInfo !== null) {
+        const obj = {
+          key: ele.longId,
+          id: ele.name == 'NSDX' ? ele.id : ele.longId,
+          name: `${ele.name} - ${ele.cAssetName} LP`,
+          assetTokenName: ele.name,
+          cAssetTokenName: ele.cAssetName,
+          APR: poolInfo.longAprP < 100000000 ? fixD(poolInfo.longAprP, 2) : 'Infinity',
+          Rewards: formatUnits(poolInfo.Reward, assetBaseInfoObj[ele.name].decimals),
+          Staked: formatUnits(longFarmingUserInfo.amount, assetBaseInfoObj[ele.name].decimals),
+          longId: ele.longId,
+          longAllocPoint: poolInfo.info.longAllocPoint,
+          totalStakedNum: poolInfo.totalSupply,
+          longRootPid: ele.name == 'NSDX' ? '' : poolInfo.longPoolInfoItem.rootPid.toString(),
+          assetStaked:
+            ele.name == 'NSDX'
+              ? formatUnits(longFarmingUserInfo.amount, assetBaseInfoObj[ele.name].decimals)
+              : poolInfo.asset,
+          cAssetStaked: ele.name == 'NSDX' ? null : poolInfo.cAsset,
+        }
+        return obj
       }
-      return obj
     }
   }
 
@@ -217,6 +222,7 @@ const LongFarming: React.FC<any> = props => {
       clearInterval(timer)
     }
   }, [account, farmListArray])
+  /** Get long farming info */
   useEffect(() => {
     getLongFarmingInfo()
   }, [account])
@@ -448,3 +454,4 @@ const TableList: React.FC<any> = props => {
   )
 }
 export default LongFarming
+

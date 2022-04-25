@@ -27,6 +27,7 @@ import lpContractAbi from '../../../constants/abis/lpContract.json'
 import { getAllowance, getAssetList } from 'utils/getList'
 import { useTranslation } from 'react-i18next'
 import { useSwapFactoryContract } from 'constants/hooks/useContract'
+import { simpleRpcProvider } from 'utils/providers'
 const { Option } = Select
 
 const Long: React.FC<any> = props => {
@@ -249,7 +250,8 @@ const Long: React.FC<any> = props => {
   }
 
   async function getReserver(result: string) {
-    const contract = new ethers.Contract(result, lpContractAbi, library)
+    const customProvider = simpleRpcProvider
+    const contract = new ethers.Contract(result, lpContractAbi, customProvider)
     const reserves = await contract.getReserves()
     const token0 = await contract.token0()
     const token1 = await contract.token1()
