@@ -74,9 +74,12 @@ const Buy: React.FC<any> = props => {
     if(account !== undefined && account !== null) {
       const contract = new ethers.Contract(tokenAddress, lpContractAbi, library)
       const allowance = await getAllowance(contract, account, SwapRouterAddress, decimal )
-      setAllowance(allowance.allowance)
-      // console.log(`Allowance of ${tokenAddress} on contract ${allowance.allowance}`)
-      setTokenApprove(parseFloat(allowance.allowance) > 0)
+
+      if(allowance !== undefined) {
+        setAllowance(allowance.allowance)
+        // console.log(`Allowance of ${tokenAddress} on contract ${allowance.allowance}`)
+        setTokenApprove(parseFloat(allowance.allowance) > 0)
+      }
     }
   }, [account])
 
@@ -165,7 +168,7 @@ const Buy: React.FC<any> = props => {
         setShow(false)
       }, 1200)
       getAmountsIn()
-    }
+    } 
     if (tokenAamount && isChangeTokenA) {
       setShow(true)
       setTimeout(() => {
@@ -183,7 +186,7 @@ const Buy: React.FC<any> = props => {
   const fixDPreciseB = assetBaseInfoObj[tokenB].fixDPrecise
 
   async function getAmountsOut() {
-    if (tokenAamount == '' || tokenAamount == '0') {
+    if (tokenAamount == '' || parseFloat(tokenAamount) === 0) {
       return false
     }
     const parseAmount = parseUnits(tokenAamount, assetBaseInfoObj[tokenA].decimals)
@@ -193,7 +196,7 @@ const Buy: React.FC<any> = props => {
   }
 
   async function getAmountsIn() {
-    if (tokenBamount == '' || tokenBamount == '0') {
+    if (tokenBamount == '' || parseFloat(tokenBamount) === 0) {
       return false
     }
     const parseAmount = parseUnits(tokenBamount, assetBaseInfoObj[tokenB].decimals)
