@@ -53,7 +53,7 @@ const FarmPoolItem: React.FC<any> = props => {
   async function getPoolInfo() {
     const price = priceList
 
-    if (oraclePrice !== undefined) {
+    if (oraclePrice !== undefined && oraclePrice > 0) {
       // long apr
       const _promises = []
       _promises.push(
