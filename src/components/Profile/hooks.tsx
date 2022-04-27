@@ -23,7 +23,7 @@ export default function useProfile() {
             }
 
             let positionList = await PositionContract.getPositions(
-                "0xf0b6e22ae73fc05b8904bb582262d316885f1e0a", 
+                account, 
                 startAt,
                 limit
             )
