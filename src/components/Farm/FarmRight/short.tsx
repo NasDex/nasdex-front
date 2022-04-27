@@ -11,7 +11,7 @@ import ConfirmOrder from '../shortOrderConfirm/index'
 import Notification from '../../../utils/notification'
 import { useMintState } from 'state/mint/hooks'
 import { useCommonState, useProvider } from 'state/common/hooks'
-import { getSwapPrice } from 'utils/getList'
+import { getAllowance, getSwapPrice } from 'utils/getList'
 type IconType = 'success' | 'info' | 'error' | 'warning'
 import useModal from '../../../hooks/useModal'
 import { fixD } from 'utils'
@@ -36,6 +36,9 @@ import { formatUnits, parseUnits } from 'ethers/lib/utils'
 import { useSwapRouterContract } from 'constants/hooks/useContract'
 import { useTranslation } from 'react-i18next'
 import precision from 'utils/precision'
+import Erc20Abi from 'constants/abis/erc20.json'
+import { ethers } from 'ethers'
+import { ShortStakingAddress } from 'constants/dist'
 const { Option } = Select
 const Short: React.FC<any> = props => {
   const { t, i18n } = useTranslation()
@@ -110,6 +113,7 @@ const Short: React.FC<any> = props => {
     try {
       setRequestedApproval(true)
       await onApprove()
+      setCassetAllowance("100000000000000000000000")
       setRequestedApproval(false)
     } catch (e) {
       console.error(e)
@@ -306,6 +310,28 @@ const Short: React.FC<any> = props => {
       setSwapPrice(price)
     }
   }
+
+  // allowance checking
+  const [cAssetAllowance, setCassetAllowance] = useState("0")
+  const getTokenAllowance = useCallback(async(tokenAddress: any, decimal: string) => {
+    if(account !== undefined && account !== null) {
+      const contract = new ethers.Contract(tokenAddress, Erc20Abi, library)
+      const allowance = await getAllowance(contract, account, mintAddress, decimal )
+      setCassetAllowance(allowance.allowance)
+    }
+  }, [account])
+  useEffect(() => {
+    if(account !== undefined && library !== undefined && commonState.assetBaseInfoObj !== undefined) {
+        const cAsset = commonState.assetBaseInfoObj[selectCoin]
+        if(cAsset === undefined) {
+          console.log(`cAsset is undefined`)
+          return
+        }
+        getTokenAllowance(cAsset.address, cAsset.decimals)
+    }
+  }, [account, library, selectCoin, commonState.assetBaseInfoObj])
+
+
   return (
     <div className="short-container">
       <div className="short-desc"> {t('shortDesc')} </div>
@@ -580,7 +606,7 @@ const Short: React.FC<any> = props => {
         <Button disabled className="short-farm">
           {t('Insufficient')}
         </Button>
-      ) : commonState.assetBaseInfoObj[selectCoin]?.mintContractAllowance ? (
+      ) : parseFloat(cAssetAllowance) > 0 ? (
         <Button
           disabled={
             Number(tradeCollateral) > Number(commonState.assetBaseInfoObj[selectCoin]?.balance) ||
