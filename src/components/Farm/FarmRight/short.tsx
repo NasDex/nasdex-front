@@ -319,7 +319,7 @@ const Short: React.FC<any> = props => {
       const allowance = await getAllowance(contract, account, mintAddress, decimal )
       setCassetAllowance(allowance.allowance)
     }
-  }, [account])
+  }, [account, library])
   useEffect(() => {
     if(account !== undefined && library !== undefined && commonState.assetBaseInfoObj !== undefined) {
         const cAsset = commonState.assetBaseInfoObj[selectCoin]

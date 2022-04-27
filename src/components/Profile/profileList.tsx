@@ -174,8 +174,7 @@ const ProfileList: React.FC<any> = props => {
 
   const getPosition = useCallback(async (header: string) => {
     try {
-      if (commonState.account !== undefined) {
-        // console.log(`Account before get position  ${commonState.account}`)
+      if (commonState.account !== undefined && commonState.assetsNameInfo !== undefined && commonState.assetBaseInfoObj !== undefined) {
         const positions: any = await getPositions(commonState.account, commonState.assetsNameInfo, commonState.assetBaseInfoObj)
 
         if (positions === undefined) {
@@ -210,7 +209,7 @@ const ProfileList: React.FC<any> = props => {
     } finally {
       setLoad(false)
     }
-  }, [headerActive, commonState.account])
+  }, [headerActive, commonState.account,commonState.assetsNameInfo,commonState.assetBaseInfoObj])
 
   useEffect(() => {
     if (commonState.account && commonState.assetBaseInfoObj !== undefined && commonState.assetsNameInfo !== null) {
