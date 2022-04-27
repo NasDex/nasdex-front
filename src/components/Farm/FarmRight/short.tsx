@@ -234,10 +234,10 @@ const Short: React.FC<any> = props => {
       setAmount(fixD(expectedNassetAmount, commonState.assetBaseInfoObj[selectStock].fixDPrecise))
     }
 
-    if (debounce && amountInputFocus && farmState.slippageTolerance) {
+    if (debounce && amountInputFocus && farmState.slippageTolerance && debounce > 0) {
       getAmountsOut(debounce)
     }
-    if (debounce && collateralInputFocus && farmState.slippageTolerance) {
+    if (debounce && collateralInputFocus && farmState.slippageTolerance && debounce > 0) {
       getAmountsOut(debounce)
     }
   }, [
