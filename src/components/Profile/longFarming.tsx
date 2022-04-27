@@ -110,6 +110,9 @@ const LongFarming: React.FC<any> = props => {
   }
 
   async function getData(price: any, ele: any, stakedInfo: any, longFarmingUserInfo: any) {
+    if(assetBaseInfoObj[ele.name] === undefined) {
+      return
+    }
     if (ele.longId == '') {
       longFarmingUserInfo = await MasterChefTestContract.userInfo(Number(ele.id), account)
     } else {
@@ -240,10 +243,10 @@ const LongFarming: React.FC<any> = props => {
     setFarmListArray(commonState.longFarmAssets)
   }, [commonState.longFarmAssets])
   useEffect(() => {
-    if (account && confirmSuccess) {
+    if (account && confirmSuccess && commonState.assetBaseInfoObj!==undefined) {
       setData(confirmSuccess)
     }
-  }, [account, confirmSuccess])
+  }, [account, confirmSuccess, commonState.assetBaseInfoObj])
   useEffect(() => {
     if (profileLongFarmConfirm) {
       setIsModalVisible(false)
