@@ -22,7 +22,7 @@ export default function useProfile() {
                 throw new Error(`Account is undefined`)
             }
 
-            const positionList = await PositionContract.getPositions(
+            let positionList = await PositionContract.getPositions(
                 account, 
                 startAt,
                 limit
@@ -32,7 +32,11 @@ export default function useProfile() {
                 throw new Error(`No positions found for account`)
             }
 
-            const finalResult =  await Promise.all(positionList.map(async (position: any) => {
+            const blackholeAddress = "0x0000000000000000000000000000000000000000"
+            positionList = positionList.filter((p: any) => !(p.assetToken === blackholeAddress || p.cAssetToken === blackholeAddress))
+
+            const finalResult =  await Promise.all(positionList.map(async (position: any, index: number) => {
+                
                 const assetAddress = position.assetToken
                 const cAssetAddress = position.cAssetToken
 
@@ -44,22 +48,22 @@ export default function useProfile() {
 
                 // Amount sub
                 const assetAmountSub = Number(
-                    formatUnits(position.assetAmount, asset.decimals).substring(
+                    formatUnits(position.assetAmount, asset?.decimals).substring(
                         0,
-                        formatUnits(position.assetAmount, asset.decimals).indexOf('.') + 8,
+                        formatUnits(position.assetAmount, asset?.decimals).indexOf('.') + 8,
                     ),
                 )
                 const cAssetAmountSub = Number(
-                    formatUnits(position.cAssetAmount, cAsset.decimals).substring(
+                    formatUnits(position.cAssetAmount, cAsset?.decimals).substring(
                         0,
-                        formatUnits(position.cAssetAmount, cAsset.decimals).indexOf('.') + 8,
+                        formatUnits(position.cAssetAmount, cAsset?.decimals).indexOf('.') + 8,
                     ),
                 ) 
 
                 // oracle price
                 const _oraclePromises = []
                 _oraclePromises.push(getOraclePrice(assetName))
-                if(cAsset.isNoNStablecoin === 1) {
+                if(cAsset?.isNoNStablecoin === 1) {
                     _oraclePromises.push(getOraclePrice(cAssetName))
                 }
                 const oracleResult = await Promise.all(_oraclePromises)
@@ -67,32 +71,32 @@ export default function useProfile() {
                 const cAssetOraclePrice = oracleResult[1] === undefined ? 1 :oracleResult[1]
 
                 // cAsset and nAsset value
-                const cAssetPrice = cAsset.isNoNStablecoin === 0
+                const cAssetPrice = cAsset?.isNoNStablecoin === 0
                     ? cAsset.unitPrice
                     : cAssetOraclePrice
-                const cAssetAmountValue = Number(formatUnits(position.cAssetAmount, cAsset.decimals)) * cAssetPrice
-                const nAssetValue =  Number(formatUnits(position.assetAmount, asset.decimals)) * asset.swapPrice
+                const cAssetAmountValue = Number(formatUnits(position.cAssetAmount, cAsset?.decimals)) * cAssetPrice
+                const nAssetValue =  Number(formatUnits(position.assetAmount, asset?.decimals)) * asset?.swapPrice
 
                 return {
                     key: position.id.toString(),
-                    assetAmount: formatUnits(position.assetAmount, asset.decimals),
+                    assetAmount: formatUnits(position.assetAmount, asset?.decimals),
                     assetAmountSub: assetAmountSub,
                     assetToken: position.assetToken,
-                    cAssetAmount: formatUnits(position.cAssetAmount, cAsset.decimals),
+                    cAssetAmount: formatUnits(position.cAssetAmount, cAsset?.decimals),
                     cAssetAmountValue: cAssetAmountValue,
                     cAssetAmountSub: cAssetAmountSub,
                     cAssetToken: position.cAssetToken,
                     owner: position.owner,
                     oraclePrice:
-                      cAsset.isNoNStableCoin == 0
+                      cAsset?.isNoNStableCoin == 0
                         ? assetOraclePrice
                         : fixD(
                             Number(assetOraclePrice) /
                               Number(cAssetOraclePrice),
                             2,
                           ),
-                    minCollateral: asset.minCollateral,
-                    minCollateralWarning: Number(asset.minCollateral) + 5,
+                    minCollateral: asset?.minCollateral,
+                    minCollateralWarning: Number(asset?.minCollateral) + 5,
                     assetValue: nAssetValue,
                     assetTokenName: assetName,
                     cAssetTokenName: cAssetName,

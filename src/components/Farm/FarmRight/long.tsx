@@ -124,11 +124,23 @@ const Long: React.FC<any> = props => {
   const [requestedApproval, setRequestedApproval] = useState(false)
   const handleApprove = useCallback(
     async (asset: any) => {
+      const tokenAddress = commonState.assetBaseInfoObj[asset].address
       const contract = new ethers.Contract(commonState.assetBaseInfoObj[asset].address, Erc20Abi, library.getSigner())
       try {
         setRequestedApproval(true)
+
         const tx = await contract.approve(LongStakingAddress, ethers.constants.MaxUint256)
         const receipt = await tx.wait()
+
+        const tokenAAddress = commonState.assetBaseInfoObj[tokenA].address.toLowerCase()
+        const tokenBAddress = commonState.assetBaseInfoObj[tokenB].address.toLowerCase()
+        if(tokenAddress.toLowerCase() === tokenAAddress) {
+          setAllowanceA("1000000000000000000000000000000000")
+        }
+        if(tokenAddress.toLowerCase()===tokenBAddress){
+          setAllowanceB("1000000000000000000000000000000000")
+        }
+
         const longFarmAllowance = true
         const oneAssetInfo = { ...commonState.assetBaseInfoObj[asset], longFarmAllowance }
         dispatch(upDateOneAssetBaseInfo({ oneAssetBaseInfo: oneAssetInfo }))
