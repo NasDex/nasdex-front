@@ -33,7 +33,7 @@ import useApproveFarm from '../../common/approve/index'
 import { LowerRatio } from 'utils/commonComponents'
 import { mintAddress, USDTaddress } from '../../../constants/index'
 import { formatUnits, parseUnits } from 'ethers/lib/utils'
-import { useSwapRouterContract } from 'constants/hooks/useContract'
+import { useCustomSwapRouterContract } from 'constants/hooks/useContract'
 import { useTranslation } from 'react-i18next'
 import precision from 'utils/precision'
 import Erc20Abi from 'constants/abis/erc20.json'
@@ -268,7 +268,7 @@ const Short: React.FC<any> = props => {
       return (fixD(Number(num) / Number(price) * 100, 2))
     }
   }
-  const swapRouterContract = useSwapRouterContract()
+  const swapRouterContract = useCustomSwapRouterContract()
   async function getAmountsOut(tradeAmount: any) {
     const parseAmount = parseUnits(tradeAmount, commonState.assetBaseInfoObj[selectStock].decimals)
     const amountsOut = await swapRouterContract.getAmountsOut(parseAmount, [

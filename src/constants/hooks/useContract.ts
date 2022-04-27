@@ -79,9 +79,13 @@ export const useShortStockAContract = () => {
   return useMemo(() => getShortStockAContract(library?.getSigner()), [library])
 }
 export const useSwapRouterContract = () => {
-  // const {library} = useActiveWeb3React()
-  const customProvider = simpleRpcProvider
-  return useMemo(() => getSwapRouterContract(customProvider), [customProvider])
+  const {library} = useActiveWeb3React()
+  //const customProvider = simpleRpcProvider
+  return useMemo(() => getSwapRouterContract(library?.getSigner()), [library])
+}
+export const useCustomSwapRouterContract = () => {
+   const customProvider = simpleRpcProvider
+   return useMemo(() => getSwapRouterContract(customProvider), [customProvider])
 }
 export const useSwapFactoryContract = () => {
   const {library} = useActiveWeb3React()

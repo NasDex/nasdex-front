@@ -17,7 +17,7 @@ import useApproveFarm from 'components/common/approve/index'
 import { getLpPairDetail, SwapRouterAddress } from 'constants/index'
 import {
   useSwapFactoryContract,
-  useSwapRouterContract,
+  useCustomSwapRouterContract,
 } from 'constants/hooks/useContract'
 import { formatUnits, parseUnits } from 'ethers/lib/utils'
 import iconSwapActive from '../../../img/swap/icon-swap-normal-light.png'
@@ -81,7 +81,7 @@ const Buy: React.FC<any> = props => {
         setTokenApprove(parseFloat(allowance.allowance) > 0)
       }
     }
-  }, [account])
+  }, [account, library])
 
   // Setting token A balance and token A allowance
   useEffect(() => {
@@ -99,14 +99,14 @@ const Buy: React.FC<any> = props => {
   const [pair, setPair] = useState('')
   useEffect(() => {
     if(library !== undefined) {
-      if (tokenAaddress && tokenBaddress && account !== undefined) {
+      if (tokenAaddress && tokenBaddress && account !== undefined && commonState.assetsNameInfo) {
         getPair()
       }
       if (pair) {
         getReserver(pair)
       }
     }
-  }, [library, tokenAaddress, tokenBaddress, account, pair])
+  }, [library, tokenAaddress, tokenBaddress, account, pair, commonState.assetsNameInfo])
   // const swapFactoryContract = useSwapFactoryContract()
 
   async function getPair() {
@@ -152,7 +152,10 @@ const Buy: React.FC<any> = props => {
   const handleApprove = useCallback(async () => {
     try {
       setRequestedApproval(true)
-      await onApprove()
+      const result = await onApprove()
+      if(result !== undefined && result) {
+        setTokenApprove(true)
+      }
       setRequestedApproval(false)
     } catch (e) {
       console.error(e)
@@ -160,7 +163,7 @@ const Buy: React.FC<any> = props => {
   }, [onApprove, account])
   
   const [minimumReceived, setMinimumReceived] = useState('')
-  const swapRouterContract = useSwapRouterContract()
+  const swapRouterContract = useCustomSwapRouterContract()
   useEffect(() => {
     if (tokenBamount && isChangeTokenB) {
       setShow(true)
@@ -600,7 +603,6 @@ const Buy: React.FC<any> = props => {
             isChangeTokenA: isChangeTokenA
           }}></ConfirmOrder> : null
       }
-
     </div>
   )
 }
