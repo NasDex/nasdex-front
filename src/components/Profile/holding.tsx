@@ -13,8 +13,8 @@ import useAuth from 'hooks/useAuth'
 import { useManageState } from 'state/manage/hooks'
 import { useCommonState } from 'state/common/hooks'
 import { useTranslation } from 'react-i18next'
-const PositionTable: React.FC<any> = props => {
-  const { t, i18n } = useTranslation()
+const PositionTable: React.FC<any> = () => {
+  const { t } = useTranslation()
   const columns = [
     {
       title: `${t('Ticker')}`,
@@ -89,62 +89,105 @@ const PositionTable: React.FC<any> = props => {
       ),
     },
   ]
-  const manageState = useManageState()
   const pagination = {
     pageSize: 5,
   }
 
   const { account } = useActiveWeb3React()
   const commonState = useCommonState()
-  const [load, setLoad] = useState(true)
+  const [load, setLoad] = useState(false)
   const [dataSource, setDataSource] = useState([])
   const infoArr: any = []
   Object.keys(commonState.assetBaseInfoObj).forEach(function (trait) {
     infoArr.push(commonState.assetBaseInfoObj[trait])
   })
+  // async function getPositions() {
+  //   const result: any = []
+
+  //   if(load) {
+  //     console.log(`Ongoing positions processing, skip this turn`)
+  //     return
+  //   }
+
+  //   setLoad(true)
+
+  //   if(infoArr.length <= 0) {
+  //     console.log(`No info arr`)
+  //     setLoad(false)
+  //     setDataSource([])
+  //     return
+  //   }
+
+  //   infoArr.forEach((position: any) => {
+  //     if (position.type == 'asset' && position.balance > 0) {
+  //       const value = (
+  //         parseFloat(commonState.assetBaseInfoObj[position.name].swapPrice) * parseFloat(position.balance)
+  //       ).toString()
+  //       result.push({
+  //         key: position.id,
+  //         assetAmount: position.balance,
+  //         oraclePrice: 40,
+  //         assetTokenName: position.name,
+  //         cAssetTokenName: 'USDC',
+  //         value: value,
+  //         swapPrice: position.swapPrice,
+  //       })
+  //     }
+  //   })
+
+  //   result.sort(function (a: any, b: any) {
+  //     return b.value - a.value
+  //   })
+
+  //   setLoad(false)
+  //   setDataSource(result)
+  // }
+
   async function getPositions() {
-    const result: any = []
-    if (infoArr.length > 0) {
-      infoArr.forEach((position: any) => {
-        if (position.type == 'asset') {
-          if (position.balance > 0) {
-            const value = (
-              Number(commonState.assetBaseInfoObj[position.name].swapPrice) * Number(position.balance)
-            ).toString()
-            result.push({
-              key: position.id,
-              assetAmount: position.balance,
-              oraclePrice: 40,
-              assetTokenName: position.name,
-              cAssetTokenName: 'USDC',
-              value: value,
-              swapPrice: position.swapPrice,
-            })
-          }
+    const assets = Object.values(commonState.assetBaseInfoObj)
+    const assetBalances = commonState.assetBalances
+    const swapPrices = commonState.swapPrices
+
+    if(swapPrices !== null && assetBalances !== null && assets) {
+      const result: any = []
+      assets.forEach((a:any) => {
+        const assetName = a.name
+        const assetType = a.type
+        const assetBalance = assetBalances[a.name].balance
+  
+        if(assetType === "asset" && parseFloat(assetBalance) > 0) {
+          const swapPrice = swapPrices[`${assetName}/USDC`]
+          const value = parseFloat(swapPrice) * parseFloat(assetBalance)
+          result.push({
+            key: a.id,
+            assetAmount: assetBalance,
+            oraclePrice: 40,
+            assetTokenName: assetName,
+            cAssetTokenName: 'USDC',
+            value: value,
+            swapPrice: swapPrice,
+          })
         }
       })
-    }
-    if (result && result.length > 0) {
       result.sort(function (a: any, b: any) {
         return b.value - a.value
       })
-      setLoad(false)
       setDataSource(result)
-    } else {
-      setLoad(false)
-      setDataSource([])
     }
+
+    
   }
   useEffect(() => {
     if (account) {
       getPositions()
     }
-  }, [account, commonState.assetBaseInfoObj])
+  }, [account, commonState.assetBaseInfoObj, commonState.swapPrices, commonState.assetBalances])
+  
   const { login, logout } = useAuth()
-  const { onPresentConnectModal, onPresentAccountModal } = useWalletModal(login, logout, account || undefined)
+  const { onPresentConnectModal } = useWalletModal(login, logout, account || undefined)
   const connectWallet = [
     {
-      render: (text: any, record: any) => (
+      render: () => (
         <div className="walletZhanWei">
           <img src={wallet} alt="" />
           <Button onClick={() => onPresentConnectModal()}>{t('ConnectWallet')}</Button>
@@ -177,7 +220,7 @@ const PositionTable: React.FC<any> = props => {
   )
 }
 const TableList: React.FC<any> = props => {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const record = props.TableItem
   const commonState = props.commonState
   return (

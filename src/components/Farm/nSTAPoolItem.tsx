@@ -33,7 +33,7 @@ const FarmPoolItem: React.FC<any> = props => {
   const dispatch = useDispatch()
   const commonState = useCommonState()
   const [swapPrice, setSwapPrice] = useState('--')
-  const [oraclePrice, setOraclePrice] = useState('')
+  // const [oraclePrice, setOraclePrice] = useState('')
   const [premium, setPremium] = useState('--')
   const [shortTVL, setShortTVL] = useState('')
   const [aprShort, setApr] = useState('')
@@ -48,10 +48,12 @@ const FarmPoolItem: React.FC<any> = props => {
   const library = useProvider()
   const { priceList, farmPoolItem } = props
 
+  const oraclePrice = commonState.oraclePrices[`${name}/USDC`]
+ 
   async function getPoolInfo() {
     const price = priceList
 
-    if (commonState.assetBaseInfoObj[name].oraclePrice !== undefined) {
+    if (oraclePrice !== undefined && oraclePrice > 0) {
       // long apr
       const _promises = []
       _promises.push(
@@ -73,7 +75,7 @@ const FarmPoolItem: React.FC<any> = props => {
       // Short apr
       _promises.push(
         getCommonShortApr(
-          commonState.assetBaseInfoObj[name].oraclePrice,
+          oraclePrice,
           price,
           props.farmPoolItem,
           MasterChefTestContract,
@@ -120,7 +122,7 @@ const FarmPoolItem: React.FC<any> = props => {
 
   useEffect(() => {
     if (name) {
-      setOraclePrice(commonState.assetBaseInfoObj[name].oraclePrice)
+      // setOraclePrice(commonState.assetBaseInfoObj[name].oraclePrice)
       // setSwapPrice(commonState.assetBaseInfoObj[name].swapPrice)
     }
     if (Number(swapPrice) - Number(oraclePrice) > 0) {
@@ -175,14 +177,14 @@ const FarmPoolItem: React.FC<any> = props => {
   
       getBaseData().then(() => {
         if (ShortStakingContract && MasterChefTestContract) {
-          timer = setInterval(async () => await getBaseData(), 30000)
+          timer = setInterval(async () => await getBaseData(), 10000)
         }
         return () => {
           clearInterval(timer)
         }
       })
     }
-  }, [account, library, ShortStakingContract, ShortStockAContract, MasterChefTestContract, commonState.assetBaseInfoObj[name].oraclePrice])
+  }, [account, library, ShortStakingContract, ShortStockAContract, MasterChefTestContract, oraclePrice])
   
   function thousands(num: any) {
     const str = num.toString()
@@ -202,22 +204,22 @@ const FarmPoolItem: React.FC<any> = props => {
       <div className='farmPoolBox'>
         <div className="apr-info">
           <div className="long-apr">
-            <div className="long-apr-title">{longApr == '' ? <Skeleton active paragraph={{ rows: 0 }} /> : `${longApr}%`}</div>
+            <div className="long-apr-title">{longApr === '' ? <Skeleton active paragraph={{ rows: 0 }} /> : `${longApr}%`}</div>
             <div className="long-apr-text">{t('LongAPR')}</div>
           </div>
           <div className="short-apr">
-            <div className="long-apr-title">{aprShort == '' ? <Skeleton active paragraph={{ rows: 0 }} /> : `${aprShort}%`}</div>
+            <div className="long-apr-title">{aprShort === '' ? <Skeleton active paragraph={{ rows: 0 }} /> : `${aprShort}%`}</div>
             <div className="long-apr-text">{t('ShortAPR')}</div>
           </div>
         </div>
         <div className="apr-info">
           <div className="long-TVL">
-            <div className="long-TVL-title">{longTVL == '' ? <Skeleton active paragraph={{ rows: 0 }} /> : `$${thousands(longTVL)}`}</div>
+            <div className="long-TVL-title">{longTVL === '' ? <Skeleton active paragraph={{ rows: 0 }} /> : `$${thousands(longTVL)}`}</div>
             <div className="long-apr-text">{t('LongTVL')}</div>
             <div className="hover">${thousands(longTVL)}</div>
           </div>
           <div className="short-TVL">
-            <div className="long-TVL-title">{shortTVL == '' ? <Skeleton active paragraph={{ rows: 0 }} /> : `$${thousands(shortTVL)}`}</div>
+            <div className="long-TVL-title">{shortTVL === '' ? <Skeleton active paragraph={{ rows: 0 }} /> : `$${thousands(shortTVL)}`}</div>
             <div className="long-apr-text">{t('ShortTVL')}</div>
             <div className="hover">${thousands(shortTVL)}</div>
           </div>

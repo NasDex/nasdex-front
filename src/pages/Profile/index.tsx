@@ -39,6 +39,7 @@ const Profile: React.FC<any> = props => {
   const { priceList } = stakeState
   const LPContract = useLpContract()
   const library = useProvider()
+  // Get Nasdex price
   async function initPrice() {
     const reservesValue = await LPContract.getReserves()
     let currencyANum: any
@@ -73,36 +74,36 @@ const Profile: React.FC<any> = props => {
         commonState.assetBaseInfoObj[asset].type == 'asset' ||
         commonState.assetBaseInfoObj[asset].isNoNStableCoin == 1
       ) {
-        const swapPriceObj = await getSwapPrice(
-          USDCaddress, 
-          commonState.assetBaseInfoObj[asset].address,
-          "6",
-          commonState.assetBaseInfoObj[asset].decimals,
-          library
-        )
-        if (swapPriceObj) {
-          const token0Name = commonState.assetsNameInfo[swapPriceObj.token0]
-          const token1Name = commonState.assetsNameInfo[swapPriceObj.token1]
-          const reserves0 = Number(
-            formatUnits(swapPriceObj.reserves[0], commonState.assetBaseInfoObj[token0Name]?.decimals),
-          )
-          const reserves1 = Number(
-            formatUnits(swapPriceObj.reserves[1], commonState.assetBaseInfoObj[token1Name]?.decimals),
-          )
-          if (swapPriceObj.token0 == commonState.assetBaseInfoObj[asset].address) {
-            swapPrice = reserves1 / reserves0
-          } else {
-            swapPrice = reserves0 / reserves1
-          }
-        }
+        // const swapPriceObj = await getSwapPrice(
+        //   USDCaddress, 
+        //   commonState.assetBaseInfoObj[asset].address,
+        //   "6",
+        //   commonState.assetBaseInfoObj[asset].decimals,
+        //   library
+        // )
+        // if (swapPriceObj) {
+        //   const token0Name = commonState.assetsNameInfo[swapPriceObj.token0]
+        //   const token1Name = commonState.assetsNameInfo[swapPriceObj.token1]
+        //   const reserves0 = Number(
+        //     formatUnits(swapPriceObj.reserves[0], commonState.assetBaseInfoObj[token0Name]?.decimals),
+        //   )
+        //   const reserves1 = Number(
+        //     formatUnits(swapPriceObj.reserves[1], commonState.assetBaseInfoObj[token1Name]?.decimals),
+        //   )
+        //   if (swapPriceObj.token0 == commonState.assetBaseInfoObj[asset].address) {
+        //     swapPrice = reserves1 / reserves0
+        //   } else {
+        //     swapPrice = reserves0 / reserves1
+        //   }
+        // }
 
-        const oracle = oracleList.find(ol => ol.assetKey == asset)
-        if (oracle) {
-          const contract = new ethers.Contract(oracle.address, STAOracle, library) 
-          const price = await contract.latestRoundData()
-          const decimals = await contract.decimals()
-          oraclePrice = fixD(formatUnits(price.answer, decimals), 4)
-        }
+        // const oracle = oracleList.find(ol => ol.assetKey == asset)
+        // if (oracle) {
+        //   const contract = new ethers.Contract(oracle.address, STAOracle, library) 
+        //   const price = await contract.latestRoundData()
+        //   const decimals = await contract.decimals()
+        //   oraclePrice = fixD(formatUnits(price.answer, decimals), 4)
+        // }
 
         // if (asset == 'nSE') {
         //   const SEOracleContract = new ethers.Contract(SEOracleAddress, STAOracle, library)
@@ -128,7 +129,7 @@ const Profile: React.FC<any> = props => {
     }
     initPrice()
     if (account) {
-      timer = setInterval(getBaseData(), 10000)
+      timer = setInterval(getBaseData(), 7000)
     }
     return () => {
       clearInterval(timer)

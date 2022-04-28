@@ -83,7 +83,6 @@ const LongOrderConfirm = ({
     if (!pid) {
       return false
     }
-
     const id = pid
     const Aamount = parseUnits(tokenAamount, commonState.assetBaseInfoObj[tokenA].decimals)
     const Bamount = parseUnits(tokenBamount, commonState.assetBaseInfoObj[tokenB].decimals)
@@ -100,6 +99,7 @@ const LongOrderConfirm = ({
       setLongConfirm(true)
       let tx
       openWaiting()
+
       if (token0Address == commonState.assetBaseInfoObj[tokenA].address) {
         tx = await longStakingContract.deposit(
           Number(id),
@@ -148,6 +148,7 @@ const LongOrderConfirm = ({
         openNotificationWithIcon('error')
       }
     } catch (error: any) {
+      console.log(`deposit long farm: `, error)
       if (error.message.includes('transaction was replaced')) {
         const assetNewInfo = await getOneAssetInfo(
           tokenA,
