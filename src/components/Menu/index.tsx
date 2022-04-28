@@ -194,7 +194,7 @@ const Menu: React.FC = props => {
                 {/* <p>{t('riskTips')}</p> */}
                 <p style={{marginTop:"8px"}}>{t('bugBounty')}</p>
                 <p>{t('comeWin')}</p>
-                <p style={{overflow: "hidden"}}>(<a href="https://immunefi.com/bounty/nasdex/" target="_blank">https://immunefi.com/bounty/nasdex/</a>)</p>
+                <p style={{overflow: "hidden"}}>(<a href="https://immunefi.com/bounty/nasdex/" target="_blank"style={{ wordBreak: "break-all"}}>https://immunefi.com/bounty/nasdex/</a>)</p>
               </div>
               <a className="docs" href="https://nasdexofficial.gitbook.io/nasdex/" target="_blank">
                 {t('NASDEXDocs')}
