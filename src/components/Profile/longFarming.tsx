@@ -58,6 +58,7 @@ const LongFarming: React.FC<any> = props => {
   // const LongStakingContract = useLongStakingContract()
   const customProvider = simpleRpcProvider
   const LongStakingContract = new ethers.Contract(LongStakingAddress, LongStakingContractAbi, customProvider)
+  const LongStakingWithSignerContract = useLongStakingContract()
   const MasterChefTestContract = useMasterChefTestContract()
   const [clickRewardsBtn, setClickRewardsBtn] = useState(false)
   const [openWaiting] = useModal(
@@ -166,7 +167,7 @@ const LongFarming: React.FC<any> = props => {
     setClickRewardsBtn(true)
     try {
       openWaiting()
-      const tx = await LongStakingContract.getReward(id)
+      const tx = await LongStakingWithSignerContract.getReward(id)
       dispatch(upDateTxHash({ hash: tx.hash }))
       openNoifcation()
       const receipt = await tx.wait()
