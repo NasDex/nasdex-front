@@ -36,7 +36,7 @@ export async function getApr(
   _promises.push(MasterChefTestContract.nsdxPerBlock())
   _promises.push(MasterChefTestContract.totalAllocPoint())
   _promises.push( ele.longId == '' ? MasterChefTestContract.poolInfo(longId) : LongStakingContract.poolInfo(longId))
-  _promises.push(MasterChefTestContract.pendingNSDX(Number(longId), account))
+  _promises.push(LongStakingContract.pendingNSDX(Number(longId), account))
 
   const [nsdxPerBlock, totalAllocPoint, longPoolInfoItem, Reward] = await Promise.all(_promises)
 
