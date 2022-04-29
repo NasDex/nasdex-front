@@ -68,8 +68,16 @@ export async function getApr(
   const totalSupply = parseFloat(formatUnits(totalSupplyRaw, 18))
   const amount = Number(formatUnits(longFarmingUserInfo.amount, 18))
 
-  const assetNum = Number(reserves0)
-  const cAssetNum = Number(reserves1)
+  let assetNum = 0
+  let cAssetNum = 0
+  if (token0 == assetBaseInfoObj[ele.cAssetName].address) {
+    assetNum = Number(reserves1)
+    cAssetNum = Number(reserves0)
+  } else {
+    assetNum = Number(reserves0)
+    cAssetNum = Number(reserves1)
+  }
+
   const asset = (Number(amount) / totalSupply) * reserves0
   const cAsset = (Number(amount) / totalSupply) * Number(reserves1)
 
