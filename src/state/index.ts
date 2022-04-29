@@ -23,7 +23,8 @@ const store = configureStore({
     common,
   },
   // middleware: [...getDefaultMiddleware({thunk: true}), save({states: PERSISTED_KEYS}), logger, {serializableCheck: false}],
-  middleware: [thunk, logger],
+  // middleware: [thunk, logger],
+  middleware: [thunk],
   preloadedState: load({states: PERSISTED_KEYS}),
 })
 

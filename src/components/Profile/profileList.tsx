@@ -178,7 +178,7 @@ const ProfileList: React.FC<any> = props => {
         const positions: any = await getPositions(commonState.account, commonState.assetsNameInfo, commonState.assetBaseInfoObj)
 
         if (positions === undefined) {
-          console.log(`Positions is undefined`)
+          // console.log(`Positions is undefined`)
           return
         }
 
