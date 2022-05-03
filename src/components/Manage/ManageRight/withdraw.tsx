@@ -140,11 +140,22 @@ const Withdraw: React.FC<any> = props => {
     setSelectCoin(manageState.manageCoinSelect)
   }, [manageState.manageCoinSelect])
 
+  // Asset oracle price
+  const [assetOraclePrice, setAssetOraclePrice] = useState(0)
+  useEffect(() => {
+    if(commonState.oraclePrices !== undefined && positionInfo !== undefined) {
+      const assetName = positionInfo.assetTokenName
+     
+      const assetOraPrice = commonState.oraclePrices[`${assetName}/USDC`]
+      setAssetOraclePrice(assetOraPrice)
+    }
+  }, [commonState.oraclePrices, positionInfo])
+
   useEffect(() => {
     if (collateralInputFocus) {
       if (Number(tradeAmount) > 0) {
         const result = (
-          (Number(tradeCollateral) / Number(tradeAmount) / commonState.assetBaseInfoObj[assetTokenName].oraclePrice) *
+          (Number(tradeCollateral) / Number(tradeAmount) / assetOraclePrice) *
           100
         ).toString()
         if (Number(result) > 0) {
@@ -155,7 +166,7 @@ const Withdraw: React.FC<any> = props => {
       }
     } else {
       const result = (
-        (Number(tradeAmount) * commonState.assetBaseInfoObj[assetTokenName].oraclePrice * Number(sliderValue)) /
+        (Number(tradeAmount) * assetOraclePrice * Number(sliderValue)) /
         100
       ).toString()
       if (Number(result) > 0) {
