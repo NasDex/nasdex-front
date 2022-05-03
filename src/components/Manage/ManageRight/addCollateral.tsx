@@ -22,13 +22,13 @@ import {
 import { upDateFarmMinimumReceived, upDateFarmReturned } from '../../../state/farm/actions'
 import { useManageState } from 'state/manage/hooks'
 import { useCommonState, useProvider } from 'state/common/hooks'
-import { getAllowance, getSwapPrice } from 'utils/getList'
+import { getAllowance, getOraclePrice, getSwapPrice } from 'utils/getList'
 import { useFarmState } from 'state/farm/hooks'
 import { useDispatch } from 'react-redux'
 import useModal from 'hooks/useModal'
 import useApproveFarm from '../../common/approve/index'
 import { useErc20Contract } from 'constants/hooks/useContract'
-import { mintAddress, nAssetAddress } from '../../../constants/index'
+import { mintAddress, nAssetAddress, nonStablecoinCAsset } from '../../../constants/index'
 import ConfirmOrder from '../OrderConfirm/index'
 import Notification from '../../../utils/notification'
 import { LowerRatio } from 'utils/commonComponents'
@@ -70,17 +70,6 @@ const AddCollateral: React.FC<any> = props => {
   const red = Number(commonState.assetBaseInfoObj[assetTokenName]?.minCollateral) + 15
   const orange = Number(commonState.assetBaseInfoObj[assetTokenName]?.minCollateral) + 30
   const safe = Number(commonState.assetBaseInfoObj[assetTokenName]?.minCollateral) + 50
-
-  // Asset oracle price
-  const [assetOraclePrice, setAssetOraclePrice] = useState(0)
-  useEffect(() => {
-    if(commonState.oraclePrices !== undefined && positionInfo !== undefined) {
-      const assetName = positionInfo.assetTokenName
-     
-      const assetOraPrice = commonState.oraclePrices[`${assetName}/USDC`]
-      setAssetOraclePrice(assetOraPrice)
-    }
-  }, [commonState.oraclePrices, positionInfo])
 
    // allowance checking
    const library = useProvider()
@@ -203,15 +192,19 @@ const AddCollateral: React.FC<any> = props => {
   }, [data])
 
   // Oracle Prices
+  const [assetOraclePrice, setAssetOraclePrice] = useState(0)
+  const [cAssetOraclePrice, setCAssetOraclePrice] = useState(0)
+
   useEffect(() => {
+    let assetPriceInCAsset = assetOraclePrice
+    if (nonStablecoinCAsset.includes(cAssetTokenName)) {
+      assetPriceInCAsset = assetOraclePrice / cAssetOraclePrice
+    }
+    
     if (amountInputFocus) {
       if (Number(tradeAmount) > 0) {
-        // const result = (
-        //   (Number(tradeCollateral) / Number(tradeAmount) / commonState.assetBaseInfoObj[assetTokenName].oraclePrice) *
-        //   100
-        // ).toString()
         const result = (
-          (Number(tradeCollateral) / Number(tradeAmount) / assetOraclePrice) *
+          (Number(tradeCollateral) / Number(tradeAmount) / assetPriceInCAsset) *
           100
         ).toString()
         if (Number(result) > 0) {
@@ -221,23 +214,33 @@ const AddCollateral: React.FC<any> = props => {
         }
       }
     } else {
-      // const result = (
-      //   (Number(tradeCollateral) / Number(sliderValue) / commonState.assetBaseInfoObj[assetTokenName].oraclePrice) *
-      //   100
-      // ).toString()
-     
       const result = (
-        (Number(tradeCollateral) / Number(sliderValue) / assetOraclePrice) *
+        (Number(tradeCollateral) / Number(sliderValue) / assetPriceInCAsset) *
         100
       ).toString()
-      // console.log(`result ${result}= ${Number(tradeCollateral)} / ${Number(sliderValue)} / ${assetOraclePrice}`)
       if (Number(result) > 0) {
         setAmount(fixD(result, commonState.assetBaseInfoObj[assetTokenName].fixDPrecise))
       } else {
         setAmount('')
       }
     }
-  }, [tradeAmount, sliderValue])
+  }, [tradeAmount, sliderValue, cAssetOraclePrice, assetOraclePrice])
+
+  useEffect(() => {
+    async function getOraclePrices() {
+      if(positionInfo.assetTokenName !== undefined) {
+        const assetOraPrice = await getOraclePrice(positionInfo.assetTokenName)
+        setAssetOraclePrice(assetOraPrice)
+      }
+
+      if(positionInfo.cAssetTokenName !== undefined) {
+        const cAssetOraPrice = await getOraclePrice(positionInfo.cAssetTokenName)
+        setCAssetOraclePrice(cAssetOraPrice)
+      }
+    }
+    getOraclePrices()
+  }, [positionInfo.assetTokenName, positionInfo.cAssetTokenName])
+
   function useDebounceHook(value: any, delay: any) {
     const [debounceValue, setDebounceValue] = useState(0)
     useEffect(() => {

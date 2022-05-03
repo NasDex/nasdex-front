@@ -54,6 +54,10 @@ interface Person {
   [propName: string]: any
 }
 
+export const nonStablecoinCAsset = [
+  'aUST'
+]
+
 export const oracleList = [
   {
     assetKey: 'nSE',

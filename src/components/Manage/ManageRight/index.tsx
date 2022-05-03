@@ -20,6 +20,7 @@ import useModal from 'hooks/useModal'
 import Setting from '../../common/Setting'
 import { useTranslation } from 'react-i18next'
 import { getOraclePrice } from 'utils/getList'
+import { nonStablecoinCAsset } from '../../../constants/index'
 const ProfileList: React.FC<any> = props => {
   const { t, i18n } = useTranslation()
   const tablieNav = [
@@ -81,7 +82,18 @@ const ProfileList: React.FC<any> = props => {
 
       // oracle price
       const assetOraclePrice = await getOraclePrice(assetsTokenName)
+      let assetPriceInCAsset = assetOraclePrice
+      if(nonStablecoinCAsset.includes(cAssetsTokenName)) {
+        const cAssetOraclePrice = await getOraclePrice(cAssetsTokenName)
+        assetPriceInCAsset = assetOraclePrice / cAssetOraclePrice
+      }
 
+      // cRatio
+      const cRatio = CalculateRate(
+        fixD(assetAmountSub, 6),
+        fixD(cAssetAmountSub, 6),
+        assetPriceInCAsset
+      )
       const result = {
         positionId: position.id.toString(),
         feerate: feerate,
@@ -98,11 +110,7 @@ const ProfileList: React.FC<any> = props => {
         assetTokenName: assetsTokenName,
         cAssetTokenName: cAssetsTokenName,
         isShort: position.isShort,
-        cRatio: CalculateRate(
-          fixD(assetAmountSub, 6),
-          fixD(cAssetAmountSub, 6),
-          assetOraclePrice
-        ),
+        cRatio: cRatio,
       }
       if (result) {
         setPositionInfo(result)
