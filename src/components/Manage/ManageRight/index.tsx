@@ -19,6 +19,7 @@ import { useCommonState } from 'state/common/hooks'
 import useModal from 'hooks/useModal'
 import Setting from '../../common/Setting'
 import { useTranslation } from 'react-i18next'
+import { getOraclePrice } from 'utils/getList'
 const ProfileList: React.FC<any> = props => {
   const { t, i18n } = useTranslation()
   const tablieNav = [
@@ -58,8 +59,9 @@ const ProfileList: React.FC<any> = props => {
     cRatio: '',
     isShort: '',
   })
+
   async function getPosition() {
-    if (positionId && account) {
+    if (positionId && account&&assetsName) {
       const position = await PositionsContract.getPosition(positionId)
       const feerate = (await MintContract.feeRate()) / 1000
       const assetsTokenName = assetsName[position.assetToken]
@@ -76,6 +78,10 @@ const ProfileList: React.FC<any> = props => {
           formatUnits(position.cAssetAmount, assetBaseInfoObj[cAssetsTokenName].decimals).indexOf('.') + 8,
         ),
       )
+
+      // oracle price
+      const assetOraclePrice = await getOraclePrice(assetsTokenName)
+
       const result = {
         positionId: position.id.toString(),
         feerate: feerate,
@@ -86,7 +92,7 @@ const ProfileList: React.FC<any> = props => {
         cAssetAmountSub: cAssetAmountSub,
         cAssetToken: position.cAssetToken,
         owner: position.owner,
-        oraclePrice: commonState.assetBaseInfoObj[assetsTokenName].oraclePrice,
+        oraclePrice: assetOraclePrice,
         minCollateral: commonState.assetBaseInfoObj[assetsTokenName].minCollateral,
         minCollateralWarning: commonState.assetBaseInfoObj[assetsTokenName].minCollateral + 5,
         assetTokenName: assetsTokenName,
@@ -95,7 +101,7 @@ const ProfileList: React.FC<any> = props => {
         cRatio: CalculateRate(
           fixD(assetAmountSub, 6),
           fixD(cAssetAmountSub, 6),
-          commonState.assetBaseInfoObj[assetsTokenName].oraclePrice,
+          assetOraclePrice
         ),
       }
       if (result) {

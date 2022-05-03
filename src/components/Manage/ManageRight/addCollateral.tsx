@@ -21,8 +21,8 @@ import {
 } from '../../../state/manage/actions'
 import { upDateFarmMinimumReceived, upDateFarmReturned } from '../../../state/farm/actions'
 import { useManageState } from 'state/manage/hooks'
-import { useCommonState } from 'state/common/hooks'
-import { getSwapPrice } from 'utils/getList'
+import { useCommonState, useProvider } from 'state/common/hooks'
+import { getAllowance, getSwapPrice } from 'utils/getList'
 import { useFarmState } from 'state/farm/hooks'
 import { useDispatch } from 'react-redux'
 import useModal from 'hooks/useModal'
@@ -37,6 +37,8 @@ const { Option } = Select
 type IconType = 'success' | 'info' | 'error' | 'warning'
 import { useTranslation } from 'react-i18next'
 import { parseUnits } from 'ethers/lib/utils'
+import { ethers } from 'ethers'
+import Erc20Abi from 'constants/abis/erc20.json'
 const AddCollateral: React.FC<any> = props => {
   const { t, i18n } = useTranslation()
   const manageState = useManageState()
@@ -68,6 +70,40 @@ const AddCollateral: React.FC<any> = props => {
   const red = Number(commonState.assetBaseInfoObj[assetTokenName]?.minCollateral) + 15
   const orange = Number(commonState.assetBaseInfoObj[assetTokenName]?.minCollateral) + 30
   const safe = Number(commonState.assetBaseInfoObj[assetTokenName]?.minCollateral) + 50
+
+  // Asset oracle price
+  const [assetOraclePrice, setAssetOraclePrice] = useState(0)
+  useEffect(() => {
+    if(commonState.oraclePrices !== undefined && positionInfo !== undefined) {
+      const assetName = positionInfo.assetTokenName
+     
+      const assetOraPrice = commonState.oraclePrices[`${assetName}/USDC`]
+      setAssetOraclePrice(assetOraPrice)
+    }
+  }, [commonState.oraclePrices, positionInfo])
+
+   // allowance checking
+   const library = useProvider()
+   const [assetAllowance, setAssetAllowance] = useState("0")
+   const getTokenAllowance = useCallback(async (tokenAddress: any, decimal: string) => {
+     if (account !== undefined && account !== null) {
+       const contract = new ethers.Contract(tokenAddress, Erc20Abi, library)
+       const allowance = await getAllowance(contract, account, mintAddress, decimal)
+       setAssetAllowance(allowance.allowance)
+     }
+   }, [account, library])
+   useEffect(() => {
+     if (account !== undefined && library !== undefined && commonState.assetBaseInfoObj !== undefined && assetTokenName !== undefined) {
+       const asset = commonState.assetBaseInfoObj[assetTokenName]
+       if (asset === undefined) {
+         console.log(`asset is undefined`)
+         return
+       }
+       getTokenAllowance(asset.address, asset.decimals)
+     }
+   }, [account, library, selectCoin, commonState.assetBaseInfoObj, assetTokenName])
+
+
   const marks = {
     150: {
       style: {
@@ -147,13 +183,14 @@ const AddCollateral: React.FC<any> = props => {
   function changeSlider(value: string) {
     setSliderValue(value)
   }
-  function handleConfirm() {
+  async function handleConfirm() {
+    const minReceived = await getPrice()
     dispatch(upDateManageTradeAmount({ manageTradeAmount: tradeAmount }))
     dispatch(upDateAssetAmount({ manageAssetAmount: tradeAmount }))
     dispatch(upDateManageCollateralRatio({ manageCollateralRatio: sliderValue }))
     dispatch(upDateManageTradeCollateral({ manageTradeCollateral: tradeCollateral }))
     dispatch(upDateFarmReturned({ farmReturned: returned }))
-    dispatch(upDateFarmMinimumReceived({ farmMinimumReceived: minimum.toString() }))
+    dispatch(upDateFarmMinimumReceived({ farmMinimumReceived: minReceived.toString() }))
     openConfirmOrder()
   }
   useEffect(() => {
@@ -165,11 +202,16 @@ const AddCollateral: React.FC<any> = props => {
     setData(newData)
   }, [data])
 
+  // Oracle Prices
   useEffect(() => {
     if (amountInputFocus) {
       if (Number(tradeAmount) > 0) {
+        // const result = (
+        //   (Number(tradeCollateral) / Number(tradeAmount) / commonState.assetBaseInfoObj[assetTokenName].oraclePrice) *
+        //   100
+        // ).toString()
         const result = (
-          (Number(tradeCollateral) / Number(tradeAmount) / commonState.assetBaseInfoObj[assetTokenName].oraclePrice) *
+          (Number(tradeCollateral) / Number(tradeAmount) / assetOraclePrice) *
           100
         ).toString()
         if (Number(result) > 0) {
@@ -179,10 +221,16 @@ const AddCollateral: React.FC<any> = props => {
         }
       }
     } else {
+      // const result = (
+      //   (Number(tradeCollateral) / Number(sliderValue) / commonState.assetBaseInfoObj[assetTokenName].oraclePrice) *
+      //   100
+      // ).toString()
+     
       const result = (
-        (Number(tradeCollateral) / Number(sliderValue) / commonState.assetBaseInfoObj[assetTokenName].oraclePrice) *
+        (Number(tradeCollateral) / Number(sliderValue) / assetOraclePrice) *
         100
       ).toString()
+      // console.log(`result ${result}= ${Number(tradeCollateral)} / ${Number(sliderValue)} / ${assetOraclePrice}`)
       if (Number(result) > 0) {
         setAmount(fixD(result, commonState.assetBaseInfoObj[assetTokenName].fixDPrecise))
       } else {
@@ -207,16 +255,25 @@ const AddCollateral: React.FC<any> = props => {
   }, [farmState.slippageTolerance, debounce])
 
   async function getPrice() {
-    const parseAmount = parseUnits((precision.minus(Number(tradeAmount),
-      Number(fixD(positionInfo.assetAmountSub, commonState.assetBaseInfoObj[assetTokenName].fixDPrecise)))).toString(),
+    // Difference between input amount with existing position amount
+    let difference = precision.minus(Number(tradeAmount),
+    Number(fixD(positionInfo.assetAmountSub, commonState.assetBaseInfoObj[assetTokenName].fixDPrecise)))
+    if(difference < 0) {
+      difference = (-1) * difference
+    }
+
+    const parseAmount = parseUnits( difference.toString(),
       commonState.assetBaseInfoObj[assetTokenName].decimals)
+
     const amountsOut = await swapRouterContract.getAmountsOut(parseAmount,
       [commonState.assetBaseInfoObj[assetTokenName].address,
       commonState.assetBaseInfoObj[cAssetTokenName].address])
     const amount = formatUnits(amountsOut[1], commonState.assetBaseInfoObj[cAssetTokenName].decimals)
     const minReceive = precision.minus(fixD(Number(amount), commonState.assetBaseInfoObj[cAssetTokenName].fixDPrecise),
       (fixD(Number(amount), commonState.assetBaseInfoObj[cAssetTokenName].fixDPrecise) * Number(farmState.slippageTolerance) * 0.01))
+    // console.log(`Minimum received ${minReceive}`)
     setMinimum(minReceive.toString())
+    return minReceive
   }
   useEffect(() => {
     setTradeCollateral(fixD(positionInfo.cAssetAmountSub, commonState.assetBaseInfoObj[cAssetTokenName].fixDPrecise))
@@ -399,6 +456,7 @@ const AddCollateral: React.FC<any> = props => {
           <use xlinkHref="#icon-arrow-trade"></use>
         </svg>
       </div>
+      {/** Edit */}
       <div className={amountActive ? 'amount-active amount' : 'amount'}>
         <div className="amount-header">
           <p>{positionInfo.isShort == true ? `${t('Edit')}` : `${t('Edit')}`}</p>
@@ -474,7 +532,7 @@ const AddCollateral: React.FC<any> = props => {
         <Button className="addCollateral" onClick={() => onPresentConnectModal()}>
           {t('Connect')}
         </Button>
-      ) : commonState.assetBaseInfoObj[assetTokenName]?.mintContractAllowance ? (
+      ) : parseFloat(assetAllowance) > 0 ? (
         <Button
           disabled={
             Number(positionInfo.assetAmount) - Number(tradeAmount) >
@@ -548,6 +606,10 @@ const AddCollateral: React.FC<any> = props => {
             </div>
           </div>
         ) : null}
+        {/* {tradeAmount} \n
+        {positionInfo.assetAmountSub} \n
+        {precision.minus(Number(tradeAmount),
+          Number(fixD(positionInfo.assetAmountSub, commonState.assetBaseInfoObj[assetTokenName].fixDPrecise)))} */}
       </div>
     </div>
   )
