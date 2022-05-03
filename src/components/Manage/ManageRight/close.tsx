@@ -11,7 +11,7 @@ import { fixD } from 'utils'
 import { useManageState } from 'state/manage/hooks'
 import OrderNoifcation from '../../common/Notification'
 import Notification from '../../../utils/notification'
-import { useCommonState } from 'state/common/hooks'
+import { useCommonState, useProvider } from 'state/common/hooks'
 import useModal from '../../../hooks/useModal'
 import { useMintContract } from 'constants/hooks/useContract'
 import { parseUnits } from 'ethers/lib/utils'
@@ -22,6 +22,9 @@ type IconType = 'success' | 'info' | 'error' | 'warning'
 import useApproveFarm from '../../common/approve/index'
 import { mintAddress } from '../../../constants/index'
 import { useTranslation } from 'react-i18next'
+import Erc20Abi from 'constants/abis/erc20.json'
+import { ethers } from 'ethers'
+import { getAllowance } from 'utils/getList'
 
 const { Option } = Select
 const Close: React.FC<any> = props => {
@@ -110,6 +113,28 @@ const Close: React.FC<any> = props => {
     setAmonutFee(amountFee.toString())
   }, [positionInfo.cAssetAmount])
 
+
+  // allowance checking
+  const library = useProvider()
+  const [assetAllowance, setAssetAllowance] = useState("0")
+  const getTokenAllowance = useCallback(async (tokenAddress: any, decimal: string) => {
+    if (account !== undefined && account !== null) {
+      const contract = new ethers.Contract(tokenAddress, Erc20Abi, library)
+      const allowance = await getAllowance(contract, account, mintAddress, decimal)
+      setAssetAllowance(allowance.allowance)
+    }
+  }, [account, library])
+  useEffect(() => {
+    if (account !== undefined && library !== undefined && commonState.assetBaseInfoObj !== undefined && assetTokenName !== undefined) {
+      const asset = commonState.assetBaseInfoObj[assetTokenName]
+      if (asset === undefined) {
+        console.log(`asset is undefined`)
+        return
+      }
+      getTokenAllowance(asset.address, asset.decimals)
+    }
+  }, [account, library, commonState.assetBaseInfoObj, assetTokenName])
+
   return (
     <div className="manageRight-close-container">
       <div className="tx-fee">
@@ -172,7 +197,7 @@ const Close: React.FC<any> = props => {
         <Button disabled className="close">
           {t('Insufficient')}
         </Button>
-      ) : commonState.assetBaseInfoObj[assetTokenName]?.mintContractAllowance ? (
+      ) : parseFloat(assetAllowance) > 0? (
         <Button
           className="close"
           onClick={() => burn()}
