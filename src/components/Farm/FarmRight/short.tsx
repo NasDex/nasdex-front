@@ -33,7 +33,7 @@ import useApproveFarm from '../../common/approve/index'
 import { LowerRatio } from 'utils/commonComponents'
 import { mintAddress, USDTaddress } from '../../../constants/index'
 import { formatUnits, parseUnits } from 'ethers/lib/utils'
-import { useCustomSwapRouterContract } from 'constants/hooks/useContract'
+import { useCustomSwapRouterContract, useSwapRouterContract } from 'constants/hooks/useContract'
 import { useTranslation } from 'react-i18next'
 import precision from 'utils/precision'
 import Erc20Abi from 'constants/abis/erc20.json'
@@ -189,7 +189,6 @@ const Short: React.FC<any> = props => {
     setTradeCollateral('')
     getPrice()
   }, [selectStock, selectCoin])
-
   function useDebounceHook(value: any, delay: any) {
     const [debounceValue, setDebounceValue] = useState(0)
     useEffect(() => {
@@ -198,10 +197,11 @@ const Short: React.FC<any> = props => {
     }, [value, delay])
     return debounceValue
   }
-  const debounce = useDebounceHook(tradeAmount, 100)
+  const debounce = useDebounceHook(tradeAmount, 300)
   useEffect(() => {
     const nAssetOraclePrice = commonState.assetBaseInfoObj[selectStock].oraclePrice 
     const cAssetOraclePrice = commonState.assetBaseInfoObj[selectCoin].oraclePrice
+
     const isCassetNonStablecoin = commonState.assetBaseInfoObj[selectCoin].isNoNStableCoin === undefined 
       ? false 
       : commonState.assetBaseInfoObj[selectCoin].isNoNStableCoin === 0 
@@ -248,6 +248,7 @@ const Short: React.FC<any> = props => {
     amountInputFocus,
     collateralInputFocus,
     commonState.assetBaseInfoObj,
+    commonState.oraclePrices
   ])
   useEffect(() => {
     if (tradeAmount && tradeCollateral && farmState.slippageTolerance) {
@@ -268,24 +269,26 @@ const Short: React.FC<any> = props => {
       return (fixD(Number(num) / Number(price) * 100, 2))
     }
   }
-  const swapRouterContract = useCustomSwapRouterContract()
+  const swapRouterContract = useSwapRouterContract()
   async function getAmountsOut(tradeAmount: any) {
-    const parseAmount = parseUnits(tradeAmount, commonState.assetBaseInfoObj[selectStock].decimals)
-    const amountsOut = await swapRouterContract.getAmountsOut(parseAmount, [
-      commonState.assetBaseInfoObj[selectStock].address,
-      commonState.assetBaseInfoObj[selectCoin].address,
-    ])
-    const tokenBAmount = formatUnits(amountsOut[1], commonState.assetBaseInfoObj[selectCoin].decimals)
-    setTokenBamount(fixD(tokenBAmount, commonState.assetBaseInfoObj[selectCoin].fixDPrecise))
-    setExpectedPrice(Number(fixD(tokenBAmount, commonState.assetBaseInfoObj[selectCoin].fixDPrecise) / tradeAmount))
-    setamountInputFocus(false)
-    setReturned(fixD(tokenBAmount, commonState.assetBaseInfoObj[selectCoin].fixDPrecise))
-    dispatch(upDateFarmReturned({ farmReturned: tokenBAmount }))
-    const minimum = Number(fixD(tokenBAmount, commonState.assetBaseInfoObj[selectCoin].fixDPrecise))
-      - Number(fixD(tokenBAmount, commonState.assetBaseInfoObj[selectCoin].fixDPrecise))
-      * Number(farmState.slippageTolerance) * 0.01
-    setMinimum(fixD(minimum.toString(), commonState.assetBaseInfoObj[selectCoin].fixDPrecise))
-    dispatch(upDateFarmMinimumReceived({ farmMinimumReceived: minimum.toString() }))
+    if(parseFloat(tradeAmount) > 0) {
+      const parseAmount = parseUnits(tradeAmount, commonState.assetBaseInfoObj[selectStock].decimals)
+      const amountsOut = await swapRouterContract.getAmountsOut(parseAmount, [
+        commonState.assetBaseInfoObj[selectStock].address,
+        commonState.assetBaseInfoObj[selectCoin].address,
+      ])
+      const tokenBAmount = formatUnits(amountsOut[1], commonState.assetBaseInfoObj[selectCoin].decimals)
+      setTokenBamount(fixD(tokenBAmount, commonState.assetBaseInfoObj[selectCoin].fixDPrecise))
+      setExpectedPrice(Number(fixD(tokenBAmount, commonState.assetBaseInfoObj[selectCoin].fixDPrecise) / tradeAmount))
+      setamountInputFocus(false)
+      setReturned(fixD(tokenBAmount, commonState.assetBaseInfoObj[selectCoin].fixDPrecise))
+      dispatch(upDateFarmReturned({ farmReturned: tokenBAmount }))
+      const minimum = Number(fixD(tokenBAmount, commonState.assetBaseInfoObj[selectCoin].fixDPrecise))
+        - Number(fixD(tokenBAmount, commonState.assetBaseInfoObj[selectCoin].fixDPrecise))
+        * Number(farmState.slippageTolerance) * 0.01
+      setMinimum(fixD(minimum.toString(), commonState.assetBaseInfoObj[selectCoin].fixDPrecise))
+      dispatch(upDateFarmMinimumReceived({ farmMinimumReceived: minimum.toString() }))
+    }
   }
 
   async function getPrice() {
@@ -324,7 +327,6 @@ const Short: React.FC<any> = props => {
     if(account !== undefined && library !== undefined && commonState.assetBaseInfoObj !== undefined) {
         const cAsset = commonState.assetBaseInfoObj[selectCoin]
         if(cAsset === undefined) {
-          console.log(`cAsset is undefined`)
           return
         }
         getTokenAllowance(cAsset.address, cAsset.decimals)

@@ -27,6 +27,8 @@ import { LowerRatio } from 'utils/commonComponents'
 import precision from 'utils/precision'
 const { Option } = Select
 import { useTranslation } from 'react-i18next'
+import { getOraclePrice } from 'utils/getList'
+import { nonStablecoinCAsset } from 'constants/index'
 type IconType = 'success' | 'info' | 'error' | 'warning'
 const Withdraw: React.FC<any> = props => {
   const { t, i18n } = useTranslation()
@@ -140,11 +142,35 @@ const Withdraw: React.FC<any> = props => {
     setSelectCoin(manageState.manageCoinSelect)
   }, [manageState.manageCoinSelect])
 
+  // Asset oracle price
+  const [assetOraclePrice, setAssetOraclePrice] = useState(0)
+  const [cAssetOraclePrice, setCAssetOraclePrice] = useState(0)
   useEffect(() => {
+    async function getOraclePrices() {
+      if(positionInfo.assetTokenName !== undefined) {
+        const assetOraPrice = await getOraclePrice(positionInfo.assetTokenName)
+        setAssetOraclePrice(assetOraPrice)
+      }
+
+      if(positionInfo.cAssetTokenName !== undefined) {
+        const cAssetOraPrice = await getOraclePrice(positionInfo.cAssetTokenName)
+        setCAssetOraclePrice(cAssetOraPrice)
+      }
+    }
+    getOraclePrices()
+  }, [positionInfo.assetTokenName, positionInfo.cAssetTokenName])
+
+
+  useEffect(() => {
+    let assetPriceInCAsset = assetOraclePrice
+    if (nonStablecoinCAsset.includes(cAssetTokenName)) {
+      assetPriceInCAsset = assetOraclePrice / cAssetOraclePrice
+    }
+    
     if (collateralInputFocus) {
       if (Number(tradeAmount) > 0) {
         const result = (
-          (Number(tradeCollateral) / Number(tradeAmount) / commonState.assetBaseInfoObj[assetTokenName].oraclePrice) *
+          (Number(tradeCollateral) / Number(tradeAmount) / assetPriceInCAsset) *
           100
         ).toString()
         if (Number(result) > 0) {
@@ -155,7 +181,7 @@ const Withdraw: React.FC<any> = props => {
       }
     } else {
       const result = (
-        (Number(tradeAmount) * commonState.assetBaseInfoObj[assetTokenName].oraclePrice * Number(sliderValue)) /
+        (Number(tradeAmount) * assetPriceInCAsset * Number(sliderValue)) /
         100
       ).toString()
       if (Number(result) > 0) {
@@ -164,7 +190,7 @@ const Withdraw: React.FC<any> = props => {
         setTradeCollateral('')
       }
     }
-  }, [tradeCollateral, sliderValue])
+  }, [tradeCollateral, sliderValue, cAssetOraclePrice, assetOraclePrice])
   useEffect(() => {
     setTradeCollateral(fixD(positionInfo.cAssetAmountSub, commonState.assetBaseInfoObj[cAssetTokenName].fixDPrecise))
     setAmount(fixD(positionInfo.assetAmountSub, commonState.assetBaseInfoObj[assetTokenName].fixDPrecise))
