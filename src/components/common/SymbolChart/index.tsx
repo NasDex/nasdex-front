@@ -462,7 +462,7 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
           <div className="symbol-name">
             <div className="name">
               <span>{assetName}</span> / {cAssetName}
-              {from == 'manage' || from == 'trade' ? null : (
+              {(from == 'manage' || from == 'trade' || from == 'longFarm') ? null : (
                 <svg className="icon" aria-hidden="true" onClick={openAssetPair}>
                   <use xlinkHref="#icon-Under"></use>
                 </svg>
