@@ -179,14 +179,6 @@ const OrderConfirm = ({
     const nowtime = newDate.getTime()
     let swapAmountMin
     let swapDeadline
-    if (positionInfo.isShort) {
-      swapAmountMin = parseUnits(fixD(farmState.farmMinimumReceived, cAssetInfo.decimals).toString(), cAssetInfo.decimals)
-      swapDeadline = Number(nowtime) + Number(farmState.deadline) * 60
-    } else {
-      swapAmountMin = parseUnits(
-        fixD(manageState.manageTradeCollateral, assetBaseInfoObj[cAssetTokenName].decimals).toString(), cAssetInfo.decimals)
-      swapDeadline = Number(nowtime) + Number(20) * 60
-    }
     dispatch(upDateTxHash({ hash: '' }))
     let asset
     console.log(`Manage Order confirm ${confirmType} ${assetTokenName} ${cAssetTokenName}, is short ${positionInfo.isShort},  before txn \n
@@ -205,6 +197,15 @@ const OrderConfirm = ({
     try {
       let txhash
       if (confirmType === 'editNasset') {
+        if (positionInfo.isShort) {
+          swapAmountMin = parseUnits(fixD(farmState.farmMinimumReceived, cAssetInfo.decimals).toString(), cAssetInfo.decimals)
+          swapDeadline = Number(nowtime) + Number(farmState.deadline) * 60
+        } else {
+          swapAmountMin = parseUnits(
+            fixD(manageState.manageTradeCollateral, assetBaseInfoObj[cAssetTokenName].decimals).toString(), cAssetInfo.decimals)
+          swapDeadline = Number(nowtime) + Number(20) * 60
+        }
+
         asset = positionInfo.assetTokenName
         if (currentRatio > nowRatio) {
           const assetAmount = parseUnits(
