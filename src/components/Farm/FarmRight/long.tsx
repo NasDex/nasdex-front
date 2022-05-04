@@ -95,7 +95,6 @@ const Long: React.FC<any> = props => {
   }, [account])
   useEffect(() => {
     if(tokenA !== undefined && tokenA !== null && library !== undefined) {
-      console.log(`Token A is changing ${tokenA}. Get allowance`)
       const tokenADecimal = commonState.assetBaseInfoObj[tokenA].decimals
       const tokenAAddress = commonState.assetBaseInfoObj[tokenA].address
       getTokenAllowance(tokenAAddress, tokenADecimal, true)
@@ -103,7 +102,6 @@ const Long: React.FC<any> = props => {
   }, [tokenA, account, library])
   useEffect(() => {
     if(tokenB !== undefined && tokenB !== null && library !== undefined) {
-      console.log(`Token B is changing ${tokenB}. Get allowance`)
       const tokenBDecimal = commonState.assetBaseInfoObj[tokenB].decimals
       const tokenBAddress = commonState.assetBaseInfoObj[tokenB].address
       getTokenAllowance(tokenBAddress, tokenBDecimal, false)
@@ -255,7 +253,6 @@ const Long: React.FC<any> = props => {
     const tokenBAddress = commonState.assetBaseInfoObj[tokenB].address
 
     const result = getLpPairDetail(tokenAAddress, tokenBAddress)
-    console.log(`Get pair result in long tsx`, result)
     if(result !== undefined) {
       setPair(result.lp)
     }

@@ -224,7 +224,7 @@ const SymbolTrade: React.FC<any> = props => {
       }
     }
 
-    console.log(`Props ${props.assetName}, ${props.cAssetName}`)
+    // console.log(`Props ${props.assetName}, ${props.cAssetName}`)
     if (props.assetName  === undefined) {
       dispatch(upDateCoinStock({ mintCoinStock: commonState.defaultAsset }))
     } else {
