@@ -139,7 +139,7 @@ export async function getSwapPrice(tokenAaddress: any, tokenBaddress: any, token
     // const library = getLibrary(provider) ?? simpleRpcProvider
     const lpInfo = getLpPairDetail(tokenAaddress, tokenBaddress)
     if (lpInfo === undefined) {
-      console.log(`LP info is undefined for ${tokenAaddress} and  ${tokenBaddress}, quit getSwapPrice()`)
+      // console.log(`LP info is undefined for ${tokenAaddress} and  ${tokenBaddress}, quit getSwapPrice()`)
       return
     }
 

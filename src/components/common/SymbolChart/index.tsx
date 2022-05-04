@@ -181,7 +181,7 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
       //   symbol = `${asset}/${casset}`
       //   valueChange = 150
       // }
-      console.log(commonState.assetBaseInfoObj)
+      // console.log(commonState.assetBaseInfoObj)
       symbol = `${commonState.assetBaseInfoObj[assetName]?.key}/${commonState.assetBaseInfoObj[cAssetName]?.key}`
       valueChange = 200
     } else {
@@ -375,7 +375,7 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
     if (from == 'trade' || from == 'longFarm') {
       lpUrl = '/lp'
     }
-    console.log(`Fire graph data`)
+    // console.log(`Fire graph data ${nowDate.toString()} ${beforeDate.toString()} https://beta-api.nasdex.xyz/v1/price${lpUrl}?symbol=${symbol}&type=${type}&start=${beforeDate}&end=${nowDate}`)
     // console.log(` url : https://beta-api.nasdex.xyz/v1/price${lpUrl}?symbol=${symbol}&type=${type}&start=${beforeDate}&end=${nowDate}`)
     axios({
       method: 'GET',
