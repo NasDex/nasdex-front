@@ -460,7 +460,7 @@ const SymbolTrade: React.FC<any> = props => {
                 onClick={() => {
                   setCollateralInputFocus(true)
                   setamountInputFocus(false)
-                  setTradeCollateral(assetsBalance)
+                  setTradeCollateral(fixD(assetsBalance, commonState.assetBaseInfoObj[selectCoin].fixDPrecise))
                 }}>
                 {t('MAX')}
               </Button>
