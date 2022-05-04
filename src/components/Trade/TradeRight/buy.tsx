@@ -327,7 +327,7 @@ const Buy: React.FC<any> = props => {
               <Button
                 disabled={Number(commonState.assetBaseInfoObj[tokenA]?.balance) > 0 && account ? false : true}
                 onClick={() => {
-                  setTokenAamount(commonState.assetBaseInfoObj[tokenA]?.balance)
+                  setTokenAamount(fixD(commonState.assetBaseInfoObj[tokenA]?.balance, fixDPreciseA))
                   setIsChangeTokenA(true)
                   setIsChangeTokenB(false)
                 }}>
