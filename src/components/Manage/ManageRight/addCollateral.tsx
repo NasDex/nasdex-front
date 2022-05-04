@@ -28,7 +28,7 @@ import { useDispatch } from 'react-redux'
 import useModal from 'hooks/useModal'
 import useApproveFarm from '../../common/approve/index'
 import { useErc20Contract } from 'constants/hooks/useContract'
-import { mintAddress, nAssetAddress, nonStablecoinCAsset } from '../../../constants/index'
+import { mintAddress, nAssetAddress, nonStablecoinCAsset, USDCaddress } from '../../../constants/index'
 import ConfirmOrder from '../OrderConfirm/index'
 import Notification from '../../../utils/notification'
 import { LowerRatio } from 'utils/commonComponents'
@@ -264,13 +264,12 @@ const AddCollateral: React.FC<any> = props => {
     if(difference < 0) {
       difference = (-1) * difference
     }
-
     const parseAmount = parseUnits( difference.toString(),
       commonState.assetBaseInfoObj[assetTokenName].decimals)
 
     const amountsOut = await swapRouterContract.getAmountsOut(parseAmount,
       [commonState.assetBaseInfoObj[assetTokenName].address,
-      commonState.assetBaseInfoObj[cAssetTokenName].address])
+      USDCaddress])
     const amount = formatUnits(amountsOut[1], commonState.assetBaseInfoObj[cAssetTokenName].decimals)
     const minReceive = precision.minus(fixD(Number(amount), commonState.assetBaseInfoObj[cAssetTokenName].fixDPrecise),
       (fixD(Number(amount), commonState.assetBaseInfoObj[cAssetTokenName].fixDPrecise) * Number(farmState.slippageTolerance) * 0.01))
