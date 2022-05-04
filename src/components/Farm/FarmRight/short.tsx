@@ -31,7 +31,7 @@ import { useWalletModal } from 'components/WalletModal'
 import useAuth from 'hooks/useAuth'
 import useApproveFarm from '../../common/approve/index'
 import { LowerRatio } from 'utils/commonComponents'
-import { mintAddress, USDTaddress } from '../../../constants/index'
+import { mintAddress, USDCaddress, USDTaddress } from '../../../constants/index'
 import { formatUnits, parseUnits } from 'ethers/lib/utils'
 import { useCustomSwapRouterContract, useSwapRouterContract } from 'constants/hooks/useContract'
 import { useTranslation } from 'react-i18next'
@@ -275,7 +275,7 @@ const Short: React.FC<any> = props => {
       const parseAmount = parseUnits(tradeAmount, commonState.assetBaseInfoObj[selectStock].decimals)
       const amountsOut = await swapRouterContract.getAmountsOut(parseAmount, [
         commonState.assetBaseInfoObj[selectStock].address,
-        commonState.assetBaseInfoObj[selectCoin].address,
+        USDCaddress
       ])
       const tokenBAmount = formatUnits(amountsOut[1], commonState.assetBaseInfoObj[selectCoin].decimals)
       setTokenBamount(fixD(tokenBAmount, commonState.assetBaseInfoObj[selectCoin].fixDPrecise))
