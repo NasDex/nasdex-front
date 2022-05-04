@@ -124,7 +124,6 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
     }
   
     // Farm or Long Farm handling
-    console.log(`We are from ${from}`)
     if(['farm','longFarm'].includes(from)) {
       if(farmState.farmCoinStock) {
         const assetType = commonState.assetBaseInfoObj[farmState.farmCoinStock]?.type
@@ -424,10 +423,6 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
       }
     })
   }
-
-  useEffect(()=> {
-    console.log(`cAssetName ${cAssetName}`)
-  }, [cAssetName])
 
   useEffect(() => {
     const chart = echarts.getInstanceByDom(chartRef.current as unknown as HTMLDivElement)
