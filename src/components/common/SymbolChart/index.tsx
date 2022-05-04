@@ -96,7 +96,7 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
       const swapPrice = swapPrices[combinedName]
 
       // Mint page handling
-      if(["mint", "farm"].includes(from)) {
+      if(["mint", "farm", "manage"].includes(from)) {
         setPrice(fixD(oraclePrice,4))
         setPriceLabel(cAssetName)
         calculatePremium(swapPrice, oraclePrice)
@@ -149,7 +149,7 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
     }
    
     // Manage page handling
-    if (from == 'manage') {
+    if (from === 'manage') {
       setAssetName(manageState.positionInfo.assetTokenName)
       setcAssetName(manageState.positionInfo.cAssetTokenName)
     }
@@ -181,7 +181,7 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
       //   symbol = `${asset}/${casset}`
       //   valueChange = 150
       // }
-      console.log(commonState.assetBaseInfoObj)
+      // console.log(commonState.assetBaseInfoObj)
       symbol = `${commonState.assetBaseInfoObj[assetName]?.key}/${commonState.assetBaseInfoObj[cAssetName]?.key}`
       valueChange = 200
     } else {
@@ -375,7 +375,7 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
     if (from == 'trade' || from == 'longFarm') {
       lpUrl = '/lp'
     }
-    console.log(`Fire graph data`)
+    // console.log(`Fire graph data ${nowDate.toString()} ${beforeDate.toString()} https://beta-api.nasdex.xyz/v1/price${lpUrl}?symbol=${symbol}&type=${type}&start=${beforeDate}&end=${nowDate}`)
     // console.log(` url : https://beta-api.nasdex.xyz/v1/price${lpUrl}?symbol=${symbol}&type=${type}&start=${beforeDate}&end=${nowDate}`)
     axios({
       method: 'GET',
@@ -462,7 +462,7 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
           <div className="symbol-name">
             <div className="name">
               <span>{assetName}</span> / {cAssetName}
-              {from == 'manage' || from == 'trade' ? null : (
+              {(from == 'manage' || from == 'trade' || from == 'longFarm') ? null : (
                 <svg className="icon" aria-hidden="true" onClick={openAssetPair}>
                   <use xlinkHref="#icon-Under"></use>
                 </svg>

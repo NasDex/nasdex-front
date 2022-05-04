@@ -21,6 +21,7 @@ import { fixD, numToWei } from 'utils'
 import FeeWarning from 'utils/feeWarning'
 import { TradingTimer } from 'utils/commonComponents'
 import { useTranslation } from 'react-i18next'
+import { useEffect } from 'react'
 const defaultOnDismiss = () => null
 const defaultOpenNotificationWithIcon = () => null
 const defaultSetShortConfirm = () => null
@@ -56,6 +57,11 @@ const ShortOrderConfirm = ({
   async function openPosition() {
     setShortConfirm(true)
     setShortConfirmBtn(true)
+    console.log(`Short farm ${farmState.farmCoinStock} using ${farmState.farmCoinSelect} \n 
+      cAssetAmountRaw: ${farmState.farmTradeCollateral}, \n
+      cRatio: ${farmState.farmCollateralRatio}, \n
+      minReceived: ${farmState.farmMinimumReceived}, \n
+      deadline: ${farmState.deadline}`)
     const nAssetsInfo = commonState.assetBaseInfoObj[farmState.farmCoinStock]
     const cAssetInfo = commonState.assetBaseInfoObj[farmState.farmCoinSelect]
     const assetToken = nAssetsInfo.address
@@ -66,6 +72,12 @@ const ShortOrderConfirm = ({
     const newDate = new Date()
     const nowtime = newDate.getTime()
     const swapDeadline = Number(nowtime) + Number(farmState.deadline) * 60
+
+    console.log(`Short farm ${farmState.farmCoinStock} using ${farmState.farmCoinSelect}, before sending txn \n 
+      cAssetAmount: ${cAssetAmount}, \n
+      cRatio: ${cRatio}, \n
+      minReceived: ${swapAmountMin}, \n
+      swapDeadline ${swapDeadline}`)
     dispatch(upDateTxHash({ hash: '' }))
     try {
       openWaiting()
@@ -112,6 +124,15 @@ const ShortOrderConfirm = ({
       return
     }
   }
+
+  useEffect(() => {
+    console.log(`Short farm Preview ${farmState.farmCoinStock} using ${farmState.farmCoinSelect} \n 
+      cAssetAmountRaw: ${farmState.farmTradeCollateral}, \n
+      cRatio: ${farmState.farmCollateralRatio}, \n
+      minReceived: ${farmState.farmMinimumReceived}, \n
+      deadline: ${farmState.deadline}`)
+  }, [farmState])
+
   return (
     <Modal title={t('ShortFarm')} width={420} footer={null} visible={true} onOk={onDismiss} onCancel={onDismiss}>
       <div className="short-order-confirm-conntent">

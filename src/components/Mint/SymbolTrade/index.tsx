@@ -224,7 +224,7 @@ const SymbolTrade: React.FC<any> = props => {
       }
     }
 
-    console.log(`Props ${props.assetName}, ${props.cAssetName}`)
+    // console.log(`Props ${props.assetName}, ${props.cAssetName}`)
     if (props.assetName  === undefined) {
       dispatch(upDateCoinStock({ mintCoinStock: commonState.defaultAsset }))
     } else {
@@ -460,7 +460,7 @@ const SymbolTrade: React.FC<any> = props => {
                 onClick={() => {
                   setCollateralInputFocus(true)
                   setamountInputFocus(false)
-                  setTradeCollateral(assetsBalance)
+                  setTradeCollateral(fixD(assetsBalance, commonState.assetBaseInfoObj[selectCoin].fixDPrecise))
                 }}>
                 {t('MAX')}
               </Button>

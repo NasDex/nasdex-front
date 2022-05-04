@@ -87,11 +87,11 @@ const TikerInfo = ({ onDismiss = defaultOnDismiss, nowPrice = 0, from, cAssetNam
             <span>{commonState.assetBaseInfoObj[assetName].minCollateral}%</span>
           </div>
         </div>
-        {/* <div className="describe">{commonState.assetBaseInfoObj[assetName].assetDesc}</div> */}
-        <div className="describe">{i18n.language == 'zh-CN' ?
+        <div className="describe">{commonState.assetBaseInfoObj[assetName].assetDesc} </div>
+        {/* <div className="describe">{i18n.language == 'zh-CN' ?
           'Sea Limited是一家总部位于新加坡的科技集团。Sea Limited成立于2009年，旗下包括Shopee、SeaMoney、Garena和一家在新加坡超级联赛中踢球的足球俱乐部Lion City Sailors FC。这家控股公司拥有超过33,000雇员。'
           : 'Sea Limited is a tech conglomerate headquartered in Singapore. Established in 2009, Sea Limited is a holding company for Shopee, SeaMoney, Garena and a football club Lion City Sailors FC which plays in Singapore Premier League. It has over 33,000 employees.'
-        }</div>
+        }</div> */}
       </div>
     </Modal>
   )

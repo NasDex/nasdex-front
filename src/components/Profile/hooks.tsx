@@ -1,3 +1,4 @@
+import { nonStablecoinCAsset } from "constants/index"
 import { usePositionsContract } from "constants/hooks/useContract"
 import { formatUnits } from "ethers/lib/utils"
 import { useCallback } from "react"
@@ -63,7 +64,7 @@ export default function useProfile() {
                 // oracle price
                 const _oraclePromises = []
                 _oraclePromises.push(getOraclePrice(assetName))
-                if(cAsset?.isNoNStablecoin === 1) {
+                if(nonStablecoinCAsset.includes(cAssetName)) {
                     _oraclePromises.push(getOraclePrice(cAssetName))
                 }
                 const oracleResult = await Promise.all(_oraclePromises)
@@ -77,6 +78,16 @@ export default function useProfile() {
                 const cAssetAmountValue = Number(formatUnits(position.cAssetAmount, cAsset?.decimals)) * cAssetPrice
                 const nAssetValue =  Number(formatUnits(position.assetAmount, asset?.decimals)) * asset?.swapPrice
 
+                // nAsset in cAsset price
+                const assetPriceInCAsset = assetOraclePrice / cAssetPrice
+
+                // cRatio
+                const cRatio = CalculateRate(
+                    fixD(assetAmountSub, 6),
+                    fixD(cAssetAmountSub, 6),
+                    assetPriceInCAsset,
+                )
+                
                 return {
                     key: position.id.toString(),
                     assetAmount: formatUnits(position.assetAmount, asset?.decimals),
@@ -101,15 +112,9 @@ export default function useProfile() {
                     assetTokenName: assetName,
                     cAssetTokenName: cAssetName,
                     isShort: position.isShort,
-                    cRatio: CalculateRate(
-                      fixD(assetAmountSub, 6),
-                      fixD(cAssetAmountSub, 6),
-                      assetOraclePrice,
-                    ),
+                    cRatio: cRatio,
                 }
             }))
-
-            // console.log(`Final result`, finalResult)
 
             return finalResult
 

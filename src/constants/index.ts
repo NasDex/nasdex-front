@@ -54,6 +54,10 @@ interface Person {
   [propName: string]: any
 }
 
+export const nonStablecoinCAsset = [
+  'aUST'
+]
+
 export const oracleList = [
   {
     assetKey: 'nSE',
@@ -137,7 +141,7 @@ export const getLpPairDetail = (tokenA: string, tokenB: string) => {
   }
 
   if(tokenA.toLowerCase() === tokenB.toLowerCase()) {
-    console.log(`Token A is equals to token B`)
+    // console.log(`Token A is equals to token B`)
     return
   }
 
