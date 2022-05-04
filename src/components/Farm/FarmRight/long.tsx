@@ -316,7 +316,7 @@ const Long: React.FC<any> = props => {
                 disabled={Number(commonState.assetBaseInfoObj[tokenA]?.balance) > 0 && account ? false : true}
                 onClick={() => {
                   setTokenBInputFocus(false)
-                  setTokenAamount(commonState.assetBaseInfoObj[tokenA]?.balance)
+                  setTokenAamount(fixD(commonState.assetBaseInfoObj[tokenA]?.balance, commonState.assetBaseInfoObj[tokenA].fixDPrecise))
                   setTokenAInputFocus(true)
                 }}>
                 {t('MAX')}
@@ -409,7 +409,7 @@ const Long: React.FC<any> = props => {
                 disabled={Number(commonState.assetBaseInfoObj[tokenB]?.balance) > 0 && account ? false : true}
                 onClick={() => {
                   setTokenAInputFocus(false)
-                  setTokenBamount(commonState.assetBaseInfoObj[tokenB]?.balance)
+                  setTokenBamount(fixD(commonState.assetBaseInfoObj[tokenB]?.balance, commonState.assetBaseInfoObj[tokenB].fixDPrecise))
                   setTokenBInputFocus(true)
                 }}>
                 {t('MAX')}
