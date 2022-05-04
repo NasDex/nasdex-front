@@ -19,6 +19,7 @@ import { useTradeState } from 'state/trade/hooks'
 import { useCommonState } from 'state/common/hooks'
 import { useActiveWeb3React } from 'hooks'
 import { useTranslation } from 'react-i18next'
+import { nonStablecoinCAsset } from 'constants/index'
 
 interface SymoblChartProps {
   SymoblChart: SymoblChart
@@ -123,6 +124,7 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
     }
   
     // Farm or Long Farm handling
+    console.log(`We are from ${from}`)
     if(['farm','longFarm'].includes(from)) {
       if(farmState.farmCoinStock) {
         const assetType = commonState.assetBaseInfoObj[farmState.farmCoinStock]?.type
@@ -131,7 +133,9 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
 
       if(farmState.farmCoinSelect) {
         const assetType = commonState.assetBaseInfoObj[farmState.farmCoinSelect]?.type
-        assetType === 'asset' ? setAssetName(farmState.farmCoinSelect) : setcAssetName(farmState.farmCoinSelect)
+        //TODO: Remove this when long farm supported for aUST
+        const coinAssetName = nonStablecoinCAsset.includes(farmState.farmCoinSelect) && from === 'longFarm' ? 'USDC': farmState.farmCoinSelect
+        assetType === 'asset' ? setAssetName(coinAssetName) : setcAssetName(coinAssetName)
       }
     }
 
@@ -156,13 +160,13 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
   }, [account, from, mintState, manageState, tradeState, farmState])
 
   useEffect(() => {
-    if (commonState.assetBaseInfoObj[assetName]?.type == 'asset') {
-      setAssetName(assetName)
-      setcAssetName(cAssetName)
-    } else {
-      setAssetName(cAssetName)
-      setcAssetName(assetName)
-    }
+    // if (commonState.assetBaseInfoObj[assetName]?.type == 'asset') {
+    //   setAssetName(assetName)
+    //   setcAssetName(cAssetName)
+    // } else {
+    //   setAssetName(cAssetName)
+    //   setcAssetName(assetName)
+    // }
     let symbol: any
     let asset
     let casset
@@ -420,6 +424,10 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
       }
     })
   }
+
+  useEffect(()=> {
+    console.log(`cAssetName ${cAssetName}`)
+  }, [cAssetName])
 
   useEffect(() => {
     const chart = echarts.getInstanceByDom(chartRef.current as unknown as HTMLDivElement)

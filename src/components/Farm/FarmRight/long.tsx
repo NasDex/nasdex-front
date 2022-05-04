@@ -20,7 +20,7 @@ import { useFarmState } from 'state/farm/hooks'
 import { useCommonState, useProvider } from 'state/common/hooks'
 import { upDateOneAssetBaseInfo } from 'state/common/actions'
 import { useDispatch } from 'react-redux'
-import { getLpPairDetail, LongStakingAddress } from '../../../constants/index'
+import { getLpPairDetail, LongStakingAddress, nonStablecoinCAsset } from '../../../constants/index'
 import { ethers } from 'ethers'
 import Erc20Abi from 'constants/abis/erc20.json'
 import lpContractAbi from '../../../constants/abis/lpContract.json'
@@ -80,7 +80,9 @@ const Long: React.FC<any> = props => {
       setTokenA(farmState.farmCoinStock)
     }
     if (farmState.farmCoinSelect) {
-      setTokenB(farmState.farmCoinSelect)
+      // TODO: Remove this once supported for aUST
+      const isCoinNonstablecoin = nonStablecoinCAsset.includes(farmState.farmCoinSelect)
+      setTokenB(isCoinNonstablecoin? 'USDC': farmState.farmCoinSelect)
     }
   }, [farmState.farmCoinSelect, farmState.farmCoinStock])
 
