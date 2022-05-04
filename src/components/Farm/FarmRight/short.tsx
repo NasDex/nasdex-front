@@ -500,7 +500,7 @@ const Short: React.FC<any> = props => {
                 onClick={() => {
                   setCollateralInputFocus(true)
                   setamountInputFocus(false)
-                  setTradeCollateral(commonState.assetBaseInfoObj[selectCoin]?.balance)
+                  setTradeCollateral(fixD(commonState.assetBaseInfoObj[selectCoin]?.balance, commonState.assetBaseInfoObj[selectCoin].fixDPrecise))
                 }}>
                 {t('MAX')}
               </Button>
