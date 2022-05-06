@@ -182,7 +182,7 @@ const ProfileList: React.FC<any> = props => {
           return
         }
 
-        const shortPositions = positions.map((p: any) => {
+        const shortPositions = positions.filter((q: any) => q.isShort).map((p:any) => {
           return {
             positionId: p.key,
             isShort: p.isShort,
