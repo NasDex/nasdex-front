@@ -546,7 +546,7 @@ const Short: React.FC<any> = props => {
                 </svg>
               }>
               {commonState.cAssetsListInfo.map((ele: any, index: any) => (
-                <Option value={ele.name} className="customize-option-label-item" key={index} disabled={restrictedCoins.includes(ele.name)}>
+                <Option value={ele.name} className="customize-option-label-item" key={index}>
                   <div className="customize-option-label-item">
                     <img src={require(`../../../img/coin/${ele.name}.png`).default} alt="" />
                     <span>{ele.name}</span>
@@ -611,6 +611,7 @@ const Short: React.FC<any> = props => {
       ) : parseFloat(cAssetAllowance) > 0 ? (
         <Button
           disabled={
+            restrictedCoins.includes(selectCoin) ||
             Number(tradeCollateral) > Number(commonState.assetBaseInfoObj[selectCoin]?.balance) ||
               !Number(tradeAmount) ||
               !Number(tradeCollateral) ||
