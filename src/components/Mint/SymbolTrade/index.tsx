@@ -23,7 +23,7 @@ import { useMintState } from 'state/mint/hooks'
 import { useCommonState, useProvider } from 'state/common/hooks'
 import { useManageState } from 'state/manage/hooks'
 import useApproveFarm from '../../common/approve/index'
-import { mintAddress } from '../../../constants/index'
+import { mintAddress, restrictedCoins } from '../../../constants/index'
 import { useErc20Contract } from 'constants/hooks/useContract'
 import { useActiveWeb3React } from 'hooks'
 type IconType = 'success' | 'info' | 'error' | 'warning'
@@ -506,7 +506,7 @@ const SymbolTrade: React.FC<any> = props => {
                 </svg>
               }>
               {commonState.cAssetsListInfo.map((ele: any, index: any) => (
-                <Option value={ele.name} className="customize-option-label-item" key={index}>
+                <Option value={ele.name} className="customize-option-label-item" key={index} disabled={restrictedCoins.includes(ele.name)}>
                   <div className="customize-option-label-item">
                     <img src={require(`../../../img/coin/${ele.name}.png`).default} alt="" />
                     <span>{ele.name}</span>
