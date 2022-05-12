@@ -58,6 +58,10 @@ export const nonStablecoinCAsset = [
   'aUST'
 ]
 
+export const restrictedCoins = [
+  'aUST'
+]
+
 export const oracleList = [
   {
     assetKey: 'nSE',
