@@ -120,12 +120,14 @@ const AssetPair = ({ onDismiss = defaultOnDismiss, from }: AssetPairProps) => {
           <p>{t('commonBases')}</p>
         </div>
         <div className="asset">
-          {commonState.cAssetsListInfo.filter((e : any) => !restrictedCoins.includes(e.name)).map((ele: any, index: any) => (
+          {commonState.cAssetsListInfo.map((ele: any, index: any) => (
             <div
               key={index}
               className="asset-item"
               style={
-                basePool == `${ele.name}`
+                restrictedCoins.includes(ele.name) ? {
+                  pointerEvents: "none"
+                } : basePool == `${ele.name}`
                   ? {
                     borderColor: '#005aff',
                   }
