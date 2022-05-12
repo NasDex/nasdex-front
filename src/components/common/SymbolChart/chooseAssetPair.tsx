@@ -126,7 +126,9 @@ const AssetPair = ({ onDismiss = defaultOnDismiss, from }: AssetPairProps) => {
               className="asset-item"
               style={
                 restrictedCoins.includes(ele.name) ? {
-                  pointerEvents: "none"
+                  pointerEvents: "none",
+                  backgroundColor: "rgb(0,0,0,0.05)",
+                  cursor: "not-allowed"
                 } : basePool == `${ele.name}`
                   ? {
                     borderColor: '#005aff',
