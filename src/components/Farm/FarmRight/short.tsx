@@ -545,8 +545,8 @@ const Short: React.FC<any> = props => {
                   <use xlinkHref="#icon-Under"></use>
                 </svg>
               }>
-              {commonState.cAssetsListInfo.filter((e : any) => !restrictedCoins.includes(e.name)).map((ele: any, index: any) => (
-                <Option value={ele.name} className="customize-option-label-item" key={index}>
+              {commonState.cAssetsListInfo.map((ele: any, index: any) => (
+                <Option value={ele.name} className="customize-option-label-item" key={index} disabled={restrictedCoins.includes(ele.name)}>
                   <div className="customize-option-label-item">
                     <img src={require(`../../../img/coin/${ele.name}.png`).default} alt="" />
                     <span>{ele.name}</span>
