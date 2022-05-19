@@ -4,6 +4,8 @@ export enum ChainId {
   MUMBAI_TESTNET = 80001,
 }
 
+export const BASE_URL = "https://test-api.nasdex.xyz/"
+
 export const NSDXPrice = 0.25
 export const NetworkContextName = 'NETWORK'
 export const NSDXVaultAddress = '0xF7a2B32B92bfAC72fE1e2C8a3c5D3079e88B7816'

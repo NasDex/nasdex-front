@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /** @format */
 
-import { mintAddress, USDCaddress, SwapRouterAddress, LongStakingAddress, oracleList, getLpPairDetail } from 'constants/index'
+import { mintAddress, USDCaddress, SwapRouterAddress, LongStakingAddress, oracleList, getLpPairDetail, BASE_URL } from 'constants/index'
 import { ethers } from 'ethers'
 import { formatUnits } from 'ethers/lib/utils'
 import { fixD } from 'utils'
@@ -210,7 +210,7 @@ export async function getOraclePrice(assetName: string) {
 }
 
 export async function getAssetList(): Promise<any> {
-  const response = await fetch('https://test-api.nasdex.xyz/config.json', {
+  const response = await fetch(`${BASE_URL}config.json`, {
     method: 'get',
   })
   const json = await response.json()
