@@ -210,7 +210,7 @@ export async function getOraclePrice(assetName: string) {
 }
 
 export async function getAssetList(): Promise<any> {
-  const response = await fetch('https://beta-api.nasdex.xyz/config.json', {
+  const response = await fetch(`${process.env.REACT_APP_BASE_URL}config.json`, {
     method: 'get',
   })
   const json = await response.json()

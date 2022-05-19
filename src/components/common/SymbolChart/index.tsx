@@ -378,11 +378,9 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
     if (from == 'trade' || from == 'longFarm') {
       lpUrl = '/lp'
     }
-    // console.log(`Fire graph data ${nowDate.toString()} ${beforeDate.toString()} https://beta-api.nasdex.xyz/v1/price${lpUrl}?symbol=${symbol}&type=${type}&start=${beforeDate}&end=${nowDate}`)
-    // console.log(` url : https://beta-api.nasdex.xyz/v1/price${lpUrl}?symbol=${symbol}&type=${type}&start=${beforeDate}&end=${nowDate}`)
     axios({
       method: 'GET',
-      baseURL: 'https://beta-api.nasdex.xyz',
+      baseURL: process.env.REACT_APP_BASE_URL,
       url: `/v1/price${lpUrl}?symbol=${symbol}&type=${type}&start=${beforeDate}&end=${nowDate}`,
     }).then(res => {
       if (res && res.data && res.data.code === 0) {
