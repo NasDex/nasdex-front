@@ -119,10 +119,15 @@ async function getBalance(contract: any, account: string, decimal: string){
 }
 
 export async function getAllowance(contract:any, account:string, spender:string, decimal: string) {
-  const allowanceRaw = await contract.allowance(account, spender)
-  const allowance = formatUnits(allowanceRaw, decimal)
-  const isAllowanceGranted = parseFloat(allowance) > 0
-  return { allowance, allowanceRaw: allowanceRaw.toString(), isAllowanceGranted}
+  try {
+    const allowanceRaw = await contract.allowance(account, spender)
+    const allowance = formatUnits(allowanceRaw, decimal)
+    const isAllowanceGranted = parseFloat(allowance) > 0
+    return { allowance, allowanceRaw: allowanceRaw.toString(), isAllowanceGranted}
+  } catch(err) {
+    console.log(`Error`, err)
+    return { allowance: "0", allowanceRaw: "0", isAllowanceGranted: false}
+  }
 }
 
 export async function getSwapPrice(tokenAaddress: any, tokenBaddress: any, tokenADecimal = "18" , tokenBDecimal = "18", library: any) {
@@ -134,7 +139,7 @@ export async function getSwapPrice(tokenAaddress: any, tokenBaddress: any, token
     // const library = getLibrary(provider) ?? simpleRpcProvider
     const lpInfo = getLpPairDetail(tokenAaddress, tokenBaddress)
     if (lpInfo === undefined) {
-      console.log(`LP info is undefined for ${tokenAaddress} and  ${tokenBaddress}, quit getSwapPrice()`)
+      // console.log(`LP info is undefined for ${tokenAaddress} and  ${tokenBaddress}, quit getSwapPrice()`)
       return
     }
 

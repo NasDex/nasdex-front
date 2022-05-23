@@ -118,6 +118,7 @@ const ShortFarming: React.FC<any> = props => {
       const assetsTokenName = assetsNameInfo[shortFarmingInfo.position.assetToken]
       const cAssetsTokenName = assetsNameInfo[shortFarmingInfo.position.cAssetToken]
       const logo = assetsNameInfo[shortFarmingInfo.assetConfig.token]
+      const shortReward = await ShortStakingContract.pendingNSDX(shortFarmingInfo.assetConfig.poolId, shortFarmingInfo.position.owner)
       data.push({
         key: shortFarmingInfo.position.id.toString(),
         name: `${assetsTokenName}`,
@@ -136,7 +137,7 @@ const ShortFarming: React.FC<any> = props => {
             : formatUnits(shortFarmingInfo.lockInfo.lockedAmount, assetBaseInfoObj[cAssetsTokenName].decimals),
         lockedToken: assetsNameInfo[shortFarmingInfo.position.cAssetToken],
         assetToken: assetsNameInfo[shortFarmingInfo.position.assetToken],
-        Rewards: formatUnits(shortFarmingInfo.shortReward, assetBaseInfoObj[assetsTokenName].decimals),
+        Rewards: formatUnits(shortReward, assetBaseInfoObj[assetsTokenName].decimals),
         assigned: shortFarmingInfo.lockInfo.assigned,
         poolId: shortFarmingInfo.assetConfig.poolId.toString(),
       })
@@ -208,7 +209,7 @@ const ShortFarming: React.FC<any> = props => {
       return getBaseData
     }
     if (account && (commonState.farmingPositionInfo || profileShortFarmConfirm)) {
-      timer = setInterval(getBaseData(), 5000)
+      timer = setInterval(getBaseData(), 10000)
     }
     return () => {
       clearInterval(timer)

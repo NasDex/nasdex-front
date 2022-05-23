@@ -160,6 +160,13 @@ const OrderConfirm = ({
       setCollateralConfirm(true)
       setCollateralConfirmBtn(true)
     }
+
+    console.log(`Manage Order confirm ${confirmType} ${assetTokenName} ${cAssetTokenName}, is short ${positionInfo.isShort},  before processing \n
+    manage state asset amount: ${manageState.manageAssetAmount},
+    manage state cAsset amount (manageState.manageTradeCollateral): ${manageState.manageTradeCollateral},
+    min received: ${farmState.farmMinimumReceived}
+  `, commonState.assetBaseInfoObj[cAssetTokenName], positionInfo)
+
     const cAssetInfo = commonState.assetBaseInfoObj[cAssetTokenName]
     const currentRatio = positionInfo.cRatio
     const nowRatio = manageState.manageCollateralRatio
@@ -172,25 +179,40 @@ const OrderConfirm = ({
     const nowtime = newDate.getTime()
     let swapAmountMin
     let swapDeadline
-    if (positionInfo.isShort) {
-      swapAmountMin = parseUnits(fixD(farmState.farmMinimumReceived, cAssetInfo.decimals).toString(), cAssetInfo.decimals)
-      swapDeadline = Number(nowtime) + Number(farmState.deadline) * 60
-    } else {
-      swapAmountMin = parseUnits(
-        fixD(manageState.manageTradeCollateral, assetBaseInfoObj[cAssetTokenName].decimals).toString(), cAssetInfo.decimals)
-      swapDeadline = Number(nowtime) + Number(20) * 60
-    }
     dispatch(upDateTxHash({ hash: '' }))
     let asset
+    console.log(`Manage Order confirm ${confirmType} ${assetTokenName} ${cAssetTokenName}, is short ${positionInfo.isShort},  before txn \n
+    currentRatio: ${currentRatio},
+    nowRatio: ${manageState.manageCollateralRatio}
+    position id : ${positionInfo.positionId},
+    position sset amount: ${positionAssetAmount}, 
+    manage state asset amount: ${manageAssetAmount},
+    position cAsset amount: ${positioncAssetAmount},
+    manage state cAsset amount (manageState.manageTradeCollateral): ${managecAssetAmount},
+    min received: ${farmState.farmMinimumReceived}
+    swap amount min: ${swapAmountMin},
+    swap deadline: ${swapDeadline},
+  `)
+    
     try {
       let txhash
       if (confirmType === 'editNasset') {
+        if (positionInfo.isShort) {
+          swapAmountMin = parseUnits(fixD(farmState.farmMinimumReceived, cAssetInfo.decimals).toString(), cAssetInfo.decimals)
+          swapDeadline = Number(nowtime) + Number(farmState.deadline) * 60
+        } else {
+          swapAmountMin = parseUnits(
+            fixD(manageState.manageTradeCollateral, assetBaseInfoObj[cAssetTokenName].decimals).toString(), cAssetInfo.decimals)
+          swapDeadline = Number(nowtime) + Number(20) * 60
+        }
+
         asset = positionInfo.assetTokenName
         if (currentRatio > nowRatio) {
           const assetAmount = parseUnits(
             precision.minus(manageAssetAmount, positionAssetAmount).toString(),
             assetBaseInfoObj[assetTokenName].decimals,
           )
+          console.log(`current > now ratio, ${manageAssetAmount} - ${positionAssetAmount}, asset amount ${assetAmount.toString()} mint nAsset from mint contract`)
           openWaiting()
           txhash = await MintContract.mint(positionId, assetAmount, swapAmountMin, swapDeadline)
         } else {
@@ -198,6 +220,7 @@ const OrderConfirm = ({
             precision.minus(positionAssetAmount, manageAssetAmount).toString(),
             assetBaseInfoObj[assetTokenName].decimals,
           )
+          console.log(`current < now , burning asset`)
           openWaiting()
           txhash = await MintContract.burn(positionId, assetAmount)
         }
@@ -208,6 +231,7 @@ const OrderConfirm = ({
             precision.minus(positioncAssetAmount, managecAssetAmount).toString(),
             assetBaseInfoObj[cAssetTokenName].decimals,
           )
+          console.log(`current > now ratio, ${positioncAssetAmount} - ${managecAssetAmount}  asset amount ${cAssetAmount.toString()} withdraw asset from mint contract`)
           openCollateralWaiting()
           txhash = await MintContract.withdraw(positionId, cAssetAmount)
         } else {
@@ -215,6 +239,7 @@ const OrderConfirm = ({
             precision.minus(managecAssetAmount, positioncAssetAmount).toString(),
             assetBaseInfoObj[cAssetTokenName].decimals,
           )
+          console.log(`current < now ratio, ${managecAssetAmount} - ${positioncAssetAmount} cAsset amount ${cAssetAmount.toString()} deposit asset to mint contract`)
           openCollateralWaiting()
           txhash = await MintContract.deposit(positionId, cAssetAmount)
         }

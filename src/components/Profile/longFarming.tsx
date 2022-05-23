@@ -28,6 +28,7 @@ import { getApr, getRecevied } from 'utils/getAPR'
 import { ethers } from 'ethers'
 import lTokenAbi from 'constants/abis/ltoken.json'
 import lpContractAbi from 'constants/abis/lpContract.json'
+import LongStakingContractAbi from 'constants/abis/LongStaking.json'
 import { useStakeState } from 'state/stake/hooks'
 import { useTranslation } from 'react-i18next'
 import { simpleRpcProvider } from 'utils/providers'
@@ -54,7 +55,10 @@ const LongFarming: React.FC<any> = props => {
   // const library = getLibrary(provider) ?? simpleRpcProvider
   const library = useProvider()
   const { onPresentConnectModal, onPresentAccountModal } = useWalletModal(login, logout, account || undefined)
-  const LongStakingContract = useLongStakingContract()
+  // const LongStakingContract = useLongStakingContract()
+  const customProvider = simpleRpcProvider
+  const LongStakingContract = new ethers.Contract(LongStakingAddress, LongStakingContractAbi, customProvider)
+  const LongStakingWithSignerContract = useLongStakingContract()
   const MasterChefTestContract = useMasterChefTestContract()
   const [clickRewardsBtn, setClickRewardsBtn] = useState(false)
   const [openWaiting] = useModal(
@@ -107,12 +111,15 @@ const LongFarming: React.FC<any> = props => {
   }
 
   async function getData(price: any, ele: any, stakedInfo: any, longFarmingUserInfo: any) {
+    if(assetBaseInfoObj[ele.name] === undefined) {
+      return
+    }
     if (ele.longId == '') {
       longFarmingUserInfo = await MasterChefTestContract.userInfo(Number(ele.id), account)
     } else {
       longFarmingUserInfo = await LongStakingContract.userInfo(Number(ele.longId), account)
     }
-    if (Number(formatUnits(longFarmingUserInfo.amount, assetBaseInfoObj[ele.name].decimals)) > 0) {
+    if (parseFloat(formatUnits(longFarmingUserInfo.amount, assetBaseInfoObj[ele.name].decimals)) > 0) {
       const poolInfo = await getApr(
         price,
         ele,
@@ -160,7 +167,7 @@ const LongFarming: React.FC<any> = props => {
     setClickRewardsBtn(true)
     try {
       openWaiting()
-      const tx = await LongStakingContract.getReward(id)
+      const tx = await LongStakingWithSignerContract.getReward(id)
       dispatch(upDateTxHash({ hash: tx.hash }))
       openNoifcation()
       const receipt = await tx.wait()
@@ -223,21 +230,24 @@ const LongFarming: React.FC<any> = props => {
     }
   }, [account, farmListArray])
   /** Get long farming info */
+  // useEffect(() => {
+  //   getLongFarmingInfo()
+  // }, [account])
+  // async function getLongFarmingInfo() {
+  //   const config = await getAssetList()
+  //   setFarmListArray(config.longFarmingInfoPre)
+  //   if (config.longFarmingInfoPre.length <= 0) {
+  //     setLoad(false)
+  //   }
+  // }
   useEffect(() => {
-    getLongFarmingInfo()
-  }, [account])
-  async function getLongFarmingInfo() {
-    const config = await getAssetList()
-    setFarmListArray(config.longFarmingInfoPre)
-    if (config.longFarmingInfoPre.length <= 0) {
-      setLoad(false)
-    }
-  }
+    setFarmListArray(commonState.longFarmAssets)
+  }, [commonState.longFarmAssets])
   useEffect(() => {
-    if (account && confirmSuccess) {
+    if (account && confirmSuccess && commonState.assetBaseInfoObj!==undefined) {
       setData(confirmSuccess)
     }
-  }, [account, confirmSuccess])
+  }, [account, confirmSuccess, commonState.assetBaseInfoObj])
   useEffect(() => {
     if (profileLongFarmConfirm) {
       setIsModalVisible(false)
@@ -273,7 +283,7 @@ const LongFarming: React.FC<any> = props => {
       key: 'APR',
       render: (text: any, record: any) => (
         <div className="table-cell">
-          <div className="balance">{!record.APR ? <Skeleton active paragraph={{ rows: 0 }} /> : `${record.APR}%`}</div>
+          <div className="balance">{ record.APR === undefined  ? <Skeleton active paragraph={{ rows: 0 }} /> : `${record.APR}%`}</div>
         </div>
       ),
     },

@@ -174,16 +174,15 @@ const ProfileList: React.FC<any> = props => {
 
   const getPosition = useCallback(async (header: string) => {
     try {
-      if (commonState.account !== undefined) {
-        console.log(`Account before get position  ${commonState.account}`)
+      if (commonState.account !== undefined && commonState.assetsNameInfo !== undefined && commonState.assetBaseInfoObj !== undefined) {
         const positions: any = await getPositions(commonState.account, commonState.assetsNameInfo, commonState.assetBaseInfoObj)
 
         if (positions === undefined) {
-          console.log(`Positions is undefined`)
+          // console.log(`Positions is undefined`)
           return
         }
 
-        const shortPositions = positions.map((p: any) => {
+        const shortPositions = positions.filter((q: any) => q.isShort).map((p:any) => {
           return {
             positionId: p.key,
             isShort: p.isShort,
@@ -210,11 +209,11 @@ const ProfileList: React.FC<any> = props => {
     } finally {
       setLoad(false)
     }
-  }, [headerActive, commonState.account])
+  }, [headerActive, commonState.account,commonState.assetsNameInfo,commonState.assetBaseInfoObj])
 
   useEffect(() => {
     if (commonState.account && commonState.assetBaseInfoObj !== undefined && commonState.assetsNameInfo !== null) {
-      console.log(`Checking ${headerActive.toLowerCase() === "positions"}`)
+      // console.log(`Checking ${headerActive.toLowerCase() === "positions"}`)
       if(headerActive.toLowerCase() === "positions") {
         getPosition(headerActive)
         const positionTimer = window.setInterval(() => {getPosition(headerActive)}, 10000)

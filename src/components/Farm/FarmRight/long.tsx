@@ -20,7 +20,7 @@ import { useFarmState } from 'state/farm/hooks'
 import { useCommonState, useProvider } from 'state/common/hooks'
 import { upDateOneAssetBaseInfo } from 'state/common/actions'
 import { useDispatch } from 'react-redux'
-import { getLpPairDetail, LongStakingAddress } from '../../../constants/index'
+import { getLpPairDetail, LongStakingAddress, nonStablecoinCAsset } from '../../../constants/index'
 import { ethers } from 'ethers'
 import Erc20Abi from 'constants/abis/erc20.json'
 import lpContractAbi from '../../../constants/abis/lpContract.json'
@@ -80,7 +80,9 @@ const Long: React.FC<any> = props => {
       setTokenA(farmState.farmCoinStock)
     }
     if (farmState.farmCoinSelect) {
-      setTokenB(farmState.farmCoinSelect)
+      // TODO: Remove this once supported for aUST
+      const isCoinNonstablecoin = nonStablecoinCAsset.includes(farmState.farmCoinSelect)
+      setTokenB(isCoinNonstablecoin? 'USDC': farmState.farmCoinSelect)
     }
   }, [farmState.farmCoinSelect, farmState.farmCoinStock])
 
@@ -95,7 +97,6 @@ const Long: React.FC<any> = props => {
   }, [account])
   useEffect(() => {
     if(tokenA !== undefined && tokenA !== null && library !== undefined) {
-      console.log(`Token A is changing ${tokenA}. Get allowance`)
       const tokenADecimal = commonState.assetBaseInfoObj[tokenA].decimals
       const tokenAAddress = commonState.assetBaseInfoObj[tokenA].address
       getTokenAllowance(tokenAAddress, tokenADecimal, true)
@@ -103,7 +104,6 @@ const Long: React.FC<any> = props => {
   }, [tokenA, account, library])
   useEffect(() => {
     if(tokenB !== undefined && tokenB !== null && library !== undefined) {
-      console.log(`Token B is changing ${tokenB}. Get allowance`)
       const tokenBDecimal = commonState.assetBaseInfoObj[tokenB].decimals
       const tokenBAddress = commonState.assetBaseInfoObj[tokenB].address
       getTokenAllowance(tokenBAddress, tokenBDecimal, false)
@@ -124,11 +124,23 @@ const Long: React.FC<any> = props => {
   const [requestedApproval, setRequestedApproval] = useState(false)
   const handleApprove = useCallback(
     async (asset: any) => {
+      const tokenAddress = commonState.assetBaseInfoObj[asset].address
       const contract = new ethers.Contract(commonState.assetBaseInfoObj[asset].address, Erc20Abi, library.getSigner())
       try {
         setRequestedApproval(true)
+
         const tx = await contract.approve(LongStakingAddress, ethers.constants.MaxUint256)
         const receipt = await tx.wait()
+
+        const tokenAAddress = commonState.assetBaseInfoObj[tokenA].address.toLowerCase()
+        const tokenBAddress = commonState.assetBaseInfoObj[tokenB].address.toLowerCase()
+        if(tokenAddress.toLowerCase() === tokenAAddress) {
+          setAllowanceA("1000000000000000000000000000000000")
+        }
+        if(tokenAddress.toLowerCase()===tokenBAddress){
+          setAllowanceB("1000000000000000000000000000000000")
+        }
+
         const longFarmAllowance = true
         const oneAssetInfo = { ...commonState.assetBaseInfoObj[asset], longFarmAllowance }
         dispatch(upDateOneAssetBaseInfo({ oneAssetBaseInfo: oneAssetInfo }))
@@ -243,7 +255,6 @@ const Long: React.FC<any> = props => {
     const tokenBAddress = commonState.assetBaseInfoObj[tokenB].address
 
     const result = getLpPairDetail(tokenAAddress, tokenBAddress)
-    console.log(`Get pair result in long tsx`, result)
     if(result !== undefined) {
       setPair(result.lp)
     }
@@ -307,7 +318,7 @@ const Long: React.FC<any> = props => {
                 disabled={Number(commonState.assetBaseInfoObj[tokenA]?.balance) > 0 && account ? false : true}
                 onClick={() => {
                   setTokenBInputFocus(false)
-                  setTokenAamount(commonState.assetBaseInfoObj[tokenA]?.balance)
+                  setTokenAamount(fixD(commonState.assetBaseInfoObj[tokenA]?.balance, commonState.assetBaseInfoObj[tokenA].fixDPrecise))
                   setTokenAInputFocus(true)
                 }}>
                 {t('MAX')}
@@ -400,7 +411,7 @@ const Long: React.FC<any> = props => {
                 disabled={Number(commonState.assetBaseInfoObj[tokenB]?.balance) > 0 && account ? false : true}
                 onClick={() => {
                   setTokenAInputFocus(false)
-                  setTokenBamount(commonState.assetBaseInfoObj[tokenB]?.balance)
+                  setTokenBamount(fixD(commonState.assetBaseInfoObj[tokenB]?.balance, commonState.assetBaseInfoObj[tokenB].fixDPrecise))
                   setTokenBInputFocus(true)
                 }}>
                 {t('MAX')}

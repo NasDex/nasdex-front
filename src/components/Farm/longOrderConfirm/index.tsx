@@ -79,11 +79,32 @@ const LongOrderConfirm = ({
   const Aminimum = Number(Areturned) - Number(Areturned) * Number(farmState.slippageTolerance) * 0.01
   const Breturned = (Number(tokenAamount) * tokenAPrice).toString()
   const Bminimum = Number(Breturned) - Number(Breturned) * Number(farmState.slippageTolerance) * 0.01
+  
+  useEffect(() => {
+    console.log(`Long Farm ${tokenA}, ${tokenB} when open/n
+    tokenAAmount ${tokenAamount},
+    tokenBAmount ${tokenBamount},
+    A returned ${Areturned},
+    B returned ${Breturned},
+    slippage ${farmState.slippageTolerance}
+    A min ${Aminimum},
+    B min ${Bminimum},
+    deadline ${farmState.deadline}
+  `)
+  }, [tokenAamount, tokenBamount, Areturned, Breturned, farmState.slippageTolerance, Aminimum, Bminimum, farmState.deadline])
+
+
   async function openPosition() {
     if (!pid) {
       return false
     }
-
+    console.log(`Long Farm ${tokenA}, ${tokenB} before process/n
+      tokenAAmount ${tokenAamount},
+      tokenBAmount ${tokenBamount},
+      A min ${Aminimum},
+      B min ${Bminimum},
+      deadline ${farmState.deadline}
+    `)
     const id = pid
     const Aamount = parseUnits(tokenAamount, commonState.assetBaseInfoObj[tokenA].decimals)
     const Bamount = parseUnits(tokenBamount, commonState.assetBaseInfoObj[tokenB].decimals)
@@ -94,12 +115,22 @@ const LongOrderConfirm = ({
     const newDate = new Date()
     const nowtime = newDate.getTime()
     const swapDeadline = Math.ceil(nowtime / 1000) + Number(farmState.deadline) * 60
+
+    console.log(`Long Farm ${tokenA}, ${tokenB} before txn/n
+      tokenAAmount ${Aamount},
+      tokenBAmount ${Bamount},
+      A min ${swapAmountAMin},
+      B min ${swapAmountBMin},
+      deadline ${swapDeadline}
+    `)
+
     dispatch(upDateTxHash({ hash: '' }))
     try {
       setLongConfirmBtn(true)
       setLongConfirm(true)
       let tx
       openWaiting()
+
       if (token0Address == commonState.assetBaseInfoObj[tokenA].address) {
         tx = await longStakingContract.deposit(
           Number(id),
@@ -148,6 +179,7 @@ const LongOrderConfirm = ({
         openNotificationWithIcon('error')
       }
     } catch (error: any) {
+      console.log(`deposit long farm: `, error)
       if (error.message.includes('transaction was replaced')) {
         const assetNewInfo = await getOneAssetInfo(
           tokenA,

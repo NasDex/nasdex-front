@@ -19,6 +19,7 @@ import { useTradeState } from 'state/trade/hooks'
 import { useCommonState } from 'state/common/hooks'
 import { useActiveWeb3React } from 'hooks'
 import { useTranslation } from 'react-i18next'
+import { nonStablecoinCAsset } from 'constants/index'
 
 interface SymoblChartProps {
   SymoblChart: SymoblChart
@@ -96,7 +97,7 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
       const swapPrice = swapPrices[combinedName]
 
       // Mint page handling
-      if(["mint", "farm"].includes(from)) {
+      if(["mint", "farm", "manage"].includes(from)) {
         setPrice(fixD(oraclePrice,4))
         setPriceLabel(cAssetName)
         calculatePremium(swapPrice, oraclePrice)
@@ -131,7 +132,9 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
 
       if(farmState.farmCoinSelect) {
         const assetType = commonState.assetBaseInfoObj[farmState.farmCoinSelect]?.type
-        assetType === 'asset' ? setAssetName(farmState.farmCoinSelect) : setcAssetName(farmState.farmCoinSelect)
+        //TODO: Remove this when long farm supported for aUST
+        const coinAssetName = nonStablecoinCAsset.includes(farmState.farmCoinSelect) && from === 'longFarm' ? 'USDC': farmState.farmCoinSelect
+        assetType === 'asset' ? setAssetName(coinAssetName) : setcAssetName(coinAssetName)
       }
     }
 
@@ -149,20 +152,20 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
     }
    
     // Manage page handling
-    if (from == 'manage') {
+    if (from === 'manage') {
       setAssetName(manageState.positionInfo.assetTokenName)
       setcAssetName(manageState.positionInfo.cAssetTokenName)
     }
   }, [account, from, mintState, manageState, tradeState, farmState])
 
   useEffect(() => {
-    if (commonState.assetBaseInfoObj[assetName]?.type == 'asset') {
-      setAssetName(assetName)
-      setcAssetName(cAssetName)
-    } else {
-      setAssetName(cAssetName)
-      setcAssetName(assetName)
-    }
+    // if (commonState.assetBaseInfoObj[assetName]?.type == 'asset') {
+    //   setAssetName(assetName)
+    //   setcAssetName(cAssetName)
+    // } else {
+    //   setAssetName(cAssetName)
+    //   setcAssetName(assetName)
+    // }
     let symbol: any
     let asset
     let casset
@@ -181,7 +184,7 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
       //   symbol = `${asset}/${casset}`
       //   valueChange = 150
       // }
-      console.log(commonState.assetBaseInfoObj)
+      // console.log(commonState.assetBaseInfoObj)
       symbol = `${commonState.assetBaseInfoObj[assetName]?.key}/${commonState.assetBaseInfoObj[cAssetName]?.key}`
       valueChange = 200
     } else {
@@ -214,7 +217,7 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
           break
       }
     }
-  }, [timeStatus, assetName, cAssetName])
+  }, [timeStatus, assetName, cAssetName, from])
   const [timeIndex, setTimeIndex] = useState(0)
   function TimeStatus(label: any, key: any) {
     setTimeStatus(label)
@@ -375,7 +378,7 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
     if (from == 'trade' || from == 'longFarm') {
       lpUrl = '/lp'
     }
-    console.log(`Fire graph data`)
+    // console.log(`Fire graph data ${nowDate.toString()} ${beforeDate.toString()} https://beta-api.nasdex.xyz/v1/price${lpUrl}?symbol=${symbol}&type=${type}&start=${beforeDate}&end=${nowDate}`)
     // console.log(` url : https://beta-api.nasdex.xyz/v1/price${lpUrl}?symbol=${symbol}&type=${type}&start=${beforeDate}&end=${nowDate}`)
     axios({
       method: 'GET',
@@ -462,7 +465,7 @@ const SymbolTradeChart: React.FC<SymoblChartProps> = props => {
           <div className="symbol-name">
             <div className="name">
               <span>{assetName}</span> / {cAssetName}
-              {from == 'manage' || from == 'trade' ? null : (
+              {(from == 'manage' || from == 'trade' || from == 'longFarm') ? null : (
                 <svg className="icon" aria-hidden="true" onClick={openAssetPair}>
                   <use xlinkHref="#icon-Under"></use>
                 </svg>

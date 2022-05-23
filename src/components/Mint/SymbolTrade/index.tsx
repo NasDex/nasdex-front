@@ -20,7 +20,7 @@ import Notification from '../../../utils/notification'
 import React from 'react'
 import { fixD } from 'utils'
 import { useMintState } from 'state/mint/hooks'
-import { useCommonState } from 'state/common/hooks'
+import { useCommonState, useProvider } from 'state/common/hooks'
 import { useManageState } from 'state/manage/hooks'
 import useApproveFarm from '../../common/approve/index'
 import { mintAddress } from '../../../constants/index'
@@ -33,6 +33,9 @@ import { LowerRatio } from 'utils/commonComponents'
 import Setting from '../../common/Setting'
 import { number } from 'echarts'
 import { useTranslation } from 'react-i18next'
+import { ethers } from 'ethers'
+import Erc20Abi from 'constants/abis/erc20.json'
+import { getAllowance } from 'utils/getList'
 const { Option } = Select
 const SymbolTrade: React.FC<any> = props => {
   const openNotificationWithIcon = (type: IconType) => {
@@ -73,6 +76,8 @@ const SymbolTrade: React.FC<any> = props => {
   const inputReftwo = React.useRef<any>(null)
   const marksMock: any = {}
 
+  const library = useProvider()
+
   const marks = {
     150: {
       style: {
@@ -104,7 +109,10 @@ const SymbolTrade: React.FC<any> = props => {
   const handleApprove = useCallback(async () => {
     try {
       setRequestedApproval(true)
-      await onApprove()
+      const result = await onApprove()
+      if(result !== undefined && result) {
+        setCassetAllowance("100000000000000000000")
+      }
       setRequestedApproval(false)
     } catch (e) {
       console.error(e)
@@ -216,7 +224,7 @@ const SymbolTrade: React.FC<any> = props => {
       }
     }
 
-    console.log(`Props ${props.assetName}, ${props.cAssetName}`)
+    // console.log(`Props ${props.assetName}, ${props.cAssetName}`)
     if (props.assetName  === undefined) {
       dispatch(upDateCoinStock({ mintCoinStock: commonState.defaultAsset }))
     } else {
@@ -269,6 +277,26 @@ const SymbolTrade: React.FC<any> = props => {
     setAmount('')
     setTradeCollateral('')
   }, [selectStock, selectCoin])
+
+  // allowance checking
+  const [cAssetAllowance, setCassetAllowance] = useState("0")
+  const getTokenAllowance = useCallback(async (tokenAddress: any, decimal: string) => {
+    if (account !== undefined && account !== null) {
+      const contract = new ethers.Contract(tokenAddress, Erc20Abi, library)
+      const allowance = await getAllowance(contract, account, mintAddress, decimal)
+      setCassetAllowance(allowance.allowance)
+    }
+  }, [account, library])
+  useEffect(() => {
+    if (account !== undefined && library !== undefined && commonState.assetBaseInfoObj !== undefined) {
+      const cAsset = commonState.assetBaseInfoObj[selectCoin]
+      if (cAsset === undefined) {
+        console.log(`cAsset is undefined`)
+        return
+      }
+      getTokenAllowance(cAsset.address, cAsset.decimals)
+    }
+  }, [account, library, selectCoin, commonState.assetBaseInfoObj])
 
   return (
     <div className="trade">
@@ -432,7 +460,7 @@ const SymbolTrade: React.FC<any> = props => {
                 onClick={() => {
                   setCollateralInputFocus(true)
                   setamountInputFocus(false)
-                  setTradeCollateral(assetsBalance)
+                  setTradeCollateral(fixD(assetsBalance, commonState.assetBaseInfoObj[selectCoin].fixDPrecise))
                 }}>
                 {t('MAX')}
               </Button>
@@ -496,7 +524,7 @@ const SymbolTrade: React.FC<any> = props => {
         <Button className="confirm-order" onClick={() => onPresentConnectModal()}>
           {t('Connect')}
         </Button>
-      ) : commonState.assetBaseInfoObj[selectCoin]?.mintContractAllowance ?
+      ) : parseFloat(cAssetAllowance) > 0 ?
         Number(tradeCollateral) > Number(assetsBalance) ? (
           <Button disabled className="confirm-order">
             {t('Insufficient')}
