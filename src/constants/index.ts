@@ -31,6 +31,7 @@ export const ETHOracleAddress = '0x0715A7794a1dc8e42615F059dD6e406A6594651A'
 export const MATICOracleAddress = '0xd0D5e3DB44DE05E9F294BB0a3bEEaF030DE24Ada' 
 export const nTSLAOracleAddress = '0x567E67f456c7453c583B6eFA6F18452cDee1F5a8' 
 export const aUSTOracleAddress = '0x7958b7693bE15a601cFef8e091c69f18d738e4E8' 
+export const nAAPLOracleAddress = '0x7E7B45b08F68EC69A99AAb12e42FcCB078e10094'
 
 export const NSDXVault = '0x9185921Da8cD0266257DFa606b6075Ef5be67723' 
 export const NSDXTestToken = '0xE8d17b127BA8b9899a160D9a07b69bCa8E08bfc6'
@@ -50,6 +51,11 @@ export const SwapRouterAddress = '0x270Ec6bE0C9D67370C2B247D5AF1CC0B7dED0d4a'
 export const nTSLATokenAddress = "0x20796c1c7738992e598b81062b41f2e0b8a8c382"
 export const nTSLALpTokenAddress = "0xc6cb70d5C8d98C9399D4c37E6135dF31551c3A40"
 export const nTSLAShortTokenAddress = "0xb6F1739cD40d8933127Ee2F2D58b81caDc74A8e0"
+
+// nAAPL
+export const nAAPLTokenAddress = '0x29da66CeE2b8BE4157F4988bFAd0906fdC211C27'
+export const nAAPLLpTokenAddress = '0x59B051Cf1e68de4c9EDD4CFf0582447634306839'
+export const nAAPLShortTokenAddress = '0x02e6C0cAD535f49b2d3D596843D8a3908833aA8d'
 interface Person {
   name: string
   age?: number
@@ -83,6 +89,12 @@ export const oracleList = [
     oraclePrice: null,
     decimal: 8
   },
+  {
+    assetKey: 'nAAPL',
+    address: nAAPLOracleAddress,
+    oraclePrice: null,
+    decimal: 8
+  },
 ]
 
 export const lpPairDetails = [
@@ -100,7 +112,14 @@ export const lpPairDetails = [
     lp: nTSLALpTokenAddress, 
     tokenADecimal: 18,
     tokenBDecimal: 6
-  }
+  },
+  {
+    tokenA: USDCaddress,
+    tokenB: nAAPLTokenAddress,
+    lp: nAAPLLpTokenAddress,
+    tokenADecimal: 6,
+    tokenBDecimal: 18,
+  },
 ]
 
 // Move this to backend
@@ -118,8 +137,15 @@ export const shortStakes = [
     rootId: 13,
     shortToken: nTSLAShortTokenAddress,
     shortTokenDecimal: 18,
-    name: "sTSLA",
-  }
+    name: 'sTSLA',
+  },
+  {
+    shortId: 2, // sAAPL
+    rootId: 15,
+    shortToken: nAAPLShortTokenAddress,
+    shortTokenDecimal: 18,
+    name: 'sAAPL',
+  },
 ]
 
 export const longStakes = [
@@ -136,8 +162,15 @@ export const longStakes = [
     rootId: 12,
     lpToken: nTSLALpTokenAddress,
     lpTokenDecimal: 18,
-    name: "nTSLA",
-  }
+    name: 'nTSLA',
+  },
+  {
+    longId: 2, // nAAPL
+    rootId: 14,
+    lpToken: nAAPLLpTokenAddress,
+    lpTokenDecimal: 18,
+    name: 'nAAPL',
+  },
 ]
 
 export const getLpPairDetail = (tokenA: string, tokenB: string) => {
