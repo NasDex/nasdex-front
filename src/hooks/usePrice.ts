@@ -11,6 +11,7 @@ export default function usePrice() {
         SE: "nSE",
         AUST: "aUST",
         TSLA: "nTSLA",
+        AAPL: "nAAPL",
         USD: "USDC",
     }
 

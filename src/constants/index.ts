@@ -30,6 +30,7 @@ export const STAOracleAddress = '0x2349a2522143E80e6014acd608B24146a9c9e4E9'
 export const ETHOracleAddress = '0x0715A7794a1dc8e42615F059dD6e406A6594651A'
 export const MATICOracleAddress = '0xd0D5e3DB44DE05E9F294BB0a3bEEaF030DE24Ada'
 export const nTSLAOracleAddress = '0xDb12E805d004698FC58F6e4fbdD876268DF2dfFe'
+export const nAAPLOracleAddress = '0x78ded7ecC5149Ee1f6d0DacfaD4F20882fDEe663'
 export const aUSTOracleAddress = '0xC6Be21D8533e90Fd136905eBe70c9d9148237f2d'
 
 export const NSDXVault = '0x9185921Da8cD0266257DFa606b6075Ef5be67723'
@@ -50,6 +51,11 @@ export const SwapRouterAddress = '0xeF1F06F0a9645A143Eaccb543f5bda85A9BD21D9'
 export const nTSLATokenAddress = '0x362dB5C57CbD3CF43491134F79c334bC2a10db86'
 export const nTSLALpTokenAddress = '0x211B33e5231907E26ab6FD8CAa3F6eA81936D15e'
 export const nTSLAShortTokenAddress = '0x362dB5C57CbD3CF43491134F79c334bC2a10db86'
+
+// nAAPL
+export const nAAPLTokenAddress = '0xe2D34f6f9939ACDDdAB8612B0ADbE7B9f3c8F0c0'
+export const nAAPLLpTokenAddress = '0xDD8235664df4Ca35Ee0B814e4B4F80B82961c89f'
+export const nAAPLShortTokenAddress = '0x4e0726a2eC86042321Dd7C62aa1AA357D81638cC'
 
 interface Person {
   name: string
@@ -80,6 +86,12 @@ export const oracleList = [
     oraclePrice: null,
     decimal: 8
   },
+  {
+    assetKey: 'nAAPL',
+    address: nAAPLOracleAddress,
+    oraclePrice: null,
+    decimal: 8
+  },
 ]
 
 export const lpPairDetails = [
@@ -95,6 +107,13 @@ export const lpPairDetails = [
     tokenA: USDCaddress,
     tokenB: nTSLATokenAddress,
     lp: nTSLALpTokenAddress,
+    tokenADecimal: 6,
+    tokenBDecimal: 18,
+  },
+  {
+    tokenA: USDCaddress,
+    tokenB: nAAPLTokenAddress,
+    lp: nAAPLLpTokenAddress,
     tokenADecimal: 6,
     tokenBDecimal: 18,
   },
@@ -116,6 +135,13 @@ export const shortStakes = [
     shortTokenDecimal: 18,
     name: 'sTSLA',
   },
+  {
+    shortId: 2, // sTSLA
+    rootId: 10,
+    shortToken: nAAPLShortTokenAddress,
+    shortTokenDecimal: 18,
+    name: 'sTSLA',
+  },
 ]
 
 export const longStakes = [
@@ -130,6 +156,13 @@ export const longStakes = [
     longId: 1, // nTSLA
     rootId: 7,
     lpToken: nTSLALpTokenAddress,
+    lpTokenDecimal: 18,
+    name: 'nTSLA',
+  },
+  {
+    longId: 2, // nAAPL
+    rootId: 9,
+    lpToken: nAAPLLpTokenAddress,
     lpTokenDecimal: 18,
     name: 'nTSLA',
   },
