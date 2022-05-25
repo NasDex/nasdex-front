@@ -49,61 +49,75 @@ export async function getCommonAssetInfo(library: any ,account?: string | undefi
   const updatedList: any[] = []
   const updateAsset:any = {}
 
-  // Checking for asset balance and allowance
+  console.log(`getList Asset base info arr`, assetBaseInfoArr)
   for (let i = 0; i < assetBaseInfoArr.length; i++) {
+
+    try {
+      const asset:any = assetBaseInfoArr[i]
    
-    const asset:any = assetBaseInfoArr[i]
-   
-    const assetContract = new ethers.Contract(asset.address, Erc20Abi, customProvider)
-
-    const assetDecimal =  asset.decimals
-    const assetType = asset.type
-    const assetName = asset.name
-    const assetAddress = asset.address
-
-    if(account !== undefined && account !== null) {
-      const balance = await getBalance(assetContract, account, assetDecimal)
-      asset.balance = balance.balance
-
-      // const _promises = []
-      // _promises.push(getAllowance(assetContract, account, mintAddress, assetDecimal))
-      // _promises.push(getAllowance(assetContract, account, SwapRouterAddress, assetDecimal))
-      // _promises.push(getAllowance(assetContract, account, LongStakingAddress, assetDecimal))
-      // const [mint, swap ] = await Promise.all(_promises)
-
-      // asset.mintContractAllowance = mint.isAllowanceGranted 
-      // asset.swapContractAllowance = swap.isAllowanceGranted
-      // asset.longFarmAllowance = longFarm.isAllowanceGranted
-
-      // Collateral asset which is not a stablecoin type
-      const nonStablecoinCAsset = ['aUST']
-
-      if (assetType === "asset" || nonStablecoinCAsset.includes(assetName)) {
-        // Price oracle
-        const oracleInfo = oracleList.find(i => i.assetKey === assetName)
-
-        if (oracleInfo !== undefined) {
-          const priceOracleContract = new ethers.Contract(oracleInfo.address, STAOracle, customProvider)
-          const price = await priceOracleContract.latestRoundData()
-          asset.oraclePrice = fixD(formatUnits(price.answer, oracleInfo.decimal), 4)
+      const assetContract = new ethers.Contract(asset.address, Erc20Abi, customProvider)
+  
+      const assetDecimal =  asset.decimals
+      const assetType = asset.type
+      const assetName = asset.name
+      const assetAddress = asset.address
+  
+      if(account !== undefined && account !== null) {
+        const balance = await getBalance(assetContract, account, assetDecimal)
+        asset.balance = balance.balance
+        console.log(`getList ${assetName} balance`, asset.balance)
+  
+        // const _promises = []
+        // _promises.push(getAllowance(assetContract, account, mintAddress, assetDecimal))
+        // _promises.push(getAllowance(assetContract, account, SwapRouterAddress, assetDecimal))
+        // _promises.push(getAllowance(assetContract, account, LongStakingAddress, assetDecimal))
+        // const [mint, swap ] = await Promise.all(_promises)
+  
+        // asset.mintContractAllowance = mint.isAllowanceGranted 
+        // asset.swapContractAllowance = swap.isAllowanceGranted
+        // asset.longFarmAllowance = longFarm.isAllowanceGranted
+  
+        // Collateral asset which is not a stablecoin type
+        const nonStablecoinCAsset = ['aUST']
+  
+        if (assetType === "asset" || nonStablecoinCAsset.includes(assetName)) {
+          // Price oracle
+          const oracleInfo = oracleList.find(i => i.assetKey === assetName)
+  
+          console.log(`getList ${assetName}, oracle info`, oracleInfo)
+  
+          if (oracleInfo !== undefined) {
+            const priceOracleContract = new ethers.Contract(oracleInfo.address, STAOracle, customProvider)
+            const price = await priceOracleContract.latestRoundData()
+            asset.oraclePrice = fixD(formatUnits(price.answer, oracleInfo.decimal), 4)
+          }
         }
       }
+  
+      // Find swap price
+      if(assetType === 'asset') {
+        const swapPriceResult = await getSwapPrice(USDCaddress, assetAddress, "6", assetDecimal.toString(), library)
+        const nAssetTokenPrice = swapPriceResult?.tokenPrice1 // nAssetIndex is 1 in the lp
+        console.log(`getList ${assetName}, asset type = asset,  swap price`, nAssetTokenPrice)
+        asset.swapPrice = nAssetTokenPrice
+      } 
+  
+      updatedList.push(asset)
+      updateAsset[assetName] = asset
+    } catch(err) {
+      console.log(`Error `, err)
     }
-
-    // Find swap price
-    if(assetType === 'asset') {
-      const swapPriceResult = await getSwapPrice(USDCaddress, assetAddress, "6", assetDecimal.toString(), library)
-      const nAssetTokenPrice = swapPriceResult?.tokenPrice1 // nAssetIndex is 1 in the lp
-      asset.swapPrice = nAssetTokenPrice
-    } 
-
-    updatedList.push(asset)
-    updateAsset[assetName] = asset
   }
+
+  console.log(`getList Updated list`, updatedList)
+  console.log(`getList Update asset`, updateAsset)
 
   const nonCAsset = ['WMATIC', 'NSDX']
   const cAssetsListInfo = updatedList.filter(a => !nonCAsset.includes(a.name) && a.type === 'cAsset')
   const assetsListInfo  = updatedList.filter(a => a.type === 'asset') 
+
+  console.log(`getList cAssetsListInfo`, cAssetsListInfo)
+  console.log(`getList asset list info`, assetsListInfo)
 
   // dispatch(upDateAssetsNameInfo({ assetsNameInfo: assetsName }))
   dispatch(upDateAssetsListInfo({ assetsListInfo: assetsListInfo }))

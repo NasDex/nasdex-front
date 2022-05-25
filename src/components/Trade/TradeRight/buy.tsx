@@ -248,6 +248,10 @@ const Buy: React.FC<any> = props => {
     return () => clearInterval(interval)
   }, [timer])
 
+  useEffect(() => {
+    console.log(`All assets list info in trade buy`, commonState.allAssetsListInfo)
+  }, [commonState.allAssetsListInfo])
+
 
   const [isModalVisible, setIsModalVisible] = useState(false)
 

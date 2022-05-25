@@ -298,6 +298,15 @@ const SymbolTrade: React.FC<any> = props => {
     }
   }, [account, library, selectCoin, commonState.assetBaseInfoObj])
 
+
+  useEffect(() => {
+    console.log(`assets list info in mint`, commonState.assetsListInfo)
+  }, [commonState.assetsListInfo])
+
+  useEffect(() => {
+    console.log(`cassets list info in mint`, commonState.cAssetsListInfo)
+  }, [commonState.cAssetsListInfo])
+
   return (
     <div className="trade">
       <div className="trade-title">
