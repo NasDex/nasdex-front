@@ -13,14 +13,14 @@ export const MasterChefAddress = '0x35cA0e02C4c16c94c4cC8B67D13d660b78414f95'
 export const NSDXToken = '0xE8d17b127BA8b9899a160D9a07b69bCa8E08bfc6' 
 export const LPAddress = '0x56B8936a96cD5EE5C5837F385a19B4c2999fD74a' // NSDX / USDC
 
-export const mintAddress = '0xDf6ea9670E3f89555Eec716aADFD3fbf0F8a14FD' 
+export const mintAddress = '0xB7957FE76c2fEAe66B57CF3191aFD26d99EC5599' 
 export const USDTaddress = '0x519130DA1C46CF79F39A0339016c07c77f938fCB' // Testnet address
 export const USDCaddress = '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174'
-export const nAssetAddress = '0xc7D14a939eE0265BEAB7456394E50Ccc6C665298' // nSE
+export const nAssetAddress = '0xd067082D2808C6Bad647FD497D45c5d1d299216C' // nSE
 export const nETHAssetAddress = '0xAE53Ad289fEf1Ff08d07c06808Fb3888150608b9' 
 export const nMATICAssetAddress = '0x0C70ac0337088C96C55667974103957166DB63b6' 
-export const ShortTokenAddress = '0xef4c2e11E136e2824d4Ec9bc4b147d8C38d931f5' 
-export const LongTokenAddress = '0x5f1BD282C552446887919E810901b55Bc6dA2ac4' 
+export const ShortTokenAddress = '0xF7A9ff1c816562628Cf38E7F2421e17a4882d901' 
+export const LongTokenAddress = '0x239363FeD0937613A5Ae8b9916754b6b277B553E' 
 export const ETHShortTokenddress = '0xeF25EB0E63e42022E2da28f9c270dB993a0Ac2d2' 
 export const MATICShortTokenddress = '0x979Ee7097c4270950f89CA412191bf59c1C4C5ca' 
 
@@ -35,21 +35,21 @@ export const aUSTOracleAddress = '0x7958b7693bE15a601cFef8e091c69f18d738e4E8'
 export const NSDXVault = '0x9185921Da8cD0266257DFa606b6075Ef5be67723' 
 export const NSDXTestToken = '0xE8d17b127BA8b9899a160D9a07b69bCa8E08bfc6'
 export const MasterChefTestAddress = '0x35cA0e02C4c16c94c4cC8B67D13d660b78414f95' 
-export const PositionsAddress = '0x0Dc84B14964234DCB4465874F9FF4778EBb2998a'
-export const ShortLockAddress = '0x1D7E96bf705bCeEF2d78286d74e940bDf1072345' 
-export const ShortStakingAddress = '0x12531d4ac0669Fa24621C27D0541895b2eB0343d' 
-export const LongStakingAddress = '0x63213eCf311F60c52c6d00C7FE700f2BdCE353Bb' 
+export const PositionsAddress = '0xADaE61C3D7D4853f71f8e0623fE70622C708F266'
+export const ShortLockAddress = '0x8EdF0c0f9C56B11A5bE56CB816A2e57c110f44b1' 
+export const ShortStakingAddress = '0xB68F3D8E341B88df22a73034DbDE3c888f4bE9DE' 
+export const LongStakingAddress = '0xcA502B303c07c60E71a953cF34c6A512EBC61Bc6' 
 export const MultiCallAddress = '0xA8e39872452BA48b1F4c7e16b78668199d2C41Dd' 
-export const AssetAddress = '0x6C1BAa725A126e9936A2627b7024c3f8c450E64C' 
-export const AdminAddress = '0xC01bd61922702D06fA0EA91D2672AEba4Cd7E6d3' 
+export const AssetAddress = '0x6788fFdeA052875f7e5F6F0Dc5aa8e5003308049' 
+export const AdminAddress = '0x3F71D535a8dFFB933779915a89f8b7B321140344' 
 
 export const SwapFactoryAddress = '0xa07dD2e9fa20C14C45A28978041b4c64e45f7f97' 
 export const SwapRouterAddress = '0x270Ec6bE0C9D67370C2B247D5AF1CC0B7dED0d4a' 
 
 // nTSLA 
-export const nTSLATokenAddress = "0xe532dcE6BEFe42Ca8767DFa2abFCE2b99087168B"
-export const nTSLALpTokenAddress = "0x8dEf846Af4c574835D6406ceB442eEE57eE1C424"
-export const nTSLAShortTokenAddress = "0x12C590aD53CD55677D15B9E2f7D5866B6E1931bB"
+export const nTSLATokenAddress = "0x20796c1c7738992e598b81062b41f2e0b8a8c382"
+export const nTSLALpTokenAddress = "0xc6cb70d5C8d98C9399D4c37E6135dF31551c3A40"
+export const nTSLAShortTokenAddress = "0xb6F1739cD40d8933127Ee2F2D58b81caDc74A8e0"
 interface Person {
   name: string
   age?: number
@@ -95,27 +95,27 @@ export const lpPairDetails = [
     tokenBDecimal: 18
   }, 
   {
-    tokenA: USDCaddress,
-    tokenB: nTSLATokenAddress,
+    tokenA: nTSLATokenAddress,
+    tokenB: USDCaddress,
     lp: nTSLALpTokenAddress, 
-    tokenADecimal: 6,
-    tokenBDecimal: 18
+    tokenADecimal: 18,
+    tokenBDecimal: 6
   }
 ]
 
 // Move this to backend
 export const shortStakes = [
   {
-    shortId: 1, // sSE
-    rootId: 5,
+    shortId: 0, // sSE
+    rootId: 11,
     shortToken: ShortTokenAddress,
     shortTokenDecimal: 18,
     name: "sSE",
 
   },
   {
-    shortId: 2, // sTSLA
-    rootId: 7,
+    shortId: 1, // sTSLA
+    rootId: 13,
     shortToken: nTSLAShortTokenAddress,
     shortTokenDecimal: 18,
     name: "sTSLA",
@@ -124,16 +124,16 @@ export const shortStakes = [
 
 export const longStakes = [
   {
-    longId: 1, // nSE
-    rootId: 4,
+    longId: 0, // nSE
+    rootId: 10,
     lpToken: LongTokenAddress,
     lpTokenDecimal: 18,
     name: "nSE",
 
   },
   {
-    longId: 2, // nTSLA
-    rootId: 6,
+    longId: 1, // nTSLA
+    rootId: 12,
     lpToken: nTSLALpTokenAddress,
     lpTokenDecimal: 18,
     name: "nTSLA",
