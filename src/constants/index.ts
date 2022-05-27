@@ -40,7 +40,7 @@ export const PositionsAddress = '0xADaE61C3D7D4853f71f8e0623fE70622C708F266'
 export const ShortLockAddress = '0x8EdF0c0f9C56B11A5bE56CB816A2e57c110f44b1' 
 export const ShortStakingAddress = '0xB68F3D8E341B88df22a73034DbDE3c888f4bE9DE' 
 export const LongStakingAddress = '0xcA502B303c07c60E71a953cF34c6A512EBC61Bc6' 
-export const MultiCallAddress = '0xA8e39872452BA48b1F4c7e16b78668199d2C41Dd' 
+export const MultiCallAddress = '0xA8B0637C7F0e923F72f903DbC8169a8a186433D6' 
 export const AssetAddress = '0x6788fFdeA052875f7e5F6F0Dc5aa8e5003308049' 
 export const AdminAddress = '0x3F71D535a8dFFB933779915a89f8b7B321140344' 
 
