@@ -120,7 +120,7 @@ const AssetPair = ({ onDismiss = defaultOnDismiss, from }: AssetPairProps) => {
           <p>{t('commonBases')}</p>
         </div>
         <div className="asset">
-          {commonState.cAssetsListInfo.map((ele: any, index: any) => (
+          {commonState.cAssetsListInfo.filter((c: any) => !restrictedCoins.includes(c.name)).map((ele: any, index: any) => (
             <div
               key={index}
               className="asset-item"

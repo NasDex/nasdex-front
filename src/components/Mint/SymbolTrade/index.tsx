@@ -505,7 +505,7 @@ const SymbolTrade: React.FC<any> = props => {
                   <use xlinkHref="#icon-Under"></use>
                 </svg>
               }>
-              {commonState.cAssetsListInfo.map((ele: any, index: any) => (
+              {commonState.cAssetsListInfo.filter((c: any) => !restrictedCoins.includes(c.name)).map((ele: any, index: any) => (
                 <Option value={ele.name} className="customize-option-label-item" key={index}>
                   <div className="customize-option-label-item">
                     <img src={require(`../../../img/coin/${ele.name}.png`).default} alt="" />
