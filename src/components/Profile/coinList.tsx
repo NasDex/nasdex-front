@@ -7,6 +7,7 @@ import { useActiveWeb3React } from 'hooks'
 import zhanweifu from '../../img/common/zhanweifu.png'
 import { fixD } from 'utils'
 import { useCommonState } from 'state/common/hooks'
+import { restrictedCoins } from 'constants/index'
 const CoinList: React.FC<any> = props => {
   const { account } = useActiveWeb3React()
   const commonState = useCommonState()
@@ -106,6 +107,9 @@ const CoinList: React.FC<any> = props => {
     <div className="coin-list">
       {assetInfo.map((ele: any, key: any) => {
         if(ele === undefined) {
+          return null
+        }
+        if(restrictedCoins.includes(ele.name)) {
           return null
         }
         return (
