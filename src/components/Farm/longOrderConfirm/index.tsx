@@ -75,9 +75,9 @@ const LongOrderConfirm = ({
     <OrderNoifcation type="waitings" title={t('LongFarm')} from="farm" message={``}></OrderNoifcation>,
   )
 
-  const Areturned = (Number(tokenBamount) * tokenBPrice).toString()
+  const Areturned = !tokenBPrice ? Number(tokenAamount).toString() : (Number(tokenBamount) * tokenBPrice).toString()
   const Aminimum = Number(Areturned) - Number(Areturned) * Number(farmState.slippageTolerance) * 0.01
-  const Breturned = (Number(tokenAamount) * tokenAPrice).toString()
+  const Breturned = !tokenAPrice ? Number(tokenBamount).toString() :(Number(tokenAamount) * tokenAPrice).toString()
   const Bminimum = Number(Breturned) - Number(Breturned) * Number(farmState.slippageTolerance) * 0.01
   
   useEffect(() => {
@@ -289,8 +289,8 @@ const LongOrderConfirm = ({
             <div className="text">
               {isChildTab ? `1 ${tokenA}` : `1 ${tokenB}`} =
               {isChildTab
-                ? ` ${fixD(tokenAPrice, commonState.assetBaseInfoObj[tokenB].fixDPrecise)} ${tokenB}`
-                : ` ${fixD(tokenBPrice, commonState.assetBaseInfoObj[tokenA].fixDPrecise)} ${tokenA}`}
+                ? !tokenAPrice ? `${tokenBamount} ${tokenB}` :` ${fixD(tokenAPrice, commonState.assetBaseInfoObj[tokenB].fixDPrecise)} ${tokenB}`
+                : !tokenBPrice ? `${tokenAamount} ${tokenA}` : ` ${fixD(tokenBPrice, commonState.assetBaseInfoObj[tokenA].fixDPrecise)} ${tokenA}`}
               <svg className="icon" aria-hidden="true" onClick={() => setChildTab(!isChildTab)}>
                 <use xlinkHref="#Icon-Trade-Active"></use>
               </svg>
