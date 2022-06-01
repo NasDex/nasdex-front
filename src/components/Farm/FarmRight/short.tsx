@@ -31,7 +31,7 @@ import { useWalletModal } from 'components/WalletModal'
 import useAuth from 'hooks/useAuth'
 import useApproveFarm from '../../common/approve/index'
 import { LowerRatio } from 'utils/commonComponents'
-import { mintAddress, USDCaddress, USDTaddress } from '../../../constants/index'
+import { mintAddress, restrictedCoins, USDCaddress, USDTaddress } from '../../../constants/index'
 import { formatUnits, parseUnits } from 'ethers/lib/utils'
 import { useCustomSwapRouterContract, useSwapRouterContract } from 'constants/hooks/useContract'
 import { useTranslation } from 'react-i18next'
@@ -545,7 +545,7 @@ const Short: React.FC<any> = props => {
                   <use xlinkHref="#icon-Under"></use>
                 </svg>
               }>
-              {commonState.cAssetsListInfo.map((ele: any, index: any) => (
+              {commonState.cAssetsListInfo.filter((c: any) => !restrictedCoins.includes(c.name)).map((ele: any, index: any) => (
                 <Option value={ele.name} className="customize-option-label-item" key={index}>
                   <div className="customize-option-label-item">
                     <img src={require(`../../../img/coin/${ele.name}.png`).default} alt="" />
@@ -611,6 +611,7 @@ const Short: React.FC<any> = props => {
       ) : parseFloat(cAssetAllowance) > 0 ? (
         <Button
           disabled={
+            restrictedCoins.includes(selectCoin) ||
             Number(tradeCollateral) > Number(commonState.assetBaseInfoObj[selectCoin]?.balance) ||
               !Number(tradeAmount) ||
               !Number(tradeCollateral) ||

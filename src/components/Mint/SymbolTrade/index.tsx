@@ -23,7 +23,7 @@ import { useMintState } from 'state/mint/hooks'
 import { useCommonState, useProvider } from 'state/common/hooks'
 import { useManageState } from 'state/manage/hooks'
 import useApproveFarm from '../../common/approve/index'
-import { mintAddress } from '../../../constants/index'
+import { mintAddress, restrictedCoins } from '../../../constants/index'
 import { useErc20Contract } from 'constants/hooks/useContract'
 import { useActiveWeb3React } from 'hooks'
 type IconType = 'success' | 'info' | 'error' | 'warning'
@@ -505,7 +505,7 @@ const SymbolTrade: React.FC<any> = props => {
                   <use xlinkHref="#icon-Under"></use>
                 </svg>
               }>
-              {commonState.cAssetsListInfo.map((ele: any, index: any) => (
+              {commonState.cAssetsListInfo.filter((c: any) => !restrictedCoins.includes(c.name)).map((ele: any, index: any) => (
                 <Option value={ele.name} className="customize-option-label-item" key={index}>
                   <div className="customize-option-label-item">
                     <img src={require(`../../../img/coin/${ele.name}.png`).default} alt="" />
@@ -532,6 +532,7 @@ const SymbolTrade: React.FC<any> = props => {
         ) : (
           <Button
             disabled={
+              restrictedCoins.includes(selectCoin) ||
               !Number(tradeAmount) ||
                 !Number(tradeCollateral) ||
                 Number(sliderValue) < Number(minCollateral) ||

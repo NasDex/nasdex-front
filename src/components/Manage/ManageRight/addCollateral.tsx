@@ -28,7 +28,7 @@ import { useDispatch } from 'react-redux'
 import useModal from 'hooks/useModal'
 import useApproveFarm from '../../common/approve/index'
 import { useErc20Contract } from 'constants/hooks/useContract'
-import { mintAddress, nAssetAddress, nonStablecoinCAsset, USDCaddress } from '../../../constants/index'
+import { mintAddress, nAssetAddress, nonStablecoinCAsset, restrictedCoins, USDCaddress } from '../../../constants/index'
 import ConfirmOrder from '../OrderConfirm/index'
 import Notification from '../../../utils/notification'
 import { LowerRatio } from 'utils/commonComponents'
@@ -283,6 +283,16 @@ const AddCollateral: React.FC<any> = props => {
     setSliderValue(positionInfo.cRatio)
   }, [positionInfo])
 
+  // Temporary disable short for aUST
+  const [disableButton, setDisableButton] = useState(false)
+  useEffect(() => {
+    // Is shorting  using aUST
+    const disablingButton=  (precision.minus(Number(tradeAmount),
+    Number(fixD(positionInfo.assetAmountSub, commonState.assetBaseInfoObj[assetTokenName].fixDPrecise))) > 0) && restrictedCoins.includes(cAssetTokenName)
+    setDisableButton(disablingButton)
+  }, [tradeAmount, positionInfo.assetAmountSub,commonState.assetBaseInfoObj[assetTokenName]])
+ 
+
   return (
     <div className="manageRight-addCollateral-container">
       <div className={collateralActive ? 'amount-active amount amountDisabled' : 'amount amountDisabled'}>
@@ -534,46 +544,53 @@ const AddCollateral: React.FC<any> = props => {
         <Button className="addCollateral" onClick={() => onPresentConnectModal()}>
           {t('Connect')}
         </Button>
-      ) : parseFloat(assetAllowance) > 0 ? (
+      ) : disableButton ?
         <Button
-          disabled={
-            Number(positionInfo.assetAmount) - Number(tradeAmount) >
-              Number(commonState.assetBaseInfoObj[assetTokenName]?.balance) ||
-              tradeAmount ==
-              fixD(positionInfo.assetAmountSub, commonState.assetBaseInfoObj[assetTokenName].fixDPrecise) ||
-              Number(sliderValue) < minCollateral ||
-              tradeAmount == '0' ||
-              editConfirmBtn
-              ? true
-              : false
-          }
+          disabled={true}
           className="addCollateral"
           onClick={() => handleConfirm()}>
           {t('Confirm')}
         </Button>
-      ) : tradeAmount ==
-        fixD(positionInfo.assetAmountSub, commonState.assetBaseInfoObj[assetTokenName].fixDPrecise) || Number(tradeAmount) == 0 ? (
-        <Button
-          disabled={
-            Number(positionInfo.assetAmount) - Number(tradeAmount) >
-              Number(commonState.assetBaseInfoObj[assetTokenName]?.balance) ||
-              tradeAmount ==
-              fixD(positionInfo.assetAmountSub, commonState.assetBaseInfoObj[assetTokenName].fixDPrecise) ||
-              Number(sliderValue) < minCollateral ||
-              tradeAmount == '0' ||
-              editConfirmBtn
-              ? true
-              : false
-          }
-          className="addCollateral"
-          onClick={() => handleConfirm()}>
-          {t('Confirm')}
-        </Button>
-      ) : (
-        <Button className="addCollateral" loading={requestedApproval} onClick={() => handleApprove()}>
-          <span>{t('Approve')}</span>
-        </Button>
-      )}
+        : parseFloat(assetAllowance) > 0 ? (
+          <Button
+            disabled={
+              (Number(positionInfo.assetAmount) - Number(tradeAmount) >
+                Number(commonState.assetBaseInfoObj[assetTokenName]?.balance) ||
+                tradeAmount ==
+                fixD(positionInfo.assetAmountSub, commonState.assetBaseInfoObj[assetTokenName].fixDPrecise) ||
+                Number(sliderValue) < minCollateral ||
+                tradeAmount == '0' ||
+                editConfirmBtn
+                ? true
+                : false)
+            }
+            className="addCollateral"
+            onClick={() => handleConfirm()}>
+            {t('Confirm')}
+          </Button>
+        ) : tradeAmount ==
+          fixD(positionInfo.assetAmountSub, commonState.assetBaseInfoObj[assetTokenName].fixDPrecise) || Number(tradeAmount) == 0 ? (
+          <Button
+            disabled={
+              Number(positionInfo.assetAmount) - Number(tradeAmount) >
+                Number(commonState.assetBaseInfoObj[assetTokenName]?.balance) ||
+                tradeAmount ==
+                fixD(positionInfo.assetAmountSub, commonState.assetBaseInfoObj[assetTokenName].fixDPrecise) ||
+                Number(sliderValue) < minCollateral ||
+                tradeAmount == '0' ||
+                editConfirmBtn
+                ? true
+                : false
+            }
+            className="addCollateral"
+            onClick={() => handleConfirm()}>
+            {t('Confirm')}
+          </Button>
+        ) : (
+          <Button className="addCollateral" loading={requestedApproval} onClick={() => handleApprove()}>
+            <span>{t('Approve')}</span>
+          </Button>
+        )}
       <div className="tx-fee">
         <div className="item">
           <div className="tx-fee-text">

@@ -36,13 +36,19 @@ export default function useProfile() {
             const blackholeAddress = "0x0000000000000000000000000000000000000000"
             positionList = positionList.filter((p: any) => !(p.assetToken === blackholeAddress || p.cAssetToken === blackholeAddress))
 
-            const finalResult =  await Promise.all(positionList.map(async (position: any, index: number) => {
-                
+            const newAssetsNameInfo = Object.keys(assetsNameInfo).reduce(function (result : any, key : any) {
+                const lowerCaseKey = key.toLowerCase()
+                result[lowerCaseKey] = assetsNameInfo[key]
+                return result
+            }, {})
+
+            const finalResult = await Promise.all(positionList.map(async (position: any, index: number) => {
+
                 const assetAddress = position.assetToken
                 const cAssetAddress = position.cAssetToken
 
-                const assetName = assetsNameInfo[assetAddress]
-                const cAssetName = assetsNameInfo[cAssetAddress]
+                const assetName = newAssetsNameInfo[assetAddress.toLowerCase()]
+                const cAssetName = newAssetsNameInfo[cAssetAddress.toLowerCase()]
 
                 const asset = assetBaseInfoObj[assetName]
                 const cAsset = assetBaseInfoObj[cAssetName]

@@ -16,6 +16,7 @@ import { useActiveWeb3React } from 'hooks'
 import { useCommonState } from 'state/common/hooks'
 import { fixD, getpriceList } from 'utils/dist'
 import { useTranslation } from 'react-i18next'
+import { restrictedCoins } from 'constants/index'
 const defaultOnDismiss = () => null
 
 type AssetPairProps = {
@@ -119,12 +120,16 @@ const AssetPair = ({ onDismiss = defaultOnDismiss, from }: AssetPairProps) => {
           <p>{t('commonBases')}</p>
         </div>
         <div className="asset">
-          {commonState.cAssetsListInfo.map((ele: any, index: any) => (
+          {commonState.cAssetsListInfo.filter((c: any) => !restrictedCoins.includes(c.name)).map((ele: any, index: any) => (
             <div
               key={index}
               className="asset-item"
               style={
-                basePool == `${ele.name}`
+                restrictedCoins.includes(ele.name) ? {
+                  pointerEvents: "none",
+                  backgroundColor: "rgb(0,0,0,0.05)",
+                  cursor: "not-allowed"
+                } : basePool == `${ele.name}`
                   ? {
                     borderColor: '#005aff',
                   }

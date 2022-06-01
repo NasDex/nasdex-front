@@ -28,7 +28,7 @@ import precision from 'utils/precision'
 const { Option } = Select
 import { useTranslation } from 'react-i18next'
 import { getOraclePrice } from 'utils/getList'
-import { nonStablecoinCAsset } from 'constants/index'
+import { nonStablecoinCAsset, restrictedCoins } from 'constants/index'
 type IconType = 'success' | 'info' | 'error' | 'warning'
 const Withdraw: React.FC<any> = props => {
   const { t, i18n } = useTranslation()
@@ -196,6 +196,14 @@ const Withdraw: React.FC<any> = props => {
     setAmount(fixD(positionInfo.assetAmountSub, commonState.assetBaseInfoObj[assetTokenName].fixDPrecise))
     setSliderValue(positionInfo.cRatio)
   }, [positionInfo])
+
+  const [disableButton, setDisableButton] = useState(false)
+  useEffect(() => {
+    // add collateral + restricted coin
+    const disablingButton = precision.minus(Number(tradeCollateral),
+    Number(fixD(positionInfo.cAssetAmountSub, commonState.assetBaseInfoObj[cAssetTokenName].fixDPrecise))) > 0 && restrictedCoins.includes(cAssetTokenName)
+    setDisableButton(disablingButton)
+  }, [tradeCollateral, positionInfo.cAssetAmountSub, commonState.assetBaseInfoObj[cAssetTokenName]])
 
   return (
     <div className="manageRight-withdraw-container">
@@ -432,8 +440,11 @@ const Withdraw: React.FC<any> = props => {
         <Button className="withdraw" onClick={() => onPresentConnectModal()}>
           {t('Connect')}
         </Button>
-      ) :
-        precision.minus(Number(tradeCollateral),
+      ) : disableButton ?
+          <Button disabled className="withdraw">
+            {t('Confirm')}
+          </Button>
+        : precision.minus(Number(tradeCollateral),
           Number(fixD(positionInfo.cAssetAmount, commonState.assetBaseInfoObj[cAssetTokenName].fixDPrecise))) > 0
           && precision.minus(Number(tradeCollateral),
             Number(fixD(positionInfo.cAssetAmount, commonState.assetBaseInfoObj[cAssetTokenName].fixDPrecise))) > Number(commonState.assetBaseInfoObj[cAssetTokenName]?.balance) ? (
