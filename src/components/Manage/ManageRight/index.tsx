@@ -63,10 +63,17 @@ const ProfileList: React.FC<any> = props => {
 
   async function getPosition() {
     if (positionId && account&&assetsName) {
+      const newAssetsNameInfo = Object.keys(assetsName).reduce(function (result : any, key : any) {
+        const lowerCaseKey = key.toLowerCase()
+        result[lowerCaseKey] = assetsName[key]
+        return result
+    }, {})
+
       const position = await PositionsContract.getPosition(positionId)
       const feerate = (await MintContract.feeRate()) / 1000
-      const assetsTokenName = assetsName[position.assetToken]
-      const cAssetsTokenName = assetsName[position.cAssetToken]
+      const assetsTokenName = newAssetsNameInfo[position.assetToken.toLowerCase()]
+      const cAssetsTokenName = newAssetsNameInfo[position.cAssetToken.toLowerCase()]
+
       const assetAmountSub = Number(
         formatUnits(position.assetAmount, assetBaseInfoObj[assetsTokenName].decimals).substring(
           0,
