@@ -131,7 +131,7 @@ const LongOrderConfirm = ({
       let tx
       openWaiting()
 
-      if (token0Address == commonState.assetBaseInfoObj[tokenA].address) {
+      if (token0Address.toLowerCase() == commonState.assetBaseInfoObj[tokenA].address.toLowerCase()) {
         tx = await longStakingContract.deposit(
           Number(id),
           Aamount,
