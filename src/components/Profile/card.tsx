@@ -94,15 +94,18 @@ const ProfileCard: React.FC<ProfileCardProps> = props => {
     try {
       const lpPairs = commonState.longFarmingInfo
       const lpPairsTotalValue:any = [] // Total sum up of nAssets value
+
+      const nAssetAtZeroIndex = ["nTSLA"]
+
       if(lpPairs.length > 0) {
         for(let i = 0; i < lpPairs.length; i ++) {
           const lpPair = lpPairs[i]
 
-          const token0Name = lpPair.cAssetName
+          const token0Name = nAssetAtZeroIndex.includes(lpPair.name) ? lpPair.name : lpPair.cAssetName
           const token0Info = commonState.assetBaseInfoObj[token0Name]
           const token0Type = token0Info.type
           
-          const token1Name = lpPair.name
+          const token1Name = nAssetAtZeroIndex.includes(lpPair.name) ? lpPair.cAssetName : lpPair.name
           const token1Info = commonState.assetBaseInfoObj[token1Name]
 
           const swapPriceObj = await getSwapPrice(
@@ -129,7 +132,6 @@ const ProfileCard: React.FC<ProfileCardProps> = props => {
             tvl = (parseFloat(reserves0) * tokenPrice0) + (parseFloat(reserves1) * token1UnitPrice)
             // console.log(`${token1Name}, tvl = (${parseFloat(reserves0)} * ${tokenPrice0})  + (${parseFloat(reserves1)} * ${token1UnitPrice}) `)
           }
-
           lpPairsTotalValue.push(tvl)
         }
         setAssetNumArray(lpPairsTotalValue)
