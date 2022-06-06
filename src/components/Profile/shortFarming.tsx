@@ -111,13 +111,18 @@ const ShortFarming: React.FC<any> = props => {
 
   async function setData() {
     const data: any = []
+    const newAssetsNameInfo = Object.keys(assetsNameInfo).reduce(function (result : any, key : any) {
+      const lowerCaseKey = key.toLowerCase()
+      result[lowerCaseKey] = assetsNameInfo[key]
+      return result
+    }, {})
     for (let i = 0; i < commonState.farmingPositionInfo.length; i++) {
       const ele = commonState.farmingPositionInfo[i]
       const date = Date.parse(new Date().toString()) / 1000
       const shortFarmingInfo = await MultiCallContract.getPositionInfo(ele.positionId)
-      const assetsTokenName = assetsNameInfo[shortFarmingInfo.position.assetToken]
-      const cAssetsTokenName = assetsNameInfo[shortFarmingInfo.position.cAssetToken]
-      const logo = assetsNameInfo[shortFarmingInfo.assetConfig.token]
+      const assetsTokenName = newAssetsNameInfo[shortFarmingInfo.position.assetToken.toLowerCase()]
+      const cAssetsTokenName = newAssetsNameInfo[shortFarmingInfo.position.cAssetToken.toLowerCase()]
+      const logo = newAssetsNameInfo[shortFarmingInfo.assetConfig.token]
       const shortReward = await ShortStakingContract.pendingNSDX(shortFarmingInfo.assetConfig.poolId, shortFarmingInfo.position.owner)
       data.push({
         key: shortFarmingInfo.position.id.toString(),
@@ -135,8 +140,8 @@ const ShortFarming: React.FC<any> = props => {
           Number(shortFarmingInfo.lockInfo.unlockTime.toString()) > date
             ? '0'
             : formatUnits(shortFarmingInfo.lockInfo.lockedAmount, assetBaseInfoObj[cAssetsTokenName].decimals),
-        lockedToken: assetsNameInfo[shortFarmingInfo.position.cAssetToken],
-        assetToken: assetsNameInfo[shortFarmingInfo.position.assetToken],
+        lockedToken: newAssetsNameInfo[shortFarmingInfo.position.cAssetToken.toLowerCase()],
+        assetToken: newAssetsNameInfo[shortFarmingInfo.position.assetToken.toLowerCase()],
         Rewards: formatUnits(shortReward, assetBaseInfoObj[assetsTokenName].decimals),
         assigned: shortFarmingInfo.lockInfo.assigned,
         poolId: shortFarmingInfo.assetConfig.poolId.toString(),
